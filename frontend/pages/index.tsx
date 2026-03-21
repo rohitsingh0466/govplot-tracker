@@ -65,23 +65,44 @@ export default function Home() {
 
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-12">
 
-        {/* Hero */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+        {/* Hero Section */}
+        <div className="text-center mb-14 animate-fade-in-up">
+          <div className="inline-block mb-6 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200">
+            <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              ✨ Track Government Plot Schemes in Real-Time
+            </span>
+          </div>
+
+          <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 bg-clip-text text-transparent mb-6 leading-tight">
             🏠 GovPlot Tracker
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            India&apos;s most complete tracker for Government Residential Plot Schemes.
-            Real-time status across <strong>9 top cities</strong>. Get notified the moment a scheme opens.
+
+          <p className="text-xl md:text-2xl text-slate-700 max-w-3xl mx-auto mb-2 leading-relaxed">
+            India&apos;s <span className="font-bold text-blue-600">most complete</span> real-time tracker for Government Residential Plot Schemes.
           </p>
-          <button
-            onClick={() => setAlertOpen(true)}
-            className="mt-5 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition"
-          >
-            🔔 Get Free Alerts
-          </button>
+
+          <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-10 flex items-center justify-center gap-8 flex-wrap">
+            <span>📍 <strong>9 Major Cities</strong></span>
+            <span>🔔 <strong>Instant Alerts</strong></span>
+            <span>✅ <strong>Live Updates</strong></span>
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => setAlertOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105 text-lg"
+            >
+              🔔 Get Free Alerts
+            </button>
+            <button
+              onClick={() => {/* scroll to schemes */}}
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-8 py-4 rounded-xl transition text-lg"
+            >
+              Browse Schemes →
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -96,38 +117,83 @@ export default function Home() {
 
         {/* Scheme Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-56 bg-gray-200 animate-pulse rounded-xl" />
+              <div key={i} className="h-72 bg-gradient-to-br from-slate-200 to-slate-300 animate-pulse rounded-2xl" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
-            <div className="text-5xl mb-4">🔍</div>
-            <p className="text-lg">No schemes found for the selected filters.</p>
+          <div className="text-center py-24 text-slate-500">
+            <div className="text-7xl mb-6">🔍</div>
+            <p className="text-2xl font-bold mb-2">No schemes found</p>
+            <p className="text-lg">Try adjusting your filters to find what you&apos;re looking for</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map(s => (
               <SchemeCard key={s.scheme_id} scheme={s} />
             ))}
           </div>
         )}
 
-        {/* Ad Slot — Google AdSense */}
-        <div className="mt-12 bg-gray-100 border border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-400 text-sm">
-          {/* Replace this div with your AdSense code snippet */}
-          📢 Advertisement Slot — Google AdSense
+        {/* Advertisement Slot */}
+        <div className="mt-16 bg-gradient-to-r from-slate-100 to-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-slate-500">
+          <div className="text-3xl mb-3">📢</div>
+          <p className="font-semibold mb-1">Advertisement Space</p>
+          <p className="text-sm">Google AdSense / Affiliate Partners</p>
         </div>
       </main>
 
-      <footer className="mt-16 border-t bg-white py-8 text-center text-gray-400 text-sm">
-        <p>© 2025 GovPlot Tracker · Data sourced from official government portals</p>
-        <p className="mt-1">
-          <a href="/about" className="hover:underline">About</a> ·{" "}
-          <a href="/privacy" className="hover:underline">Privacy</a> ·{" "}
-          <a href="/contact" className="hover:underline">Contact</a>
-        </p>
+      {/* Footer */}
+      <footer className="mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">🏠</span>
+                <span className="font-bold text-blue-600">GovPlot Tracker</span>
+              </div>
+              <p className="text-sm text-slate-600">
+                Real-time tracking for government residential plot schemes across India.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-bold text-slate-900 mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition">Schemes</a></li>
+                <li><a href="/cities" className="text-slate-600 hover:text-blue-600 transition">Cities</a></li>
+                <li><a href="/about" className="text-slate-600 hover:text-blue-600 transition">About</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="font-bold text-slate-900 mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/privacy" className="text-slate-600 hover:text-blue-600 transition">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-slate-600 hover:text-blue-600 transition">Terms of Use</a></li>
+                <li><a href="/contact" className="text-slate-600 hover:text-blue-600 transition">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div>
+              <h4 className="font-bold text-slate-900 mb-4">Newsletter</h4>
+              <p className="text-sm text-slate-600 mb-3">Get weekly updates on new schemes</p>
+              <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition text-sm">
+                Subscribe
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-200 pt-8 text-center text-slate-600 text-sm">
+            <p>© 2025 GovPlot Tracker · Data sourced from official government portals</p>
+            <p className="mt-2">Built with ❤️ for every Indian looking to invest in government land</p>
+          </div>
+        </div>
       </footer>
 
       <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} />

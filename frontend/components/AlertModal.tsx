@@ -37,56 +37,66 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in-up">
+        {/* Header gradient */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 relative overflow-hidden">
+          <div className="absolute -right-20 -top-20 w-40 h-40 bg-blue-500 rounded-full opacity-20" />
+          <div className="relative">
+            <button
+              onClick={onClose}
+              className="absolute right-0 top-0 text-white hover:bg-white/20 rounded-full p-2 transition"
+            >
+              ✕
+            </button>
+            <div className="text-4xl mb-3">🔔</div>
+            <h2 className="text-2xl font-bold text-white mb-2">Get Free Alerts</h2>
+            <p className="text-blue-100">Get notified instantly when new schemes open</p>
+          </div>
+        </div>
+
+        <div className="p-8">
           {!done ? (
             <>
-              <div className="flex justify-between items-start mb-4">
+              <div className="space-y-5">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">🔔 Get Scheme Alerts</h2>
-                  <p className="text-sm text-gray-500 mt-1">Free notifications when new schemes open</p>
-                </div>
-                <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Email Address *</label>
+                  <label className="text-sm font-bold text-slate-900 block mb-2">📧 Email Address *</label>
                   <input
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">City</label>
+                  <label className="text-sm font-bold text-slate-900 block mb-2">📍 City</label>
                   <select
                     value={city}
                     onChange={e => setCity(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white"
                   >
                     {CITIES.map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-2">Notification Channel</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <label className="text-sm font-bold text-slate-900 block mb-3">Notification Channel</label>
+                  <div className="grid grid-cols-3 gap-3">
                     {CHANNELS.map(ch => (
                       <button
                         key={ch.id}
                         onClick={() => setChannel(ch.id)}
-                        className={`relative border rounded-lg p-3 text-xs font-medium transition ${
-                          channel === ch.id ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-200 text-gray-600"
+                        className={`relative border-2 rounded-xl p-3 text-xs font-bold transition transform hover:scale-105 ${
+                          channel === ch.id
+                            ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 shadow-lg"
+                            : "border-slate-200 text-slate-600 bg-slate-50 hover:bg-white"
                         }`}
                       >
                         {ch.label}
                         {!ch.free && (
-                          <span className="absolute -top-1.5 -right-1.5 text-[9px] bg-yellow-400 text-yellow-900 px-1 rounded-full font-bold">PRO</span>
+                          <span className="absolute -top-2 -right-2 text-[10px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full font-bold">PRO</span>
                         )}
                       </button>
                     ))}
@@ -97,24 +107,24 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
               <button
                 onClick={submit}
                 disabled={loading || !email}
-                className="mt-6 w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-300 text-white font-semibold py-3 rounded-xl transition"
+                className="mt-8 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-300 disabled:to-slate-400 text-white font-bold py-3.5 rounded-xl transition transform hover:scale-105 shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed"
               >
-                {loading ? "Subscribing..." : "Subscribe for Free 🎉"}
+                {loading ? "⏳ Subscribing..." : "✨ Subscribe for Free"}
               </button>
-              <p className="text-center text-xs text-gray-400 mt-3">No spam. Unsubscribe anytime.</p>
+              <p className="text-center text-xs text-slate-600 mt-4">🔒 No spam. Unsubscribe anytime.</p>
             </>
           ) : (
-            <div className="text-center py-6">
-              <div className="text-5xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">You&apos;re subscribed!</h3>
-              <p className="text-sm text-gray-500 mb-6">
-                We&apos;ll notify you on <strong>{channel}</strong> when new schemes open{city !== "All Cities" ? ` in ${city}` : ""}.
+            <div className="text-center py-4">
+              <div className="text-6xl mb-4">🎉</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">You&apos;re all set!</h3>
+              <p className="text-slate-600 mb-8">
+                We&apos;ll send <strong>{channel === 'email' ? '📧 email' : channel === 'telegram' ? '✈️ Telegram' : '💬 WhatsApp'}</strong> alerts{city !== "All Cities" ? ` for ${city}` : ""}.
               </p>
               <button
                 onClick={() => { setDone(false); onClose(); }}
-                className="bg-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl text-sm font-bold transform hover:scale-105 transition shadow-lg hover:shadow-xl"
               >
-                Done
+                ✓ Done
               </button>
             </div>
           )}
