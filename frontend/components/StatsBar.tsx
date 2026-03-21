@@ -17,18 +17,18 @@ export default function StatsBar({ stats }: { stats: Stats }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-10">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10 px-4 sm:px-0">
       {cards.map((c, i) => (
         <div
           key={c.label}
-          className={`${c.bg} rounded-2xl p-5 text-center shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 border border-white/50 animate-fade-in-up`}
+          className={`${c.bg} rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center shadow-sm hover:shadow-lg transition transform hover:-translate-y-1 border border-white/50 animate-fade-in-up`}
           style={{ animationDelay: `${i * 50}ms` }}
         >
-          <div className="text-3xl mb-2">{c.icon}</div>
-          <div className={`text-4xl font-bold bg-gradient-to-r ${c.color} bg-clip-text text-transparent`}>
+          <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">{c.icon}</div>
+          <div className={`text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r ${c.color} bg-clip-text text-transparent`}>
             {c.value}
           </div>
-          <div className="text-xs text-slate-600 mt-2 font-medium">{c.label}</div>
+          <div className="text-xs sm:text-xs text-slate-600 mt-1 sm:mt-2 font-medium leading-tight">{c.label}</div>
         </div>
       ))}
     </div>

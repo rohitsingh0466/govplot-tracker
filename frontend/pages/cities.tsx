@@ -39,59 +39,59 @@ export default function CitiesPage() {
 
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <main className="max-w-7xl mx-auto px-4 py-14">
+      <main className="max-w-7xl mx-auto px-4 py-10 sm:py-14">
         {/* Header */}
-        <div className="text-center mb-14 animate-fade-in-up">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-slate-900 bg-clip-text text-transparent mb-3">
+        <div className="text-center mb-10 sm:mb-14 animate-fade-in-up px-4 sm:px-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-slate-900 bg-clip-text text-transparent mb-2 sm:mb-3">
             🏙️ 9 Major Cities
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
             Real-time scheme tracking across India's top IT hubs, tourism destinations, and government capitals
           </p>
         </div>
 
         {/* City Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
           {CITIES.map((city, i) => {
             const colors = COLOR_MAP[city.color];
             return (
               <div
                 key={city.name}
-                className={`${colors.bg} rounded-2xl border-2 border-white/50 p-6 shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 animate-fade-in-up overflow-hidden group relative`}
+                className={`${colors.bg} rounded-xl sm:rounded-2xl border-2 border-white/50 p-4 sm:p-6 shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 animate-fade-in-up overflow-hidden group`}
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {/* Gradient accent */}
-                <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${colors.gradient} rounded-full opacity-10 group-hover:opacity-20 transition`} />
+                <div className={`absolute -right-10 -top-10 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${colors.gradient} rounded-full opacity-10 group-hover:opacity-20 transition`} />
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className={`text-4xl bg-gradient-to-br ${colors.gradient} rounded-xl p-3 text-white shadow-lg`}>
+                  <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                    <div className={`text-3xl sm:text-4xl bg-gradient-to-br ${colors.gradient} rounded-xl p-2 sm:p-3 text-white shadow-lg`}>
                       {city.emoji}
                     </div>
                     <div>
-                      <h2 className="font-bold text-slate-900 text-2xl">{city.name}</h2>
-                      <p className="text-sm text-slate-600 font-medium">{city.state}</p>
+                      <h2 className="font-bold text-slate-900 text-lg sm:text-2xl">{city.name}</h2>
+                      <p className="text-xs sm:text-sm text-slate-600 font-medium">{city.state}</p>
                     </div>
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-3 sm:mb-4">
                     <span className="text-xs font-bold text-slate-600 block mb-1">Authority:</span>
                     <span className={`text-sm font-bold ${colors.text}`}>{city.authority}</span>
                   </div>
 
-                  <div className="flex flex-wrap gap-1.5 mb-6">
+                  <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-4 sm:mb-6">
                     {city.tags.map(tag => (
-                      <span key={tag} className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/80 ${colors.text} border-2 border-white/50`}>
+                      <span key={tag} className={`text-xs font-semibold px-2 sm:px-3 py-1 rounded-full bg-white/80 ${colors.text} border-2 border-white/50`}>
                         {tag}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <a
                       href={`/?city=${city.name}`}
-                      className={`flex-1 text-center bg-gradient-to-r ${colors.gradient} text-white text-sm font-bold py-3 rounded-xl hover:shadow-lg transition transform hover:scale-105`}
+                      className={`flex-1 text-center bg-gradient-to-r ${colors.gradient} text-white text-sm font-bold py-2.5 sm:py-3 rounded-xl hover:shadow-lg transition transform hover:scale-105`}
                     >
                       View Schemes →
                     </a>
@@ -99,7 +99,7 @@ export default function CitiesPage() {
                       href={city.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`text-center bg-white text-2xl py-3 px-4 rounded-xl border-2 ${colors.text} border-opacity-30 hover:shadow-lg transition transform hover:scale-105`}
+                      className={`text-center bg-white text-xl sm:text-2xl py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl border-2 ${colors.text} border-opacity-30 hover:shadow-lg transition transform hover:scale-105`}
                     >
                       🌐
                     </a>

@@ -68,37 +68,37 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 py-12">
 
         {/* Hero Section */}
-        <div className="text-center mb-14 animate-fade-in-up">
-          <div className="inline-block mb-6 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200">
-            <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <div className="text-center mb-12 sm:mb-14 animate-fade-in-up px-4 sm:px-0">
+          <div className="inline-block mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200">
+            <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               ✨ Track Government Plot Schemes in Real-Time
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 bg-clip-text text-transparent mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight px-2">
             🏠 GovPlot Tracker
           </h1>
 
-          <p className="text-xl md:text-2xl text-slate-700 max-w-3xl mx-auto mb-2 leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto mb-2 leading-relaxed px-4">
             India&apos;s <span className="font-bold text-blue-600">most complete</span> real-time tracker for Government Residential Plot Schemes.
           </p>
 
-          <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-10 flex items-center justify-center gap-8 flex-wrap">
-            <span>📍 <strong>9 Major Cities</strong></span>
-            <span>🔔 <strong>Instant Alerts</strong></span>
-            <span>✅ <strong>Live Updates</strong></span>
+          <p className="text-base sm:text-lg text-slate-600 max-w-4xl mx-auto mb-8 sm:mb-10 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-8 flex-wrap px-4">
+            <span className="flex items-center gap-1"><span className="text-lg">📍</span> <strong>9 Major Cities</strong></span>
+            <span className="flex items-center gap-1"><span className="text-lg">🔔</span> <strong>Instant Alerts</strong></span>
+            <span className="flex items-center gap-1"><span className="text-lg">✅</span> <strong>Live Updates</strong></span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <button
               onClick={() => setAlertOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105 text-lg"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105 text-base sm:text-lg"
             >
               🔔 Get Free Alerts
             </button>
             <button
               onClick={() => {/* scroll to schemes */}}
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-8 py-4 rounded-xl transition text-lg"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl transition text-base sm:text-lg hover:shadow-lg"
             >
               Browse Schemes →
             </button>
@@ -145,23 +145,23 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-12">
+      <footer className="mt-16 sm:mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
             {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🏠</span>
-                <span className="font-bold text-blue-600">GovPlot Tracker</span>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <span className="text-xl sm:text-2xl">🏠</span>
+                <span className="font-bold text-blue-600 text-base sm:text-lg">GovPlot Tracker</span>
               </div>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 Real-time tracking for government residential plot schemes across India.
               </p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-bold text-slate-900 mb-4">Quick Links</h4>
+              <h4 className="font-bold text-slate-900 mb-3 sm:mb-4 text-sm sm:text-base">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="/" className="text-slate-600 hover:text-blue-600 transition">Schemes</a></li>
                 <li><a href="/cities" className="text-slate-600 hover:text-blue-600 transition">Cities</a></li>
@@ -171,7 +171,7 @@ export default function Home() {
 
             {/* Legal */}
             <div>
-              <h4 className="font-bold text-slate-900 mb-4">Legal</h4>
+              <h4 className="font-bold text-slate-900 mb-3 sm:mb-4 text-sm sm:text-base">Legal</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="/privacy" className="text-slate-600 hover:text-blue-600 transition">Privacy Policy</a></li>
                 <li><a href="/terms" className="text-slate-600 hover:text-blue-600 transition">Terms of Use</a></li>
@@ -180,8 +180,8 @@ export default function Home() {
             </div>
 
             {/* Newsletter */}
-            <div>
-              <h4 className="font-bold text-slate-900 mb-4">Newsletter</h4>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <h4 className="font-bold text-slate-900 mb-3 sm:mb-4 text-sm sm:text-base">Newsletter</h4>
               <p className="text-sm text-slate-600 mb-3">Get weekly updates on new schemes</p>
               <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition text-sm">
                 Subscribe
@@ -189,9 +189,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-slate-200 pt-8 text-center text-slate-600 text-sm">
-            <p>© 2025 GovPlot Tracker · Data sourced from official government portals</p>
-            <p className="mt-2">Built with ❤️ for every Indian looking to invest in government land</p>
+          <div className="border-t border-slate-200 pt-6 sm:pt-8 text-center text-slate-600 text-xs sm:text-sm">
+            <p className="mb-2">© 2025 GovPlot Tracker · Data sourced from official government portals</p>
+            <p>Built with ❤️ for every Indian looking to invest in government land</p>
           </div>
         </div>
       </footer>
