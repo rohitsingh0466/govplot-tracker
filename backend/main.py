@@ -2,10 +2,31 @@
 GovPlot Tracker — FastAPI Backend
 """
 
+import os
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routes import schemes, alerts, auth, cities
+from backend.models.database import init_db
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run on startup — create all DB tables if they don't exist."""
+    logger.info("🚀 GovPlot Tracker starting up...")
+    try:
+        init_db()
+        logger.info("✅ Database tables verified/created successfully.")
+    except Exception as exc:
+        logger.error(f"❌ Database init failed: {exc}")
+    yield
+    logger.info("🛑 GovPlot Tracker shutting down.")
+
 
 app = FastAPI(
     title="GovPlot Tracker API",
@@ -13,18 +34,22 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    lifespan=lifespan,
 )
 
-# ── CORS ─────────────────────────────────────────────────────────────────────
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "https://govplot-tracker.vercel.app,https://govplot-tracker-rohitsingh0466s-projects.vercel.app,http://localhost:3000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # restrict in production to your domain
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Routers ───────────────────────────────────────────────────────────────────
 app.include_router(schemes.router, prefix="/api/v1/schemes", tags=["Schemes"])
 app.include_router(alerts.router,  prefix="/api/v1/alerts",  tags=["Alerts"])
 app.include_router(auth.router,    prefix="/api/v1/auth",    tags=["Auth"])
@@ -33,10 +58,12 @@ app.include_router(cities.router,  prefix="/api/v1/cities",  tags=["Cities"])
 
 @app.get("/", tags=["Health"])
 def root():
+    db_type = "PostgreSQL (Supabase)" if "postgresql" in os.getenv("DATABASE_URL", "") else "SQLite (local)"
     return {
         "service": "GovPlot Tracker API",
         "version": "1.0.0",
         "status": "running",
+        "database": db_type,
         "docs": "/api/docs",
     }
 
