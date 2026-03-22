@@ -1,6 +1,5 @@
 """
 GovPlot Tracker — Scraper Orchestrator
-Runs all city scrapers, saves results to JSON and optionally to Supabase.
 """
 
 import json
@@ -19,19 +18,10 @@ from scraper.cities.other_cities import MHADAScraper, PMRDAScraper, GMADAScraper
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-# ── Registry: all 9 cities ────────────────────────────────────────────────────
 SCRAPERS = [
-    LDAScraper,    # Lucknow
-    BDAScraper,    # Bangalore
-    NoidaScraper,  # Noida (GNIDA/NUDA/YEIDA)
-    HSVPScraper,   # Gurgaon
-    HMDAScraper,   # Hyderabad
-    MHADAScraper,  # Mumbai
-    PMRDAScraper,  # Pune
-    GMADAScraper,  # Chandigarh
-    ADAScraper,    # Agra
+    LDAScraper, BDAScraper, NoidaScraper, HSVPScraper, HMDAScraper,
+    MHADAScraper, PMRDAScraper, GMADAScraper, ADAScraper,
 ]
-# ─────────────────────────────────────────────────────────────────────────────
 
 OUTPUT_DIR = Path("data/schemes")
 
@@ -51,35 +41,29 @@ def run_all() -> list[dict]:
             errors.append({"scraper": scraper.authority, "error": str(exc)})
             logger.error(f"❌ {scraper.authority} failed: {exc}")
 
-    # Save per-run snapshot
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    snapshot_path = OUTPUT_DIR / f"schemes_{timestamp}.json"
-    with open(snapshot_path, "w", encoding="utf-8") as f:
+    with open(OUTPUT_DIR / f"schemes_{timestamp}.json", "w", encoding="utf-8") as f:
         json.dump(all_schemes, f, ensure_ascii=False, indent=2)
 
-    # Always overwrite the "latest" file (used by the API)
     latest_path = OUTPUT_DIR / "latest.json"
     with open(latest_path, "w", encoding="utf-8") as f:
         json.dump(all_schemes, f, ensure_ascii=False, indent=2)
 
     logger.info(f"📁 Saved {len(all_schemes)} schemes → {latest_path}")
-
     if errors:
-        logger.warning(f"⚠️  {len(errors)} scrapers had errors: {errors}")
+        logger.warning(f"⚠️  {len(errors)} scraper(s) had errors: {errors}")
 
-    # Push to Supabase if configured
     _push_to_supabase(all_schemes)
-
     return all_schemes
 
 
 def _push_to_supabase(schemes: list[dict]):
-    """Push scraped data to Supabase (optional — requires SUPABASE_URL + SUPABASE_KEY env vars)."""
+    """Push to Supabase using service role key for trusted server-side writes."""
     supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_KEY")
+    supabase_key = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
 
     if not supabase_url or not supabase_key:
-        logger.info("Supabase not configured — skipping DB push (set SUPABASE_URL + SUPABASE_KEY)")
+        logger.info("Supabase not configured — skipping push.")
         return
 
     try:
@@ -94,12 +78,12 @@ def _push_to_supabase(schemes: list[dict]):
             f"{supabase_url}/rest/v1/schemes",
             json=schemes,
             headers=headers,
-            timeout=30,
+            timeout=60,
         )
         resp.raise_for_status()
         logger.info(f"✅ Pushed {len(schemes)} schemes to Supabase")
     except Exception as exc:
-        logger.error(f"Supabase push failed: {exc}")
+        logger.error(f"❌ Supabase push failed: {exc}")
 
 
 if __name__ == "__main__":
