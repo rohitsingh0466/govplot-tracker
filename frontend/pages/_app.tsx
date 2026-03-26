@@ -1,12 +1,13 @@
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import "../styles/globals.css";
+import { AuthProvider } from "../lib/AuthContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
   return (
-    <>
+    <AuthProvider>
       {adsenseClient && (
         <Script
           id="adsense-script"
@@ -17,6 +18,6 @@ export default function App({ Component, pageProps }: AppProps) {
         />
       )}
       <Component {...pageProps} />
-    </>
+    </AuthProvider>
   );
 }
