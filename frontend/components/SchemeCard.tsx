@@ -9,7 +9,7 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
   const cfg = STATUS_CONFIG[scheme.status] ?? STATUS_CONFIG["ACTIVE"];
 
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col overflow-hidden group mx-2 sm:mx-0`}>
+    <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col overflow-hidden`}>
       {/* Header with gradient background */}
       <div className={`bg-gradient-to-r ${cfg.gradientBg} p-4 sm:p-5 flex-1 border-b border-slate-100`}>
         <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">

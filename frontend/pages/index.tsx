@@ -73,37 +73,38 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 py-12">
 
         {/* Hero Section */}
-        <div className="text-center mb-12 sm:mb-14 animate-fade-in-up px-4 sm:px-0">
-          <div className="inline-block mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200">
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in-up px-2 sm:px-4">
+          <div className="inline-block mb-3 sm:mb-4 px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200">
             <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               ✨ Track Government Plot Schemes in Real-Time
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight px-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 bg-clip-text text-transparent mb-3 sm:mb-4 leading-tight px-1">
             🏠 GovPlot Tracker
           </h1>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto mb-2 leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-700 max-w-4xl mx-auto mb-2 leading-relaxed px-2">
             India&apos;s <span className="font-bold text-blue-600">most complete</span> real-time tracker for Government Residential Plot Schemes.
           </p>
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-4xl mx-auto mb-8 sm:mb-10 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-8 flex-wrap px-4">
-            <span className="flex items-center gap-1"><span className="text-lg">📍</span> <strong>9 Major Cities</strong></span>
-            <span className="flex items-center gap-1"><span className="text-lg">🔔</span> <strong>Instant Alerts</strong></span>
-            <span className="flex items-center gap-1"><span className="text-lg">✅</span> <strong>Live Updates</strong></span>
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-4xl mx-auto mb-6 sm:mb-8 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-8 flex-wrap px-2">
+            <span className="flex items-center gap-1"><span className="text-base">📍</span> <strong>9 Major Cities</strong></span>
+            <span className="flex items-center gap-1"><span className="text-base">🔔</span> <strong>Instant Alerts</strong></span>
+            <span className="flex items-center gap-1"><span className="text-base">✅</span> <strong>Live Updates</strong></span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center px-2">
             <button
               onClick={() => setAlertOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105 text-base sm:text-lg"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105 text-sm sm:text-base md:text-lg"
+
             >
               🔔 Get Free Alerts
             </button>
             <button
               onClick={() => {/* scroll to schemes */}}
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl transition text-base sm:text-lg hover:shadow-lg"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-xl transition text-sm sm:text-base md:text-lg hover:shadow-lg"
             >
               Browse Schemes →
             </button>
