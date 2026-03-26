@@ -67,6 +67,12 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
       {/* CTA */}
       <div className="border-t border-slate-100 px-4 sm:px-5 py-3 sm:py-3 flex gap-2">
         <a
+          href={`/schemes/${scheme.scheme_id}`}
+          className="text-center text-sm font-bold py-2.5 sm:py-3 px-4 rounded-xl border border-slate-200 text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
+        >
+          Details
+        </a>
+        <a
           href={scheme.apply_url || "#"}
           target="_blank"
           rel="noopener noreferrer"
@@ -78,7 +84,7 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
               : "bg-gradient-to-r from-slate-200 to-slate-300 text-slate-600 cursor-not-allowed"
           }`}
         >
-          {scheme.status === "OPEN" ? "Apply Now →" : scheme.status === "UPCOMING" ? "Coming Soon ⏳" : "View Details"}
+          {scheme.status === "OPEN" ? "Apply Now →" : scheme.status === "UPCOMING" ? "Coming Soon ⏳" : "Official Link"}
         </a>
       </div>
     </div>

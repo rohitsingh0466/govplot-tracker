@@ -7,6 +7,9 @@ import logging
 import os
 from dataclasses import dataclass
 
+from backend.models.database import SessionLocal
+from backend.models.db_models import User
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,6 +110,18 @@ def send_telegram_alert(chat_id: str, payload: AlertPayload):
         logger.error(f"Telegram send failed: {exc}")
 
 
+def _resolve_telegram_chat_id(recipient: str) -> str | None:
+    if recipient.lstrip("-").isdigit():
+        return recipient
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == recipient).first()
+        return user.telegram_chat_id if user and user.telegram_chat_id else None
+    finally:
+        db.close()
+
+
 def dispatch_alert(channel: str, recipient: str, payload: AlertPayload):
     """Unified dispatcher — routes to the correct channel."""
     if channel == "email":
@@ -114,6 +129,10 @@ def dispatch_alert(channel: str, recipient: str, payload: AlertPayload):
     elif channel == "whatsapp":
         send_whatsapp_alert(recipient, payload)
     elif channel == "telegram":
-        send_telegram_alert(recipient, payload)
+        chat_id = _resolve_telegram_chat_id(recipient)
+        if not chat_id:
+            logger.warning(f"No Telegram chat linked for recipient: {recipient}")
+            return
+        send_telegram_alert(chat_id, payload)
     else:
         logger.warning(f"Unknown channel: {channel}")

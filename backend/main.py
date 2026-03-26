@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routes import schemes, alerts, auth, cities
+from backend.routes import schemes, alerts, auth, cities, billing, telegram
 from backend.models.database import init_db
 
 logger = logging.getLogger(__name__)
@@ -54,6 +54,8 @@ app.include_router(schemes.router, prefix="/api/v1/schemes", tags=["Schemes"])
 app.include_router(alerts.router,  prefix="/api/v1/alerts",  tags=["Alerts"])
 app.include_router(auth.router,    prefix="/api/v1/auth",    tags=["Auth"])
 app.include_router(cities.router,  prefix="/api/v1/cities",  tags=["Cities"])
+app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(telegram.router, prefix="/api/v1/telegram", tags=["Telegram"])
 
 
 @app.get("/", tags=["Health"])

@@ -47,7 +47,18 @@ class User(Base):
     hashed_password = Column(String(256), nullable=False)
     name          = Column(String(128), nullable=True)
     phone         = Column(String(20), nullable=True)
+    telegram_chat_id = Column(String(64), nullable=True)
+    telegram_username = Column(String(128), nullable=True)
+    telegram_link_token = Column(String(128), nullable=True)
+    telegram_link_expires_at = Column(DateTime, nullable=True)
     is_premium    = Column(Boolean, default=False)
+    subscription_tier = Column(String(32), default="free", nullable=False)
+    subscription_status = Column(String(32), default="inactive", nullable=False)
+    subscription_expires_at = Column(DateTime, nullable=True)
+    razorpay_customer_id = Column(String(128), nullable=True)
+    razorpay_subscription_id = Column(String(128), nullable=True)
+    is_active     = Column(Boolean, default=True)
+    last_login_at = Column(DateTime, nullable=True)
     created_at    = Column(DateTime, default=datetime.utcnow)
 
 
@@ -120,11 +131,61 @@ class UserOut(BaseModel):
     email: str
     name: Optional[str]
     is_premium: bool
+    subscription_tier: str
+    subscription_status: str
+    telegram_username: Optional[str]
 
     class Config:
         from_attributes = True
 
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    expires_in: int
+
+
+class AuthResponse(Token):
+    user: UserOut
+
+
+class SubscriptionStartRequest(BaseModel):
+    plan_code: str = "pro_monthly"
+
+
+class SubscriptionStartResponse(BaseModel):
+    subscription_id: str
+    checkout_key: str
+    plan_code: str
+    amount: int
+    currency: str
+    name: str
+    description: str
+    prefill_email: str
+    prefill_name: Optional[str] = None
+    prefill_contact: Optional[str] = None
+
+
+class SubscriptionVerifyRequest(BaseModel):
+    razorpay_payment_id: str
+    razorpay_subscription_id: str
+    razorpay_signature: str
+
+
+class TelegramLinkResponse(BaseModel):
+    link_token: str
+    bot_username: str
+    deep_link_url: str
+    expires_in: int
+
+
+class TelegramLinkStatus(BaseModel):
+    is_linked: bool
+    telegram_username: Optional[str] = None
+    deep_link_url: Optional[str] = None
+    bot_username: Optional[str] = None

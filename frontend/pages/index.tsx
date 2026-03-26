@@ -6,6 +6,7 @@ import StatsBar from "../components/StatsBar";
 import FilterBar from "../components/FilterBar";
 import AlertModal from "../components/AlertModal";
 import Navbar from "../components/Navbar";
+import AdSenseSlot from "../components/AdSenseSlot";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -59,7 +60,11 @@ export default function Home() {
       <Head>
         <title>GovPlot Tracker — Government Plot Schemes India</title>
         <meta name="description" content="Track government residential plot schemes across Lucknow, Bangalore, Noida, Gurgaon, Hyderabad, Pune, Mumbai & more. Get real-time alerts." />
+        <meta name="keywords" content="government plot scheme India, LDA plot scheme, BDA residential plots, government land scheme alerts" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="GovPlot Tracker — Government Plot Schemes India" />
+        <meta property="og:description" content="Track government residential plot schemes across India's major cities with real-time alerts and scheme detail pages." />
+        <meta property="og:type" content="website" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -137,11 +142,7 @@ export default function Home() {
         )}
 
         {/* Advertisement Slot */}
-        <div className="mt-16 bg-gradient-to-r from-slate-100 to-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-slate-500">
-          <div className="text-3xl mb-3">📢</div>
-          <p className="font-semibold mb-1">Advertisement Space</p>
-          <p className="text-sm">Google AdSense / Affiliate Partners</p>
-        </div>
+        <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT} className="mt-16" />
       </main>
 
       {/* Footer */}
