@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routes import schemes, alerts, auth, cities, billing, telegram
+from backend.routes.seo import router as seo_router
 from backend.models.database import init_db
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="GovPlot Tracker API",
     description="Real-time Government Residential Plot Scheme tracker for India's top cities.",
-    version="1.0.0",
+    version="1.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     lifespan=lifespan,
@@ -56,6 +57,7 @@ app.include_router(auth.router,    prefix="/api/v1/auth",    tags=["Auth"])
 app.include_router(cities.router,  prefix="/api/v1/cities",  tags=["Cities"])
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
 app.include_router(telegram.router, prefix="/api/v1/telegram", tags=["Telegram"])
+app.include_router(seo_router,     prefix="/api/v1/seo",     tags=["SEO"])
 
 
 @app.get("/", tags=["Health"])
@@ -63,7 +65,7 @@ def root():
     db_type = "PostgreSQL (Supabase)" if "postgresql" in os.getenv("DATABASE_URL", "") else "SQLite (local)"
     return {
         "service": "GovPlot Tracker API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "status": "running",
         "database": db_type,
         "docs": "/api/docs",
