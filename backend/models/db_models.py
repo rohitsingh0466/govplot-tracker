@@ -5,7 +5,7 @@ GovPlot Tracker — SQLAlchemy Models + Pydantic Schemas
 from __future__ import annotations
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean, Text
+from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean, Text, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, EmailStr
 
@@ -47,7 +47,7 @@ class User(Base):
     hashed_password = Column(String(256), nullable=False)
     name          = Column(String(128), nullable=True)
     phone         = Column(String(20), nullable=True)
-    telegram_chat_id = Column(String(64), nullable=True)
+    telegram_chat_id = Column(BigInteger, nullable=True)
     telegram_username = Column(String(128), nullable=True)
     telegram_link_token = Column(String(128), nullable=True)
     telegram_link_expires_at = Column(DateTime, nullable=True)
@@ -72,6 +72,51 @@ class AlertSubscription(Base):
     channel       = Column(String(32), default="email")  # email | whatsapp | telegram | push
     is_active     = Column(Boolean, default=True)
     created_at    = Column(DateTime, default=datetime.utcnow)
+
+
+class Subscription(Base):
+    """Razorpay payment records."""
+    __tablename__ = "subscriptions"
+
+    id                  = Column(Integer, primary_key=True, autoincrement=True)
+    user_email          = Column(String(256), index=True, nullable=False)
+    razorpay_order_id   = Column(String(64), nullable=True)
+    razorpay_payment_id = Column(String(64), nullable=True)
+    razorpay_sub_id     = Column(String(64), nullable=True)
+    plan                = Column(String(20), nullable=False, default="pro")
+    amount_paise        = Column(Integer, nullable=False, default=9900)
+    currency            = Column(String(10), default="INR")
+    status              = Column(String(20), default="created")
+    created_at          = Column(DateTime, default=datetime.utcnow)
+    expires_at          = Column(DateTime, nullable=True)
+
+
+class SeoMetadata(Base):
+    """Per-scheme SEO metadata — titles, descriptions, slugs."""
+    __tablename__ = "seo_metadata"
+
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    scheme_id  = Column(String(64), unique=True, index=True)
+    meta_title = Column(String(160))
+    meta_desc  = Column(String(320))
+    og_title   = Column(String(160))
+    og_desc    = Column(String(320))
+    keywords   = Column(Text)
+    slug       = Column(String(200), unique=True, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class TelegramSubscriber(Base):
+    """Telegram alert subscribers (not account-linked, just city watchers)."""
+    __tablename__ = "telegram_subscribers"
+
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    chat_id    = Column(String(32), unique=True, nullable=False)
+    username   = Column(String(64), nullable=True)
+    city       = Column(String(128), nullable=True)
+    is_active  = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
