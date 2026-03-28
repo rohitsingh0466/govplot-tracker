@@ -16,13 +16,12 @@ DATABASE_URL = os.getenv(
 # SQLite needs check_same_thread=False
 connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
 
-# Add these kwargs to create_engine for pooler compatibility
 engine = create_engine(
     DATABASE_URL,
     connect_args=connect_args,
-    pool_size=1,
-    max_overflow=0,
-    pool_pre_ping=True,   # ← detects dead connections and reconnects
+    pool_pre_ping=True,
+    pool_size=5,
+    max_overflow=10,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
