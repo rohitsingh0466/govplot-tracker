@@ -7,6 +7,7 @@ GET /api/v1/seo/slug/{slug}    → scheme by URL slug
 from __future__ import annotations
 
 import logging
+import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -15,6 +16,8 @@ from backend.models.database import get_db
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+SITE_URL = os.getenv("NEXT_PUBLIC_SITE_URL", "https://govplottracker.com")
 
 
 @router.get("/sitemap")
@@ -30,7 +33,7 @@ def get_sitemap(db: Session = Depends(get_db)):
             ORDER BY s.last_updated DESC
         """)).fetchall()
         return {
-            "base_url": "https://govplot-tracker.vercel.app",
+            "base_url": SITE_URL,
             "count": len(rows),
             "schemes": [
                 {
@@ -45,13 +48,12 @@ def get_sitemap(db: Session = Depends(get_db)):
             ],
         }
     except Exception:
-        # seo_metadata table may not exist yet — fall back to schemes only
         rows = db.execute(text("""
             SELECT scheme_id, name, city, status, last_updated
             FROM schemes WHERE is_active = TRUE
         """)).fetchall()
         return {
-            "base_url": "https://govplot-tracker.vercel.app",
+            "base_url": SITE_URL,
             "count": len(rows),
             "schemes": [
                 {
