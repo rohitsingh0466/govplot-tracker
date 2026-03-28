@@ -40,7 +40,7 @@ app = FastAPI(
 
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "https://govplot-tracker.vercel.app,https://govplot-tracker-rohitsingh0466s-projects.vercel.app,http://localhost:3000"
+    "https://govplottracker.com,https://www.govplottracker.com,https://govplot-tracker.vercel.app,http://localhost:3000"
 ).split(",")
 
 app.add_middleware(
