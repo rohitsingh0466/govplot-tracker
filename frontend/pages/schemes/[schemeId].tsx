@@ -25,7 +25,7 @@ type Scheme = {
 
 export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
   const [alertOpen, setAlertOpen] = useState(false);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplot-tracker.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com";
   const canonicalUrl = `${siteUrl}/schemes/${scheme.scheme_id}`;
   const title = `${scheme.name} | ${scheme.city} Government Plot Scheme`;
   const description = `${scheme.name} by ${scheme.authority} in ${scheme.city}. Track status, dates, plots, pricing, and official application links on GovPlot Tracker.`;
