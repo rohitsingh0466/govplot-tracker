@@ -6,7 +6,7 @@ Uses SQLite for local dev, PostgreSQL (Supabase) in production.
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import NullPool, QueuePool
 from backend.models.db_models import Base
 
 DATABASE_URL = os.getenv(
@@ -16,18 +16,25 @@ DATABASE_URL = os.getenv(
 
 connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
 
-# Supabase Transaction Pooler (port 6543) manages its own connection pool.
-# SQLAlchemy must use NullPool — no internal pooling on top of the pooler.
+# Supabase Transaction Pooler (port 6543) manages its own connections.
+# Use NullPool — SQLAlchemy must NOT maintain its own pool on top.
+# pool_pre_ping is incompatible with NullPool, so we omit it.
 is_pooler = "pooler.supabase.com" in DATABASE_URL
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args=connect_args,
-    pool_pre_ping=True,
-    **( {"poolclass": NullPool}
-        if is_pooler else
-        {"pool_size": 5, "max_overflow": 10} ),
-)
+if is_pooler:
+    engine = create_engine(
+        DATABASE_URL,
+        poolclass=NullPool,
+        connect_args=connect_args,
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args=connect_args,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
