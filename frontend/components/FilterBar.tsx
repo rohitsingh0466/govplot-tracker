@@ -1,51 +1,58 @@
-const CITIES = ["Lucknow","Bangalore","Noida","Gurgaon","Hyderabad","Pune","Mumbai","Chandigarh","Agra"];
-const STATUSES = ["OPEN","ACTIVE","UPCOMING","CLOSED"];
+const CITIES = ["Lucknow", "Bangalore", "Noida", "Gurgaon", "Hyderabad", "Pune", "Mumbai", "Chandigarh", "Agra"];
+const STATUSES = ["OPEN", "ACTIVE", "UPCOMING", "CLOSED"];
 
 interface Props {
-  city: string; setCity: (v: string) => void;
-  status: string; setStatus: (v: string) => void;
-  search: string; setSearch: (v: string) => void;
+  city: string;
+  setCity: (v: string) => void;
+  status: string;
+  setStatus: (v: string) => void;
+  search: string;
+  setSearch: (v: string) => void;
 }
 
 export default function FilterBar({ city, setCity, status, setStatus, search, setSearch }: Props) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-6 mx-4 sm:mx-0 mb-6 sm:mb-8 backdrop-blur-sm">
-      {/* Search */}
+    <div className="surface-card mb-6 border-amber-100/90 p-4 sm:mb-8 sm:p-6">
       <div className="mb-4">
+        <label htmlFor="scheme-search" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          Search
+        </label>
         <input
+          id="scheme-search"
           type="text"
-          placeholder="🔍 Search schemes by name or city..."
+          placeholder="Search schemes, authority, or city"
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white"
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
         />
       </div>
 
-      {/* Filters Row */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-        {/* City filter */}
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
         <select
           value={city}
-          onChange={e => setCity(e.target.value)}
-          className="border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white font-medium flex-1 sm:flex-none"
+          onChange={(e) => setCity(e.target.value)}
+          className="rounded-xl border border-amber-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
         >
-          <option value="">📍 All Cities</option>
-          {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+          <option value="">All Cities</option>
+          {CITIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
         </select>
 
-        {/* Status filter */}
-        <div className="flex gap-2 flex-wrap sm:flex-nowrap">
-          {["", ...STATUSES].map(s => (
+        <div className="grid flex-1 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          {["", ...STATUSES].map((s) => (
             <button
               key={s}
               onClick={() => setStatus(s)}
-              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold border-2 transition transform hover:scale-105 whitespace-nowrap flex-1 sm:flex-none ${
+              className={`rounded-lg border px-3 py-2 text-xs font-bold tracking-wide transition ${
                 status === s
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-blue-400 hover:bg-blue-50"
+                  ? "border-teal-700 bg-teal-700 text-white shadow"
+                  : "border-amber-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"
               }`}
             >
-              {s === "" ? "All" : s}
+              {s === "" ? "ALL" : s}
             </button>
           ))}
         </div>

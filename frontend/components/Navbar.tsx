@@ -38,41 +38,41 @@ export default function Navbar({ onAlertClick }: { onAlertClick: () => void }) {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-slate-100 bg-white/90 shadow-sm backdrop-blur-lg">
+      <nav className="sticky top-0 z-50 border-b border-amber-100 bg-[#fffdf8]/90 shadow-sm backdrop-blur-lg">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-base font-bold text-white shadow-lg sm:h-10 sm:w-10 sm:text-lg">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-700 text-base font-bold text-white shadow-lg sm:h-10 sm:w-10 sm:text-lg">
                 🏠
               </div>
               <div className="flex flex-col">
-                <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-base font-bold text-transparent sm:text-lg">
+                <span className="bg-gradient-to-r from-teal-700 to-cyan-800 bg-clip-text text-base font-bold text-transparent sm:text-lg">
                   GovPlot
                 </span>
-                <span className="hidden text-xs font-medium text-slate-500 sm:block">Tracker</span>
+                <span className="hidden text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:block">Tracker</span>
               </div>
             </div>
 
             <div className="hidden items-center gap-8 text-sm font-medium md:flex">
-              <a href="/" className="text-slate-600 transition hover:text-blue-600">
+              <a href="/" className="text-slate-600 transition hover:text-teal-700">
                 Schemes
               </a>
-              <a href="/cities" className="text-slate-600 transition hover:text-blue-600">
+              <a href="/cities" className="text-slate-600 transition hover:text-teal-700">
                 Cities
               </a>
-              <a href="/about" className="text-slate-600 transition hover:text-blue-600">
+              <a href="/about" className="text-slate-600 transition hover:text-teal-700">
                 About
               </a>
             </div>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 transition hover:bg-slate-100 md:hidden"
+              className="rounded-lg p-2 transition hover:bg-amber-50 md:hidden"
             >
               <div className="flex h-6 w-6 flex-col items-center justify-center">
-                <span className={`block h-0.5 w-5 bg-slate-600 transition-transform ${mobileMenuOpen ? "translate-y-1 rotate-45" : "-translate-y-1"}`}></span>
-                <span className={`block h-0.5 w-5 bg-slate-600 transition-opacity ${mobileMenuOpen ? "opacity-0" : "opacity-100"}`}></span>
-                <span className={`block h-0.5 w-5 bg-slate-600 transition-transform ${mobileMenuOpen ? "-translate-y-1 -rotate-45" : "translate-y-1"}`}></span>
+                <span className={`block h-0.5 w-5 bg-slate-700 transition-transform ${mobileMenuOpen ? "translate-y-1 rotate-45" : "-translate-y-1"}`}></span>
+                <span className={`block h-0.5 w-5 bg-slate-700 transition-opacity ${mobileMenuOpen ? "opacity-0" : "opacity-100"}`}></span>
+                <span className={`block h-0.5 w-5 bg-slate-700 transition-transform ${mobileMenuOpen ? "-translate-y-1 -rotate-45" : "translate-y-1"}`}></span>
               </div>
             </button>
 
@@ -95,10 +95,10 @@ export default function Navbar({ onAlertClick }: { onAlertClick: () => void }) {
               ) : (
                 <button
                   onClick={() => setAuthOpen(true)}
-                  className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
-                >
-                  Sign in
-                </button>
+                    className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-200 hover:bg-teal-50"
+                  >
+                    Sign in
+                  </button>
               )}
               {user && user.subscription_tier !== "pro" && (
                 <button
@@ -116,25 +116,25 @@ export default function Navbar({ onAlertClick }: { onAlertClick: () => void }) {
                   Connect Telegram
                 </button>
               )}
-              <button
-                onClick={onAlertClick}
-                className="transform rounded-full bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:scale-105 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl sm:px-6 sm:py-2.5"
-              >
-                🔔 Free Alerts
-              </button>
+                <button
+                  onClick={onAlertClick}
+                  className="transform rounded-full bg-gradient-to-r from-teal-600 to-cyan-700 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:scale-105 hover:from-teal-700 hover:to-cyan-800 hover:shadow-xl sm:px-6 sm:py-2.5"
+                >
+                  🔔 Free Alerts
+                </button>
             </div>
           </div>
 
           {mobileMenuOpen && (
-            <div className="mt-4 border-t border-slate-100 pb-4 pt-4 md:hidden">
+            <div className="mt-4 border-t border-amber-100 pb-4 pt-4 md:hidden">
               <div className="flex flex-col gap-4">
-                <a href="/" className="font-medium text-slate-600 transition hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                <a href="/" className="font-medium text-slate-600 transition hover:text-teal-700" onClick={() => setMobileMenuOpen(false)}>
                   Schemes
                 </a>
-                <a href="/cities" className="font-medium text-slate-600 transition hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                <a href="/cities" className="font-medium text-slate-600 transition hover:text-teal-700" onClick={() => setMobileMenuOpen(false)}>
                   Cities
                 </a>
-                <a href="/about" className="font-medium text-slate-600 transition hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                <a href="/about" className="font-medium text-slate-600 transition hover:text-teal-700" onClick={() => setMobileMenuOpen(false)}>
                   About
                 </a>
                 {user ? (
@@ -190,7 +190,7 @@ export default function Navbar({ onAlertClick }: { onAlertClick: () => void }) {
                     onAlertClick();
                     setMobileMenuOpen(false);
                   }}
-                  className="transform rounded-full bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-left font-semibold text-white shadow-lg transition hover:scale-105 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl"
+                  className="transform rounded-full bg-gradient-to-r from-teal-600 to-cyan-700 px-6 py-3 text-left font-semibold text-white shadow-lg transition hover:scale-105 hover:from-teal-700 hover:to-cyan-800 hover:shadow-xl"
                 >
                   🔔 Get Free Alerts
                 </button>

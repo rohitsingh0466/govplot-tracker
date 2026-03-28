@@ -1,74 +1,71 @@
-const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string; gradientBg: string }> = {
-  OPEN:     { label: "🔓 Open",     dot: "bg-emerald-500",  badge: "badge-OPEN",     gradientBg: "from-emerald-50 to-emerald-100/50" },
-  ACTIVE:   { label: "🔵 Active",   dot: "bg-sky-500",      badge: "badge-ACTIVE",   gradientBg: "from-sky-50 to-sky-100/50" },
-  UPCOMING: { label: "⏳ Upcoming", dot: "bg-amber-500",    badge: "badge-UPCOMING", gradientBg: "from-amber-50 to-amber-100/50" },
-  CLOSED:   { label: "❌ Closed",   dot: "bg-slate-400",    badge: "badge-CLOSED",   gradientBg: "from-slate-50 to-slate-100/50" },
+const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string; ribbon: string; accent: string }> = {
+  OPEN: { label: "Open", dot: "bg-emerald-500", badge: "badge-OPEN", ribbon: "bg-emerald-500", accent: "from-emerald-500/10 to-emerald-100/70" },
+  ACTIVE: { label: "Active", dot: "bg-sky-500", badge: "badge-ACTIVE", ribbon: "bg-sky-500", accent: "from-sky-500/10 to-sky-100/70" },
+  UPCOMING: { label: "Upcoming", dot: "bg-amber-500", badge: "badge-UPCOMING", ribbon: "bg-amber-500", accent: "from-amber-500/10 to-amber-100/70" },
+  CLOSED: { label: "Closed", dot: "bg-slate-400", badge: "badge-CLOSED", ribbon: "bg-slate-400", accent: "from-slate-500/10 to-slate-100/70" },
 };
 
 export default function SchemeCard({ scheme }: { scheme: any }) {
-  const cfg = STATUS_CONFIG[scheme.status] ?? STATUS_CONFIG["ACTIVE"];
+  const cfg = STATUS_CONFIG[scheme.status] ?? STATUS_CONFIG.ACTIVE;
 
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col overflow-hidden`}>
-      {/* Header with gradient background */}
-      <div className={`bg-gradient-to-r ${cfg.gradientBg} p-4 sm:p-5 flex-1 border-b border-slate-100`}>
-        <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
-          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full ${cfg.badge}`}>
-            <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${cfg.dot} inline-block animate-pulse`} />
+    <article className="group relative overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+      <div className={`h-1 w-full ${cfg.ribbon}`} />
+
+      <div className={`border-b border-amber-100 bg-gradient-to-br ${cfg.accent} p-4 sm:p-5`}>
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${cfg.badge}`}>
+            <span className={`inline-block h-2 w-2 rounded-full ${cfg.dot} animate-pulse`} />
             {cfg.label}
           </span>
-          <span className="text-xs text-slate-500 bg-white px-2 sm:px-2.5 py-1 rounded-full font-medium border border-slate-100">
+          <span className="rounded-full border border-amber-100 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600">
             {scheme.authority}
           </span>
         </div>
 
-        <h3 className="font-bold text-slate-900 text-sm sm:text-base leading-snug mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-600 transition">
+        <h3 className="mb-2 line-clamp-2 text-base font-bold leading-snug text-slate-900 transition group-hover:text-teal-700 sm:text-lg">
           {scheme.name}
         </h3>
 
-        <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+        <p className="flex items-center gap-2 text-sm font-semibold text-slate-600">
           <span>📍</span>
-          <span className="font-medium">{scheme.city}</span>
-        </div>
+          {scheme.city}
+        </p>
       </div>
 
-      {/* Details grid */}
-      <div className="p-4 sm:p-5 flex-1">
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 text-sm">
+      <div className="p-4 sm:p-5">
+        <div className="grid grid-cols-2 gap-2 text-sm sm:gap-3">
           {scheme.total_plots && (
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-slate-200/50">
-              <div className="text-slate-500 text-xs font-medium">Total Plots</div>
-              <div className="font-bold text-slate-800 text-base sm:text-lg">{scheme.total_plots.toLocaleString()}</div>
+            <div className="rounded-xl border border-slate-200/70 bg-slate-50 p-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Plots</div>
+              <div className="text-lg font-bold text-slate-800">{scheme.total_plots.toLocaleString()}</div>
             </div>
           )}
           {scheme.price_min && (
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-blue-200/50">
-              <div className="text-blue-600 text-xs font-medium">Price Range</div>
-              <div className="font-bold text-blue-800 text-sm sm:text-base">₹{scheme.price_min}L – ₹{scheme.price_max}L</div>
+            <div className="rounded-xl border border-teal-100 bg-teal-50/70 p-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-teal-700">Price</div>
+              <div className="text-sm font-bold text-teal-900 sm:text-base">₹{scheme.price_min}L - ₹{scheme.price_max}L</div>
             </div>
           )}
           {scheme.area_sqft_min && (
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-purple-200/50">
-              <div className="text-purple-600 text-xs font-medium">Plot Size</div>
-              <div className="font-bold text-purple-800 text-sm sm:text-base">{scheme.area_sqft_min}–{scheme.area_sqft_max} sq.ft</div>
+            <div className="rounded-xl border border-cyan-100 bg-cyan-50/70 p-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-cyan-700">Plot Size</div>
+              <div className="text-sm font-bold text-cyan-900 sm:text-base">{scheme.area_sqft_min}-{scheme.area_sqft_max} sq.ft</div>
             </div>
           )}
           {(scheme.open_date || scheme.close_date) && (
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-orange-200/50">
-              <div className="text-orange-600 text-xs font-medium">{scheme.status === "UPCOMING" ? "Opens" : "Closes"}</div>
-              <div className="font-bold text-orange-800 text-xs sm:text-sm">
-                {scheme.status === "UPCOMING" ? scheme.open_date : scheme.close_date}
-              </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">{scheme.status === "UPCOMING" ? "Opens" : "Closes"}</div>
+              <div className="text-xs font-bold text-amber-900 sm:text-sm">{scheme.status === "UPCOMING" ? scheme.open_date : scheme.close_date}</div>
             </div>
           )}
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="border-t border-slate-100 px-4 sm:px-5 py-3 sm:py-3 flex gap-2">
+      <div className="flex gap-2 border-t border-amber-100 px-4 py-3 sm:px-5">
         <a
           href={`/schemes/${scheme.scheme_id}`}
-          className="text-center text-sm font-bold py-2.5 sm:py-3 px-4 rounded-xl border border-slate-200 text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
+          className="rounded-xl border border-slate-200 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:border-teal-300 hover:text-teal-700"
         >
           Details
         </a>
@@ -76,17 +73,17 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
           href={scheme.apply_url || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex-1 text-center text-sm font-bold py-2.5 sm:py-3 rounded-xl transition transform hover:scale-105 ${
+          className={`flex-1 rounded-xl py-2.5 text-center text-sm font-bold transition ${
             scheme.status === "OPEN"
-              ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl"
+              ? "bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow hover:from-emerald-700 hover:to-green-800"
               : scheme.status === "UPCOMING"
-              ? "bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-900 shadow-lg hover:shadow-xl"
-              : "bg-gradient-to-r from-slate-200 to-slate-300 text-slate-600 cursor-not-allowed"
+                ? "bg-gradient-to-r from-amber-400 to-orange-500 text-amber-950 shadow hover:from-amber-500 hover:to-orange-600"
+                : "cursor-not-allowed bg-slate-200 text-slate-600"
           }`}
         >
-          {scheme.status === "OPEN" ? "Apply Now →" : scheme.status === "UPCOMING" ? "Coming Soon ⏳" : "Official Link"}
+          {scheme.status === "OPEN" ? "Apply Now" : scheme.status === "UPCOMING" ? "Coming Soon" : "Official Link"}
         </a>
       </div>
-    </div>
+    </article>
   );
 }

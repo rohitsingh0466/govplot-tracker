@@ -1,10 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap");
 
 :root {
-  --brand: #2563eb;
-  --brand-dark: #1e40af;
+  --bg-cream: #f8f4eb;
+  --bg-paper: #fffdf8;
+  --ink: #1f2937;
+  --accent: #0f766e;
+  --accent-dark: #115e59;
+  --sun: #f59e0b;
 }
 
 html {
@@ -12,7 +17,23 @@ html {
 }
 
 body {
-  @apply bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 text-gray-900 font-sans;
+  font-family: "Source Sans 3", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(245, 158, 11, 0.15), transparent 28%),
+    radial-gradient(circle at 88% 2%, rgba(15, 118, 110, 0.17), transparent 24%),
+    linear-gradient(180deg, var(--bg-cream) 0%, #fefbf4 40%, #f8fafc 100%);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Grotesk", "Source Sans 3", system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Status badge colours */
@@ -46,7 +67,12 @@ body {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-/* Glass morphism effect */
-.glass {
-  @apply bg-white/30 backdrop-blur-md border border-white/20;
+.surface-card {
+  @apply rounded-2xl border border-amber-100/80 bg-white/85 shadow-sm backdrop-blur;
+}
+
+.texture-grid {
+  background-image: linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
