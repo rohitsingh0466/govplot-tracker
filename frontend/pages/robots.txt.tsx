@@ -5,7 +5,7 @@ export default function RobotsTxt() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplot-tracker.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com";
 
   res.setHeader("Content-Type", "text/plain");
   res.write(`User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
