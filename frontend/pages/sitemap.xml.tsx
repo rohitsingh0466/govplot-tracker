@@ -9,7 +9,7 @@ export default function SitemapXml() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplot-tracker.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com";
   const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const staticUrls = [
