@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import axios from "axios";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -27,6 +28,7 @@ export default function AuthModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -64,6 +66,7 @@ export default function AuthModal({
       localStorage.setItem("govplot_auth_user", JSON.stringify(data.user));
       window.dispatchEvent(new Event("govplot-auth-changed"));
       onClose();
+      router.push("/");
     } catch (err: any) {
       setError(err?.response?.data?.detail || "We could not complete that request.");
     } finally {
