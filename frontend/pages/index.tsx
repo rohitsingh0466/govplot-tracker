@@ -64,7 +64,10 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="GovPlot Tracker — Government Plot Schemes India" />
         <meta property="og:description" content="Track government residential plot schemes across India's major cities with real-time alerts and scheme detail pages." />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com"}`} />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com"}`} />
+        <meta property="og:site_name" content="GovPlot Tracker" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
