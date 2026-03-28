@@ -36,7 +36,7 @@ def send_email_alert(to_email: str, payload: AlertPayload):
         from sendgrid.helpers.mail import Mail, To
 
         message = Mail(
-            from_email="alerts@govplottracker.in",
+            from_email=os.getenv("FROM_EMAIL", "alerts@govplottracker.com"),
             to_emails=To(to_email),
             subject=f"🏠 GovPlot Alert: {payload.scheme_name} is {payload.status}",
             html_content=f"""
