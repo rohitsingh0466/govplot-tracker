@@ -29,8 +29,8 @@ export default function ContactPage() {
             <p className="text-sm leading-7 text-slate-700">
               Email:
               {" "}
-              <a className="font-semibold text-blue-700" href="mailto:support@govplottracker.in">
-                support@govplottracker.in
+              <a className="font-semibold text-blue-700" href="mailto:support@govplottracker.com">
+                support@govplottracker.com
               </a>
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-700">
@@ -43,8 +43,8 @@ export default function ContactPage() {
             <p className="text-sm leading-7 text-slate-700">
               Email:
               {" "}
-              <a className="font-semibold text-blue-700" href="mailto:partners@govplottracker.in">
-                partners@govplottracker.in
+              <a className="font-semibold text-blue-700" href="mailto:partners@govplottracker.com">
+                partners@govplottracker.com
               </a>
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-700">
