@@ -1,88 +1,100 @@
-const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string; ribbon: string; accent: string }> = {
-  OPEN: { label: "Open", dot: "bg-emerald-500", badge: "badge-OPEN", ribbon: "bg-emerald-500", accent: "from-emerald-500/10 to-emerald-100/70" },
-  ACTIVE: { label: "Active", dot: "bg-sky-500", badge: "badge-ACTIVE", ribbon: "bg-sky-500", accent: "from-sky-500/10 to-sky-100/70" },
-  UPCOMING: { label: "Upcoming", dot: "bg-amber-500", badge: "badge-UPCOMING", ribbon: "bg-amber-500", accent: "from-amber-500/10 to-amber-100/70" },
-  CLOSED: { label: "Closed", dot: "bg-slate-400", badge: "badge-CLOSED", ribbon: "bg-slate-400", accent: "from-slate-500/10 to-slate-100/70" },
+import Link from "next/link";
+
+const STATUS: Record<string, { label: string; dot: string; badge: string; bar: string }> = {
+  OPEN:     { label: "Open Now",  dot: "#22c55e", badge: "badge-OPEN",     bar: "bg-[--green-500]" },
+  ACTIVE:   { label: "Active",    dot: "#0ea5e9", badge: "badge-ACTIVE",   bar: "bg-[--sky-500]" },
+  UPCOMING: { label: "Upcoming",  dot: "#f59e0b", badge: "badge-UPCOMING", bar: "bg-[--amber-500]" },
+  CLOSED:   { label: "Closed",    dot: "#94a3b8", badge: "badge-CLOSED",   bar: "bg-[--slate-400]" },
 };
 
 export default function SchemeCard({ scheme }: { scheme: any }) {
-  const cfg = STATUS_CONFIG[scheme.status] ?? STATUS_CONFIG.ACTIVE;
+  const cfg = STATUS[scheme.status] ?? STATUS.ACTIVE;
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-      <div className={`h-1 w-full ${cfg.ribbon}`} />
+    <article className="card card-hover flex flex-col overflow-hidden">
+      {/* Top color bar */}
+      <div className={`h-1 w-full ${cfg.bar}`} />
 
-      <div className={`border-b border-amber-100 bg-gradient-to-br ${cfg.accent} p-4 sm:p-5`}>
-        <div className="mb-3 flex items-start justify-between gap-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${cfg.badge}`}>
-            <span className={`inline-block h-2 w-2 rounded-full ${cfg.dot} animate-pulse`} />
+      <div className="p-5 flex-1 flex flex-col">
+        {/* Header row */}
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <span className={`inline-flex items-center gap-1.5 text-[11.5px] font-bold px-2.5 py-1 rounded-full ${cfg.badge}`}>
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ background: cfg.dot, boxShadow: `0 0 0 2px ${cfg.dot}33` }}
+            />
             {cfg.label}
           </span>
-          <span className="rounded-full border border-amber-100 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600">
+          <span className="text-[11.5px] font-semibold text-[--ink-500] bg-[--ink-50] px-2.5 py-1 rounded-full border border-[--ink-100]">
             {scheme.authority}
           </span>
         </div>
 
-        <h3 className="mb-2 line-clamp-2 text-base font-bold leading-snug text-slate-900 transition group-hover:text-teal-700 sm:text-lg">
+        {/* Name */}
+        <h3 className="text-[15px] font-[Outfit] font-700 text-[--ink-900] leading-snug mb-2 line-clamp-2 group-hover:text-[--teal-700]">
           {scheme.name}
         </h3>
 
-        <p className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-          <span>📍</span>
-          {scheme.city}
+        {/* City */}
+        <p className="text-[13px] text-[--ink-500] flex items-center gap-1.5 mb-4">
+          <span>📍</span> {scheme.city}
         </p>
-      </div>
 
-      <div className="p-4 sm:p-5">
-        <div className="grid grid-cols-2 gap-2 text-sm sm:gap-3">
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
           {scheme.total_plots && (
-            <div className="rounded-xl border border-slate-200/70 bg-slate-50 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Plots</div>
-              <div className="text-lg font-bold text-slate-800">{scheme.total_plots.toLocaleString()}</div>
+            <div className="bg-[--ink-50] rounded-xl p-3 border border-[--ink-100]">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[--ink-400] mb-0.5">Plots</div>
+              <div className="text-[15px] font-[Outfit] font-700 text-[--ink-900]">{scheme.total_plots.toLocaleString()}</div>
             </div>
           )}
           {scheme.price_min && (
-            <div className="rounded-xl border border-teal-100 bg-teal-50/70 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-teal-700">Price</div>
-              <div className="text-sm font-bold text-teal-900 sm:text-base">₹{scheme.price_min}L - ₹{scheme.price_max}L</div>
+            <div className="bg-[--teal-100]/60 rounded-xl p-3 border border-[--teal-200]/50">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[--teal-700] mb-0.5">Price</div>
+              <div className="text-[13px] font-[Outfit] font-700 text-[--teal-900]">₹{scheme.price_min}L{scheme.price_max ? `–₹${scheme.price_max}L` : "+"}</div>
             </div>
           )}
           {scheme.area_sqft_min && (
-            <div className="rounded-xl border border-cyan-100 bg-cyan-50/70 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-cyan-700">Plot Size</div>
-              <div className="text-sm font-bold text-cyan-900 sm:text-base">{scheme.area_sqft_min}-{scheme.area_sqft_max} sq.ft</div>
+            <div className="bg-[--saffron-100]/50 rounded-xl p-3 border border-[--saffron-300]/30">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[--saffron-600] mb-0.5">Size</div>
+              <div className="text-[13px] font-[Outfit] font-700 text-[--ink-900]">{scheme.area_sqft_min}–{scheme.area_sqft_max} sq.ft</div>
             </div>
           )}
           {(scheme.open_date || scheme.close_date) && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">{scheme.status === "UPCOMING" ? "Opens" : "Closes"}</div>
-              <div className="text-xs font-bold text-amber-900 sm:text-sm">{scheme.status === "UPCOMING" ? scheme.open_date : scheme.close_date}</div>
+            <div className="bg-[--ink-50] rounded-xl p-3 border border-[--ink-100]">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[--ink-400] mb-0.5">
+                {scheme.status === "UPCOMING" ? "Opens" : "Closes"}
+              </div>
+              <div className="text-[12px] font-semibold text-[--ink-800]">
+                {scheme.status === "UPCOMING" ? scheme.open_date : scheme.close_date}
+              </div>
             </div>
           )}
         </div>
-      </div>
 
-      <div className="flex gap-2 border-t border-amber-100 px-4 py-3 sm:px-5">
-        <a
-          href={`/schemes/${scheme.scheme_id}`}
-          className="rounded-xl border border-slate-200 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:border-teal-300 hover:text-teal-700"
-        >
-          Details
-        </a>
-        <a
-          href={scheme.apply_url || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`flex-1 rounded-xl py-2.5 text-center text-sm font-bold transition ${
-            scheme.status === "OPEN"
-              ? "bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow hover:from-emerald-700 hover:to-green-800"
-              : scheme.status === "UPCOMING"
-                ? "bg-gradient-to-r from-amber-400 to-orange-500 text-amber-950 shadow hover:from-amber-500 hover:to-orange-600"
-                : "cursor-not-allowed bg-slate-200 text-slate-600"
-          }`}
-        >
-          {scheme.status === "OPEN" ? "Apply Now" : scheme.status === "UPCOMING" ? "Coming Soon" : "Official Link"}
-        </a>
+        <div className="mt-auto flex gap-2">
+          <Link
+            href={`/schemes/${scheme.scheme_id}`}
+            className="btn-secondary flex-shrink-0 py-2 px-4 text-[13px]"
+          >
+            Details
+          </Link>
+          <a
+            href={scheme.apply_url || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex-1 py-2 text-center text-[13px] font-semibold rounded-full transition ${
+              scheme.status === "OPEN"
+                ? "bg-gradient-to-r from-[--green-500] to-[#16a34a] text-white hover:opacity-90 shadow-sm"
+                : scheme.status === "UPCOMING"
+                  ? "bg-gradient-to-r from-[--amber-500] to-[--saffron-600] text-white hover:opacity-90 shadow-sm"
+                  : "bg-[--ink-100] text-[--ink-500] cursor-not-allowed"
+            }`}
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {scheme.status === "OPEN" ? "Apply Now ↗" : scheme.status === "UPCOMING" ? "Notify Me" : "Official Link"}
+          </a>
+        </div>
       </div>
     </article>
   );

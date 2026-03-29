@@ -1,31 +1,21 @@
 import Head from "next/head";
-import Navbar from "../components/Navbar";
+import Link from "next/link";
 import { useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import AlertModal from "../components/AlertModal";
 
 const CITIES = [
-  { name: "Lucknow", authority: "LDA", state: "Uttar Pradesh", tags: ["Govt Capital", "Fast Growth"], color: "teal", emoji: "🏛️", url: "https://lda.up.nic.in" },
-  { name: "Bangalore", authority: "BDA", state: "Karnataka", tags: ["IT Hub", "High Demand"], color: "emerald", emoji: "💻", url: "https://bdabangalore.org" },
-  { name: "Noida", authority: "GNIDA/NUDA", state: "Uttar Pradesh", tags: ["NCR", "Expressway"], color: "sky", emoji: "🏙️", url: "https://noidaauthorityonline.in" },
-  { name: "Gurgaon", authority: "HSVP", state: "Haryana", tags: ["Corporate", "NCR"], color: "amber", emoji: "🏢", url: "https://hsvphry.gov.in" },
-  { name: "Hyderabad", authority: "HMDA", state: "Telangana", tags: ["IT Corridor", "Pharma"], color: "cyan", emoji: "🔬", url: "https://hmda.gov.in" },
-  { name: "Pune", authority: "PMRDA", state: "Maharashtra", tags: ["Education", "Auto Hub"], color: "indigo", emoji: "🎓", url: "https://pmrda.gov.in" },
-  { name: "Mumbai", authority: "MHADA", state: "Maharashtra", tags: ["Finance", "Premium Land"], color: "rose", emoji: "🌊", url: "https://mhada.gov.in" },
-  { name: "Chandigarh", authority: "GMADA", state: "Punjab/Haryana", tags: ["Planned City", "Clean City"], color: "lime", emoji: "🌿", url: "https://gmada.gov.in" },
-  { name: "Agra", authority: "ADA", state: "Uttar Pradesh", tags: ["Tourism", "Heritage"], color: "orange", emoji: "🕌", url: "https://adaagra.gov.in" },
+  { name: "Lucknow",    authority: "LDA",       state: "Uttar Pradesh",  tags: ["Govt Capital", "Growing Fast"], emoji: "🏛️", color: "#0d7a68", bg: "#f0fdf8", href: "https://lda.up.nic.in" },
+  { name: "Bangalore",  authority: "BDA",        state: "Karnataka",       tags: ["IT Hub", "High Demand"],        emoji: "💻", color: "#0369a1", bg: "#f0f9ff", href: "https://bdabangalore.org" },
+  { name: "Noida",      authority: "GNIDA/NUDA", state: "Uttar Pradesh",  tags: ["NCR", "Expressway Zone"],       emoji: "🏙️", color: "#6d28d9", bg: "#f5f3ff", href: "https://noidaauthorityonline.in" },
+  { name: "Gurgaon",    authority: "HSVP",       state: "Haryana",         tags: ["Corporate Hub", "NCR"],         emoji: "🏢", color: "#b45309", bg: "#fffbeb", href: "https://hsvphry.gov.in" },
+  { name: "Hyderabad",  authority: "HMDA",       state: "Telangana",       tags: ["IT Corridor", "Pharma Hub"],    emoji: "🔬", color: "#0e7490", bg: "#ecfeff", href: "https://hmda.gov.in" },
+  { name: "Pune",       authority: "PMRDA",      state: "Maharashtra",     tags: ["Education Hub", "Auto Belt"],   emoji: "🎓", color: "#4338ca", bg: "#eef2ff", href: "https://pmrda.gov.in" },
+  { name: "Mumbai",     authority: "MHADA",      state: "Maharashtra",     tags: ["Finance Capital", "Premium"],   emoji: "🌊", color: "#be123c", bg: "#fff1f2", href: "https://mhada.gov.in" },
+  { name: "Chandigarh", authority: "GMADA",      state: "Punjab/Haryana",  tags: ["Planned City", "Clean City"],   emoji: "🌿", color: "#15803d", bg: "#f0fdf4", href: "https://gmada.gov.in" },
+  { name: "Agra",       authority: "ADA",        state: "Uttar Pradesh",  tags: ["Tourism Zone", "Heritage"],     emoji: "🕌", color: "#c2600a", bg: "#fff7ed", href: "https://adaagra.gov.in" },
 ];
-
-const COLOR_MAP: Record<string, { bg: string; text: string; button: string; chip: string }> = {
-  teal: { bg: "from-teal-50 to-cyan-50", text: "text-teal-800", button: "from-teal-600 to-cyan-700", chip: "bg-teal-100 text-teal-800" },
-  emerald: { bg: "from-emerald-50 to-green-50", text: "text-emerald-800", button: "from-emerald-600 to-green-700", chip: "bg-emerald-100 text-emerald-800" },
-  sky: { bg: "from-sky-50 to-blue-50", text: "text-sky-800", button: "from-sky-600 to-blue-700", chip: "bg-sky-100 text-sky-800" },
-  amber: { bg: "from-amber-50 to-orange-50", text: "text-amber-800", button: "from-amber-500 to-orange-600", chip: "bg-amber-100 text-amber-800" },
-  cyan: { bg: "from-cyan-50 to-slate-50", text: "text-cyan-800", button: "from-cyan-600 to-slate-700", chip: "bg-cyan-100 text-cyan-800" },
-  indigo: { bg: "from-indigo-50 to-violet-50", text: "text-indigo-800", button: "from-indigo-600 to-violet-700", chip: "bg-indigo-100 text-indigo-800" },
-  rose: { bg: "from-rose-50 to-pink-50", text: "text-rose-800", button: "from-rose-600 to-pink-700", chip: "bg-rose-100 text-rose-800" },
-  lime: { bg: "from-lime-50 to-emerald-50", text: "text-lime-800", button: "from-lime-600 to-emerald-700", chip: "bg-lime-100 text-lime-800" },
-  orange: { bg: "from-orange-50 to-amber-50", text: "text-orange-800", button: "from-orange-600 to-amber-700", chip: "bg-orange-100 text-orange-800" },
-};
 
 export default function CitiesPage() {
   const [alertOpen, setAlertOpen] = useState(false);
@@ -33,78 +23,85 @@ export default function CitiesPage() {
   return (
     <>
       <Head>
-        <title>Cities - GovPlot Tracker</title>
-        <meta
-          name="description"
-          content="Track government residential plot schemes in Lucknow, Bangalore, Noida, Gurgaon, Hyderabad, Pune, Mumbai, Chandigarh and Agra."
-        />
+        <title>Cities — GovPlot Tracker | Track Schemes in 9 Major Indian Cities</title>
+        <meta name="description" content="Track government residential plot schemes in Lucknow, Bangalore, Noida, Gurgaon, Hyderabad, Pune, Mumbai, Chandigarh and Agra." />
+        <link rel="canonical" href="https://govplottracker.com/cities" />
       </Head>
-
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
-        <section className="mb-10 rounded-3xl border border-amber-100 bg-white/85 px-6 py-8 shadow-sm sm:mb-14 sm:px-10 sm:py-12">
-          <h1 className="mb-3 text-3xl font-bold text-slate-900 sm:text-5xl">
-            City Coverage
-            <span className="block bg-gradient-to-r from-teal-700 via-cyan-700 to-slate-900 bg-clip-text text-transparent">9 Major Markets Across India</span>
+      <div className="page-container pt-10 pb-16">
+        {/* Header */}
+        <div className="mb-10">
+          <span className="section-label">Coverage</span>
+          <h1 className="text-[36px] sm:text-[44px] font-[Outfit] font-900 text-[--ink-900] mt-1 mb-3">
+            9 Major Markets, One Dashboard
           </h1>
-          <p className="max-w-3xl text-base text-slate-600 sm:text-xl">
-            Explore plot scheme authorities, official portals, and city-level demand hotspots from one curated map of opportunities.
+          <p className="text-[15px] text-[--ink-600] max-w-2xl">
+            We track the official housing authority portals for each city every 6 hours — so you always know what's open, upcoming, or just closed.
           </p>
-        </section>
+        </div>
 
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {CITIES.map((city, i) => {
-            const colors = COLOR_MAP[city.color];
-            return (
-              <article
-                key={city.name}
-                className={`animate-fade-in-up overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br ${colors.bg} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:p-6`}
-                style={{ animationDelay: `${i * 60}ms` }}
-              >
-                <div className="mb-4 flex items-start gap-3">
-                  <div className="rounded-xl bg-white p-3 text-3xl shadow-sm">{city.emoji}</div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">{city.name}</h2>
-                    <p className="text-sm font-medium text-slate-600">{city.state}</p>
-                  </div>
+        {/* City grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {CITIES.map((city, i) => (
+            <article
+              key={city.name}
+              className="card card-hover p-6 animate-fade-in-up"
+              style={{ animationDelay: `${i * 50}ms`, borderTopColor: city.color, borderTopWidth: 3 }}
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                  style={{ background: city.bg }}
+                >
+                  {city.emoji}
                 </div>
-
-                <div className="mb-3 text-sm">
-                  <span className="text-slate-500">Authority: </span>
-                  <span className={`font-bold ${colors.text}`}>{city.authority}</span>
+                <div>
+                  <h2 className="text-[18px] font-[Outfit] font-800 text-[--ink-900]">{city.name}</h2>
+                  <p className="text-[12px] text-[--ink-500]">{city.state}</p>
                 </div>
+              </div>
 
-                <div className="mb-5 flex flex-wrap gap-2">
-                  {city.tags.map((tag) => (
-                    <span key={tag} className={`rounded-full px-3 py-1 text-xs font-semibold ${colors.chip}`}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[11.5px] text-[--ink-500]">Authority:</span>
+                <span className="text-[12px] font-bold" style={{ color: city.color }}>{city.authority}</span>
+              </div>
 
-                <div className="flex gap-2">
-                  <a
-                    href={`/?city=${city.name}`}
-                    className={`flex-1 rounded-xl bg-gradient-to-r ${colors.button} py-2.5 text-center text-sm font-bold text-white transition hover:opacity-95`}
+              <div className="flex flex-wrap gap-1.5 mb-5">
+                {city.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                    style={{ background: city.bg, color: city.color }}
                   >
-                    View Schemes
-                  </a>
-                  <a
-                    href={city.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:border-slate-300"
-                  >
-                    Official Site
-                  </a>
-                </div>
-              </article>
-            );
-          })}
-        </section>
-      </main>
+                    {tag}
+                  </span>
+                ))}
+              </div>
 
+              <div className="flex gap-2">
+                <Link
+                  href={`/schemes?city=${city.name}`}
+                  className="btn-primary flex-1 justify-center text-[13px] py-2.5"
+                  style={{ background: `linear-gradient(135deg, ${city.color}, ${city.color}dd)` }}
+                >
+                  View Schemes
+                </Link>
+                <a
+                  href={city.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary flex-shrink-0 text-[12px] py-2.5 px-3"
+                >
+                  Official ↗
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <Footer />
       <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} />
     </>
   );

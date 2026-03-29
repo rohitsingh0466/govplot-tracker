@@ -4,9 +4,9 @@ import axios from "axios";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const CITIES = ["All Cities","Lucknow","Bangalore","Noida","Gurgaon","Hyderabad","Pune","Mumbai","Chandigarh","Agra"];
 const CHANNELS = [
-  { id: "email",    label: "📧 Email",    free: true },
-  { id: "telegram", label: "✈️ Telegram", free: true },
-  { id: "whatsapp", label: "💬 WhatsApp", free: false },
+  { id: "email",    label: "Email",    icon: "📧", free: true,  desc: "Instant delivery" },
+  { id: "telegram", label: "Telegram", icon: "✈️", free: true,  desc: "Fast & free" },
+  { id: "whatsapp", label: "WhatsApp", icon: "💬", free: false, desc: "Pro feature" },
 ];
 
 export default function AlertModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -15,12 +15,13 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
   const [channel, setChannel] = useState("email");
   const [done, setDone]       = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState("");
 
   if (!open) return null;
 
   async function submit() {
-    if (!email) return;
-    setLoading(true);
+    if (!email) { setError("Please enter your email address."); return; }
+    setLoading(true); setError("");
     try {
       await axios.post(`${API}/api/v1/alerts/subscribe`, {
         email,
@@ -29,74 +30,76 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
       });
       setDone(true);
     } catch {
-      // still show success in demo mode
-      setDone(true);
+      setDone(true); // demo fallthrough
     } finally {
       setLoading(false);
     }
   }
 
+  function handleClose() {
+    setDone(false); setError(""); setEmail(""); setCity("All Cities"); setChannel("email");
+    onClose();
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in-up">
-        {/* Header gradient */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 relative overflow-hidden">
-          <div className="absolute -right-20 -top-20 w-40 h-40 bg-blue-500 rounded-full opacity-20" />
-          <div className="relative">
-            <button
-              onClick={onClose}
-              className="absolute right-0 top-0 text-white hover:bg-white/20 rounded-full p-2 transition"
-            >
-              ✕
-            </button>
-            <div className="text-4xl mb-3">🔔</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Get Free Alerts</h2>
-            <p className="text-blue-100">Get notified instantly when new schemes open</p>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[--ink-900]/60 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-md bg-white rounded-[--r-2xl] overflow-hidden shadow-[--shadow-xl]">
+        {/* Header */}
+        <div className="bg-gradient-to-br from-[--teal-700] to-[--teal-900] p-7 relative">
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm transition"
+          >
+            ✕
+          </button>
+          <div className="text-3xl mb-2">🔔</div>
+          <h2 className="text-[22px] font-[Outfit] font-800 text-white mb-1">Get Free Scheme Alerts</h2>
+          <p className="text-[13px] text-[--teal-300]">Be first to know when applications open — free.</p>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           {!done ? (
             <>
-              <div className="space-y-5">
+              <div className="space-y-4 mb-5">
                 <div>
-                  <label className="text-sm font-bold text-slate-900 block mb-2">📧 Email Address *</label>
+                  <label className="block text-[11.5px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Email Address *</label>
                   <input
                     type="email"
                     placeholder="you@example.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white"
+                    onChange={e => { setEmail(e.target.value); setError(""); }}
+                    className="input-field"
+                    onKeyDown={e => e.key === "Enter" && submit()}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-bold text-slate-900 block mb-2">📍 City</label>
-                  <select
-                    value={city}
-                    onChange={e => setCity(e.target.value)}
-                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50 hover:bg-white"
-                  >
+                  <label className="block text-[11.5px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">City</label>
+                  <select value={city} onChange={e => setCity(e.target.value)} className="input-field">
                     {CITIES.map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-bold text-slate-900 block mb-3">Notification Channel</label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <label className="block text-[11.5px] font-bold text-[--ink-600] mb-2 uppercase tracking-wider">Notification Channel</label>
+                  <div className="grid grid-cols-3 gap-2">
                     {CHANNELS.map(ch => (
                       <button
                         key={ch.id}
-                        onClick={() => setChannel(ch.id)}
-                        className={`relative border-2 rounded-xl p-3 text-xs font-bold transition transform hover:scale-105 ${
+                        onClick={() => !(!ch.free) && setChannel(ch.id)}
+                        className={`relative rounded-xl p-3 border-[1.5px] text-center transition-all ${
                           channel === ch.id
-                            ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 shadow-lg"
-                            : "border-slate-200 text-slate-600 bg-slate-50 hover:bg-white"
+                            ? "border-[--teal-500] bg-[--teal-100]/60 text-[--teal-700]"
+                            : !ch.free
+                              ? "border-[--ink-100] bg-[--ink-50] opacity-60 cursor-not-allowed"
+                              : "border-[--ink-200] hover:border-[--teal-300] text-[--ink-700]"
                         }`}
                       >
-                        {ch.label}
+                        <div className="text-xl mb-1">{ch.icon}</div>
+                        <div className="text-[11px] font-bold">{ch.label}</div>
+                        <div className="text-[10px] text-[--ink-400]">{ch.desc}</div>
                         {!ch.free && (
-                          <span className="absolute -top-2 -right-2 text-[10px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full font-bold">PRO</span>
+                          <span className="absolute -top-2 -right-2 text-[9px] bg-[--saffron-500] text-white px-1.5 py-0.5 rounded-full font-bold">PRO</span>
                         )}
                       </button>
                     ))}
@@ -104,27 +107,30 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
                 </div>
               </div>
 
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-[12.5px] text-red-700">{error}</div>
+              )}
+
               <button
                 onClick={submit}
                 disabled={loading || !email}
-                className="mt-8 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-300 disabled:to-slate-400 text-white font-bold py-3.5 rounded-xl transition transform hover:scale-105 shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed"
+                className="btn-primary w-full justify-center text-[14px] py-3"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                {loading ? "⏳ Subscribing..." : "✨ Subscribe for Free"}
+                {loading ? "Subscribing…" : "Subscribe for Free →"}
               </button>
-              <p className="text-center text-xs text-slate-600 mt-4">🔒 No spam. Unsubscribe anytime.</p>
+              <p className="text-[11px] text-[--ink-400] text-center mt-3">🔒 No spam. Unsubscribe anytime from your dashboard.</p>
             </>
           ) : (
-            <div className="text-center py-4">
-              <div className="text-6xl mb-4">🎉</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">You&apos;re all set!</h3>
-              <p className="text-slate-600 mb-8">
-                We&apos;ll send <strong>{channel === 'email' ? '📧 email' : channel === 'telegram' ? '✈️ Telegram' : '💬 WhatsApp'}</strong> alerts{city !== "All Cities" ? ` for ${city}` : ""}.
+            <div className="text-center py-6">
+              <div className="text-5xl mb-4">🎉</div>
+              <h3 className="text-[20px] font-[Outfit] font-800 text-[--ink-900] mb-2">You're subscribed!</h3>
+              <p className="text-[13.5px] text-[--ink-600] mb-6">
+                We'll send <strong>{CHANNELS.find(c => c.id === channel)?.label}</strong> alerts
+                {city !== "All Cities" ? ` for ${city}` : " for all cities"}.
               </p>
-              <button
-                onClick={() => { setDone(false); onClose(); }}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl text-sm font-bold transform hover:scale-105 transition shadow-lg hover:shadow-xl"
-              >
-                ✓ Done
+              <button onClick={handleClose} className="btn-primary text-[13px] py-2.5 px-8" style={{ fontFamily: "var(--font-display)" }}>
+                Done ✓
               </button>
             </div>
           )}

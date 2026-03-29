@@ -1,5 +1,5 @@
-const CITIES = ["Lucknow", "Bangalore", "Noida", "Gurgaon", "Hyderabad", "Pune", "Mumbai", "Chandigarh", "Agra"];
-const STATUSES = ["OPEN", "ACTIVE", "UPCOMING", "CLOSED"];
+const CITIES = ["Lucknow","Bangalore","Noida","Gurgaon","Hyderabad","Pune","Mumbai","Chandigarh","Agra"];
+const STATUSES = ["OPEN","ACTIVE","UPCOMING","CLOSED"];
 
 interface Props {
   city: string;
@@ -12,49 +12,48 @@ interface Props {
 
 export default function FilterBar({ city, setCity, status, setStatus, search, setSearch }: Props) {
   return (
-    <div className="surface-card mb-6 border-amber-100/90 p-4 sm:mb-8 sm:p-6">
-      <div className="mb-4">
-        <label htmlFor="scheme-search" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-          Search
-        </label>
-        <input
-          id="scheme-search"
-          type="text"
-          placeholder="Search schemes, authority, or city"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-        />
-      </div>
+    <div className="card p-5 mb-8">
+      <div className="flex flex-col gap-4">
+        {/* Search */}
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[--ink-400] text-base">🔍</span>
+          <input
+            type="text"
+            placeholder="Search schemes, authority, or city…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="input-field pl-10 pr-4"
+          />
+        </div>
 
-      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <select
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="rounded-xl border border-amber-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-        >
-          <option value="">All Cities</option>
-          {CITIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* City select */}
+          <select
+            value={city}
+            onChange={e => setCity(e.target.value)}
+            className="input-field sm:w-48 flex-shrink-0"
+          >
+            <option value="">🗺️ All Cities</option>
+            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
 
-        <div className="grid flex-1 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          {["", ...STATUSES].map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatus(s)}
-              className={`rounded-lg border px-3 py-2 text-xs font-bold tracking-wide transition ${
-                status === s
-                  ? "border-teal-700 bg-teal-700 text-white shadow"
-                  : "border-amber-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"
-              }`}
-            >
-              {s === "" ? "ALL" : s}
-            </button>
-          ))}
+          {/* Status pills */}
+          <div className="flex flex-wrap gap-2 flex-1">
+            {["", ...STATUSES].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatus(s)}
+                className={`px-4 py-2 rounded-full text-[12.5px] font-semibold border transition-all flex-shrink-0 ${
+                  status === s
+                    ? "bg-[--teal-600] text-white border-[--teal-600] shadow-[--shadow-teal]"
+                    : "bg-white text-[--ink-600] border-[--ink-200] hover:border-[--teal-400] hover:text-[--teal-700]"
+                }`}
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                {s === "" ? "All Status" : s === "OPEN" ? "✅ Open" : s === "ACTIVE" ? "⚡ Active" : s === "UPCOMING" ? "🔜 Upcoming" : "🔒 Closed"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
