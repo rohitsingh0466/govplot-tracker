@@ -1,5 +1,6 @@
 """
 GovPlot Tracker — authentication helpers.
+v1.2: Updated get_current_user to handle nullable email (Google/OTP users)
 """
 
 from __future__ import annotations
@@ -50,13 +51,21 @@ def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if not email:
+        subject: str = payload.get("sub")
+        if not subject:
             raise credentials_exception
     except JWTError as exc:
         raise credentials_exception from exc
 
-    user = db.query(User).filter(User.email == email, User.is_active == True).first()
+    # Subject can be an email or a numeric user ID for OTP/phone-only accounts.
+    user = None
+    if subject.isdigit():
+        user = db.query(User).filter(User.id == int(subject), User.is_active == True).first()
+    else:
+        user = db.query(User).filter(User.email == subject, User.is_active == True).first()
+        if not user:
+            user = db.query(User).filter(User.phone == subject, User.is_active == True).first()
+
     if not user:
         raise credentials_exception
     return user
