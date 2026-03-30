@@ -4,6 +4,23 @@ import axios from "axios";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+function getApiErrorMessage(err: any): string {
+  const detail = err?.response?.data?.detail;
+
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+
+  if (Array.isArray(detail) && detail.length > 0) {
+    const firstMessage = detail[0]?.msg;
+    if (typeof firstMessage === "string" && firstMessage.trim()) {
+      return firstMessage;
+    }
+  }
+
+  return "Authentication failed. Please check your details and try again.";
+}
+
 type AuthUser = {
   id: number;
   email: string;
@@ -75,7 +92,7 @@ export default function AuthModal({
       const { data } = await axios.post<AuthResponse>(`${API}${endpoint}`, payload);
       storeAuth(data);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || "Authentication failed. Please try again.");
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

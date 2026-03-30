@@ -7,6 +7,23 @@ import axios from "axios";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 type AuthMode = "login" | "register";
 
+function getApiErrorMessage(err: any): string {
+  const detail = err?.response?.data?.detail;
+
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+
+  if (Array.isArray(detail) && detail.length > 0) {
+    const firstMessage = detail[0]?.msg;
+    if (typeof firstMessage === "string" && firstMessage.trim()) {
+      return firstMessage;
+    }
+  }
+
+  return "Authentication failed. Please check your details and try again.";
+}
+
 export default function AuthPage() {
   const router = useRouter();
   const [mode, setMode]           = useState<AuthMode>("login");
@@ -57,7 +74,7 @@ export default function AuthPage() {
       const { data } = await axios.post(`${API}/api/v1/auth/${mode === "login" ? "login" : "register"}`, payload);
       storeAuth(data);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || "Authentication failed. Please try again.");
+      setError(getApiErrorMessage(err));
     } finally { setLoading(false); }
   }
 
