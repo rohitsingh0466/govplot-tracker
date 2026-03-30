@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AlertModal from "../components/AlertModal";
@@ -18,7 +19,16 @@ const CITIES = [
 ];
 
 export default function CitiesPage() {
+  const router = useRouter();
   const [alertOpen, setAlertOpen] = useState(false);
+
+  useEffect(() => {
+    if (!router.isReady || router.query.openAlert !== "1") return;
+    setAlertOpen(true);
+    const nextQuery = { ...router.query };
+    delete nextQuery.openAlert;
+    router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true });
+  }, [router]);
 
   return (
     <>

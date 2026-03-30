@@ -1,6 +1,6 @@
 """
 GovPlot Tracker — SQLAlchemy Models + Pydantic Schemas
-v1.2: Added first_name, last_name, and google_id fields
+v1.4: Added one-time free-tier phone edit tracking
 """
 
 from __future__ import annotations
@@ -52,6 +52,7 @@ class User(Base):
     last_name                = Column(String(64), nullable=True)
     name                     = Column(String(128), nullable=True)    # legacy / full name fallback
     phone                    = Column(String(20), nullable=True, unique=False, index=True)
+    free_phone_edit_used     = Column(Boolean, default=False, nullable=False)
 
     # Google OAuth
     google_id                = Column(String(128), nullable=True, unique=True, index=True)
@@ -74,6 +75,30 @@ class User(Base):
     is_active                = Column(Boolean, default=True)
     last_login_at            = Column(DateTime, nullable=True)
     created_at               = Column(DateTime, default=datetime.utcnow)
+
+    @property
+    def capabilities(self) -> list[str]:
+        tier = (self.subscription_tier or "free").lower()
+        capability_map = {
+            "free": [
+                "alerts.email",
+            ],
+            "pro": [
+                "alerts.email",
+                "alerts.telegram",
+                "alerts.whatsapp",
+                "profile.phone_edit",
+                "downloads.pdf",
+            ],
+            "premium": [
+                "alerts.email",
+                "alerts.telegram",
+                "alerts.whatsapp",
+                "profile.phone_edit",
+                "downloads.pdf",
+            ],
+        }
+        return capability_map.get(tier, capability_map["free"])
 
 
 class AlertSubscription(Base):
@@ -146,7 +171,7 @@ class SchemeOut(BaseModel):
 
 
 class AlertCreate(BaseModel):
-    email: EmailStr; city: Optional[str] = None; authority: Optional[str] = None; channel: str = "email"
+    city: Optional[str] = None; authority: Optional[str] = None; channel: str = "email"
 
 class AlertOut(BaseModel):
     id: int; user_email: str; city: Optional[str]; authority: Optional[str]; channel: str; is_active: bool
@@ -165,10 +190,15 @@ class UserOut(BaseModel):
     id: int; email: Optional[str]; first_name: Optional[str]; last_name: Optional[str]
     name: Optional[str]; is_premium: bool; subscription_tier: str; subscription_status: str
     telegram_username: Optional[str]; phone: Optional[str]; avatar_url: Optional[str] = None
+    free_phone_edit_used: bool = False
+    capabilities: list[str] = []
     class Config: from_attributes = True
 
 class UserLogin(BaseModel):
     email: EmailStr; password: str
+
+class UserProfileUpdate(BaseModel):
+    phone: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str; token_type: str = "bearer"; expires_in: int

@@ -7,8 +7,10 @@ New fields: first_name, last_name
 from __future__ import annotations
 
 import os
+import json
+import base64
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qsl, urlunparse
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -27,6 +29,7 @@ from backend.models.db_models import (
     User,
     UserCreate,
     UserLogin,
+    UserProfileUpdate,
     UserOut,
 )
 
@@ -44,6 +47,51 @@ def _build_auth_response(user: User) -> AuthResponse:
     token, expires_at = create_access_token(user.email or str(user.id))
     expires_in = max(expires_at - int(datetime.now(timezone.utc).timestamp()), 0)
     return AuthResponse(access_token=token, expires_in=expires_in, user=user)
+
+
+def _encode_state(next_url: str | None = None, action: str | None = None) -> str | None:
+    state = {k: v for k, v in {"next": next_url, "action": action}.items() if v}
+    if not state:
+        return None
+    payload = json.dumps(state).encode("utf-8")
+    return base64.urlsafe_b64encode(payload).decode("utf-8")
+
+
+def _decode_state(state: str | None) -> dict[str, str]:
+    if not state:
+        return {}
+    try:
+        raw = base64.urlsafe_b64decode(state.encode("utf-8"))
+        data = json.loads(raw.decode("utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _resolve_frontend_redirect(next_url: str | None) -> str:
+    if not next_url:
+        return FRONTEND_URL
+
+    frontend = urlparse(FRONTEND_URL)
+    parsed = urlparse(next_url)
+
+    if not parsed.netloc:
+        path = parsed.path or "/"
+        query = f"?{parsed.query}" if parsed.query else ""
+        fragment = f"#{parsed.fragment}" if parsed.fragment else ""
+        return f"{FRONTEND_URL.rstrip('/')}{path}{query}{fragment}"
+
+    if parsed.scheme == frontend.scheme and parsed.netloc == frontend.netloc:
+        return next_url
+
+    return FRONTEND_URL
+
+
+def _append_query_params(url: str, params: dict[str, str]) -> str:
+    parsed = urlparse(url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query.update({k: v for k, v in params.items() if v})
+    return urlunparse(parsed._replace(query=urlencode(query)))
 
 
 # ─── Email / Password ────────────────────────────────────────────────────────
@@ -103,7 +151,7 @@ def me(current_user: User = Depends(get_current_user)):
 # ─── Google OAuth ────────────────────────────────────────────────────────────
 
 @router.get("/google")
-def google_login():
+def google_login(next: str | None = None, action: str | None = None):
     """Redirect browser to Google OAuth consent screen."""
     if not GOOGLE_CLIENT_ID:
         raise HTTPException(status_code=503, detail="Google OAuth not configured")
@@ -116,11 +164,14 @@ def google_login():
         "access_type": "offline",
         "prompt": "select_account",
     }
+    state = _encode_state(next, action)
+    if state:
+        params["state"] = state
     return RedirectResponse(url=f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}")
 
 
 @router.get("/google/callback")
-async def google_callback(code: str, db: Session = Depends(get_db)):
+async def google_callback(code: str, state: str | None = None, db: Session = Depends(get_db)):
     """Handle Google OAuth callback, upsert user, redirect to frontend with token."""
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(status_code=503, detail="Google OAuth not configured")
@@ -144,7 +195,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
     id_token   = token_data.get("id_token")
 
     # Decode Google ID token (no signature verify needed — just payload)
-    import base64, json as _json
+    import json as _json
     try:
         payload_b64 = id_token.split(".")[1]
         payload_b64 += "=" * (4 - len(payload_b64) % 4)
@@ -186,7 +237,6 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
     db.refresh(user)
 
     auth = _build_auth_response(user)
-    import json
     user_json = json.dumps({
         "id": user.id, "email": user.email,
         "first_name": user.first_name, "last_name": user.last_name,
@@ -194,8 +244,46 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
         "subscription_tier": user.subscription_tier,
         "subscription_status": user.subscription_status,
         "telegram_username": user.telegram_username,
+        "phone": user.phone,
+        "free_phone_edit_used": user.free_phone_edit_used,
         "avatar_url": user.avatar_url,
+        "capabilities": user.capabilities,
     })
-    from urllib.parse import quote
-    redirect_url = f"{FRONTEND_URL}/auth?token={auth.access_token}&user={quote(user_json)}"
+    state_data = _decode_state(state)
+    redirect_url = _resolve_frontend_redirect(state_data.get("next"))
+    redirect_params = {
+        "token": auth.access_token,
+        "user": user_json,
+    }
+    if state_data.get("action") == "open-alert":
+        redirect_params["openAlert"] = "1"
+    redirect_url = _append_query_params(redirect_url, redirect_params)
     return RedirectResponse(url=redirect_url)
+
+
+@router.patch("/profile", response_model=UserOut)
+def update_profile(
+    payload: UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    phone = (payload.phone or "").strip()
+    if phone:
+        if not phone.isdigit() or len(phone) != 10:
+            raise HTTPException(status_code=400, detail="Mobile number must contain exactly 10 digits")
+    current_phone = (current_user.phone or "").strip()
+    tier = (current_user.subscription_tier or "free").lower()
+
+    if tier == "free" and current_phone and phone and phone != current_phone:
+        if current_user.free_phone_edit_used:
+            raise HTTPException(
+                status_code=400,
+                detail="Free users can edit the mobile number only once. Upgrade to Pro for more changes.",
+            )
+        current_user.free_phone_edit_used = True
+
+    current_user.phone = phone or None
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user

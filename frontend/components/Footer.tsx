@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[--ink-900] text-[--ink-300] mt-20">
-      <div className="page-container py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    <footer className="bg-[--ink-900] text-[--ink-300] mt-28">
+      <div className="page-container py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
@@ -39,20 +39,6 @@ export default function Footer() {
                 <li key={href}>
                   <Link href={href} className="text-[13px] text-[--ink-400] hover:text-[--teal-400] transition">
                     {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Cities */}
-          <div>
-            <h4 className="text-white font-[Outfit] font-600 text-sm mb-4 uppercase tracking-wider">Cities</h4>
-            <ul className="space-y-2.5">
-              {["Lucknow", "Bangalore", "Noida", "Gurgaon", "Hyderabad", "Pune", "Mumbai", "Chandigarh", "Agra"].map(c => (
-                <li key={c}>
-                  <Link href={`/schemes?city=${c}`} className="text-[13px] text-[--ink-400] hover:text-[--teal-400] transition">
-                    {c}
                   </Link>
                 </li>
               ))}

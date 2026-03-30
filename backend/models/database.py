@@ -4,7 +4,7 @@ Uses SQLite for local dev, PostgreSQL (Supabase) in production.
 """
 
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool, QueuePool
 from backend.models.db_models import Base
@@ -42,6 +42,22 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Create all tables."""
     Base.metadata.create_all(bind=engine)
+    _ensure_user_columns()
+
+
+def _ensure_user_columns():
+    """Backfill additive columns for existing deployments without a full migration system."""
+    inspector = inspect(engine)
+    columns = {column["name"] for column in inspector.get_columns("users")}
+
+    if "free_phone_edit_used" not in columns:
+        ddl = (
+            "ALTER TABLE users ADD COLUMN free_phone_edit_used BOOLEAN DEFAULT FALSE NOT NULL"
+            if "postgresql" in DATABASE_URL
+            else "ALTER TABLE users ADD COLUMN free_phone_edit_used BOOLEAN NOT NULL DEFAULT 0"
+        )
+        with engine.begin() as connection:
+            connection.execute(text(ddl))
 
 
 def get_db():

@@ -1,11 +1,12 @@
 import Head from "next/head";
 import Link from "next/link";
 import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AlertModal from "../../components/AlertModal";
 import AdSenseSlot from "../../components/AdSenseSlot";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Scheme = {
   scheme_id: string; name: string; city: string; authority: string; status: string;
@@ -23,11 +24,20 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
+  const router = useRouter();
   const [alertOpen, setAlertOpen] = useState(false);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://govplottracker.com";
   const canonicalUrl = `${siteUrl}/schemes/${scheme.scheme_id}`;
   const title = `${scheme.name} | ${scheme.city} Plot Scheme`;
   const description = `${scheme.name} by ${scheme.authority} in ${scheme.city}. Status: ${scheme.status}. Track dates, plots, pricing on GovPlot Tracker.`;
+
+  useEffect(() => {
+    if (!router.isReady || router.query.openAlert !== "1") return;
+    setAlertOpen(true);
+    const nextQuery = { ...router.query };
+    delete nextQuery.openAlert;
+    router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true });
+  }, [router]);
 
   return (
     <>

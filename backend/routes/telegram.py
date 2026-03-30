@@ -33,6 +33,11 @@ def create_link_token(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if "alerts.telegram" not in current_user.capabilities:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Telegram linking is available on Pro and Premium plans only",
+        )
     bot_username = _bot_username()
     token = secrets.token_urlsafe(24)
     expires_at = datetime.utcnow() + timedelta(minutes=15)
@@ -53,6 +58,11 @@ def create_link_token(
 
 @router.get("/status", response_model=TelegramLinkStatus)
 def telegram_link_status(current_user: User = Depends(get_current_user)):
+    if "alerts.telegram" not in current_user.capabilities:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Telegram linking is available on Pro and Premium plans only",
+        )
     if current_user.telegram_chat_id:
         return TelegramLinkStatus(
             is_linked=True,

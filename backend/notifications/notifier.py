@@ -122,12 +122,32 @@ def _resolve_telegram_chat_id(recipient: str) -> str | None:
         db.close()
 
 
+def _resolve_whatsapp_number(recipient: str) -> str | None:
+    if recipient.startswith("+"):
+        return recipient
+    if recipient.isdigit():
+        return f"+91{recipient}" if len(recipient) == 10 else recipient
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == recipient).first()
+        if user and user.phone:
+            return f"+91{user.phone}" if user.phone.isdigit() and len(user.phone) == 10 else user.phone
+        return None
+    finally:
+        db.close()
+
+
 def dispatch_alert(channel: str, recipient: str, payload: AlertPayload):
     """Unified dispatcher — routes to the correct channel."""
     if channel == "email":
         send_email_alert(recipient, payload)
     elif channel == "whatsapp":
-        send_whatsapp_alert(recipient, payload)
+        phone = _resolve_whatsapp_number(recipient)
+        if not phone:
+            logger.warning(f"No WhatsApp number linked for recipient: {recipient}")
+            return
+        send_whatsapp_alert(phone, payload)
     elif channel == "telegram":
         chat_id = _resolve_telegram_chat_id(recipient)
         if not chat_id:

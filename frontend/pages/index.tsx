@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import axios from "axios";
 import SchemeCard from "../components/SchemeCard";
 import StatsBar from "../components/StatsBar";
@@ -23,6 +24,7 @@ const MOCK_SCHEMES = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [schemes, setSchemes]   = useState<any[]>([]);
   const [stats, setStats]       = useState<any>(null);
   const [loading, setLoading]   = useState(true);
@@ -33,6 +35,13 @@ export default function Home() {
 
   useEffect(() => { fetchSchemes(); }, [city]);
   useEffect(() => { fetchStats(); }, []);
+  useEffect(() => {
+    if (!router.isReady || router.query.openAlert !== "1") return;
+    setAlertOpen(true);
+    const nextQuery = { ...router.query };
+    delete nextQuery.openAlert;
+    router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true });
+  }, [router]);
 
   async function fetchSchemes() {
     setLoading(true);
@@ -93,10 +102,6 @@ export default function Home() {
       {/* ── Hero Section ───────────────────────────────────── */}
       <section className="page-container pt-10 pb-14">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-[--teal-100] text-[--teal-700] text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-full mb-5 border border-[--teal-200]">
-            <span className="pulse-dot bg-[--teal-500]" />
-            Live tracking across 9 cities
-          </div>
           <h1 className="text-[38px] sm:text-[52px] lg:text-[60px] font-[Outfit] font-900 text-[--ink-900] mb-5" style={{ lineHeight: "1.08" }}>
             Never miss a{" "}
             <span className="bg-gradient-to-r from-[--teal-600] to-[--teal-400] bg-clip-text text-transparent">
