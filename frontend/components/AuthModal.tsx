@@ -37,7 +37,6 @@ export default function AuthModal({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName]   = useState("");
   const [email, setEmail]         = useState("");
-  const [phone, setPhone]         = useState("");
   const [password, setPassword]   = useState("");
   const [showPass, setShowPass]   = useState(false);
   const [loading, setLoading]     = useState(false);
@@ -71,7 +70,7 @@ export default function AuthModal({
       const payload =
         mode === "login"
           ? { email, password }
-          : { email, password, first_name: firstName, last_name: lastName, name: `${firstName} ${lastName}`, phone: phone || null };
+          : { email, password, first_name: firstName, last_name: lastName, name: `${firstName} ${lastName}` };
       const endpoint = mode === "login" ? "/api/v1/auth/login" : "/api/v1/auth/register";
       const { data } = await axios.post<AuthResponse>(`${API}${endpoint}`, payload);
       storeAuth(data);
@@ -187,17 +186,6 @@ export default function AuthModal({
                   onChange={e => setEmail(e.target.value)}
                 />
               </div>
-              {mode === "register" && (
-                <div>
-                  <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Mobile (optional)</label>
-                  <input
-                    className="input-field"
-                    placeholder="+91 98xxxxxxxx"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
-                  />
-                </div>
-              )}
               <div>
                 <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Password *</label>
                 <div className="relative">

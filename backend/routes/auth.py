@@ -72,7 +72,6 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         first_name=payload.first_name,
         last_name=payload.last_name,
         name=full_name,
-        phone=payload.phone,
         subscription_tier="free",
         subscription_status="active",
     )
