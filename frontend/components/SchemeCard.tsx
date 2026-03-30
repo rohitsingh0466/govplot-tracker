@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getEffectiveSchemeStatus } from "../lib/schemeStatus";
 
 const STATUS: Record<string, { label: string; dot: string; badge: string; bar: string }> = {
   OPEN:     { label: "Open Now",  dot: "#22c55e", badge: "badge-OPEN",     bar: "bg-[--green-500]" },
@@ -8,7 +9,8 @@ const STATUS: Record<string, { label: string; dot: string; badge: string; bar: s
 };
 
 export default function SchemeCard({ scheme }: { scheme: any }) {
-  const cfg = STATUS[scheme.status] ?? STATUS.ACTIVE;
+  const effectiveStatus = getEffectiveSchemeStatus(scheme);
+  const cfg = STATUS[effectiveStatus] ?? STATUS.ACTIVE;
 
   return (
     <article className="card card-hover flex flex-col overflow-hidden">
@@ -63,10 +65,10 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
           {(scheme.open_date || scheme.close_date) && (
             <div className="bg-[--ink-50] rounded-xl p-3 border border-[--ink-100]">
               <div className="text-[10px] font-bold uppercase tracking-wider text-[--ink-400] mb-0.5">
-                {scheme.status === "UPCOMING" ? "Opens" : "Closes"}
+                {effectiveStatus === "UPCOMING" ? "Opens" : "Closes"}
               </div>
               <div className="text-[12px] font-semibold text-[--ink-800]">
-                {scheme.status === "UPCOMING" ? scheme.open_date : scheme.close_date}
+                {effectiveStatus === "UPCOMING" ? scheme.open_date : scheme.close_date}
               </div>
             </div>
           )}
@@ -84,15 +86,15 @@ export default function SchemeCard({ scheme }: { scheme: any }) {
             target="_blank"
             rel="noopener noreferrer"
             className={`flex-1 py-2 text-center text-[13px] font-semibold rounded-full transition ${
-              scheme.status === "OPEN"
+              effectiveStatus === "OPEN"
                 ? "bg-gradient-to-r from-[--green-500] to-[#16a34a] text-white hover:opacity-90 shadow-sm"
-                : scheme.status === "UPCOMING"
+                : effectiveStatus === "UPCOMING"
                   ? "bg-gradient-to-r from-[--amber-500] to-[--saffron-600] text-white hover:opacity-90 shadow-sm"
                   : "bg-[--ink-100] text-[--ink-500] cursor-not-allowed"
             }`}
             style={{ fontFamily: "var(--font-display)" }}
           >
-            {scheme.status === "OPEN" ? "Apply Now ↗" : scheme.status === "UPCOMING" ? "Notify Me" : "Official Link"}
+            {effectiveStatus === "OPEN" ? "Apply Now ↗" : effectiveStatus === "UPCOMING" ? "Notify Me" : "Official Link"}
           </a>
         </div>
       </div>

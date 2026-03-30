@@ -9,6 +9,7 @@ import AlertModal from "../components/AlertModal";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AdSenseSlot from "../components/AdSenseSlot";
+import { normalizeScheme } from "../lib/schemeStatus";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -30,7 +31,7 @@ export default function Home() {
   const [search, setSearch]     = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
 
-  useEffect(() => { fetchSchemes(); }, [city, status]);
+  useEffect(() => { fetchSchemes(); }, [city]);
   useEffect(() => { fetchStats(); }, []);
 
   async function fetchSchemes() {
@@ -38,7 +39,6 @@ export default function Home() {
     try {
       const params: any = { limit: 100 };
       if (city) params.city = city;
-      if (status) params.status = status;
       const { data } = await axios.get(`${API}/api/v1/schemes/`, { params });
       setSchemes(data.length ? data : MOCK_SCHEMES);
     } catch {
@@ -57,12 +57,18 @@ export default function Home() {
     }
   }
 
-  const filtered = schemes.filter(s =>
-    !search ||
-    s.name.toLowerCase().includes(search.toLowerCase()) ||
-    s.city.toLowerCase().includes(search.toLowerCase()) ||
-    s.authority.toLowerCase().includes(search.toLowerCase())
-  );
+  const normalizedSchemes = schemes.map(normalizeScheme);
+
+  const filtered = normalizedSchemes.filter((s) => {
+    const matchesStatus = !status || s.status === status;
+    const matchesSearch =
+      !search ||
+      s.name.toLowerCase().includes(search.toLowerCase()) ||
+      s.city.toLowerCase().includes(search.toLowerCase()) ||
+      s.authority.toLowerCase().includes(search.toLowerCase());
+
+    return matchesStatus && matchesSearch;
+  });
 
   return (
     <>
@@ -151,7 +157,7 @@ export default function Home() {
                 <div>
                   <div className="text-2xl mb-2">{icon}</div>
                   <h3 className="text-white font-[Outfit] font-700 text-[15px] mb-1">{title}</h3>
-                  <p className="text-[--teal-300]/80 text-[13px] leading-relaxed">{desc}</p>
+                  <p className="text-white/90 text-[13px] leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}

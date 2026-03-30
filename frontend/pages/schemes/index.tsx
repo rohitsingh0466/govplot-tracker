@@ -9,6 +9,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AlertModal from "../../components/AlertModal";
 import AdSenseSlot from "../../components/AdSenseSlot";
+import { normalizeScheme } from "../../lib/schemeStatus";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -28,13 +29,13 @@ export default function SchemesPage() {
     }
   }, [router.isReady, router.query.city]);
 
-  useEffect(() => { fetchAll(); }, [city, status]);
+  useEffect(() => { fetchAll(); }, [city]);
 
   async function fetchAll() {
     setLoading(true);
     try {
       const [sRes, stRes] = await Promise.all([
-        axios.get(`${API}/api/v1/schemes/`, { params: { limit: 200, ...(city && { city }), ...(status && { status }) } }),
+        axios.get(`${API}/api/v1/schemes/`, { params: { limit: 200, ...(city && { city }) } }),
         axios.get(`${API}/api/v1/schemes/stats`),
       ]);
       setSchemes(sRes.data);
@@ -47,12 +48,18 @@ export default function SchemesPage() {
     }
   }
 
-  const filtered = schemes.filter(s =>
-    !search ||
-    s.name.toLowerCase().includes(search.toLowerCase()) ||
-    s.city.toLowerCase().includes(search.toLowerCase()) ||
-    s.authority.toLowerCase().includes(search.toLowerCase())
-  );
+  const normalizedSchemes = schemes.map(normalizeScheme);
+
+  const filtered = normalizedSchemes.filter((s) => {
+    const matchesStatus = !status || s.status === status;
+    const matchesSearch =
+      !search ||
+      s.name.toLowerCase().includes(search.toLowerCase()) ||
+      s.city.toLowerCase().includes(search.toLowerCase()) ||
+      s.authority.toLowerCase().includes(search.toLowerCase());
+
+    return matchesStatus && matchesSearch;
+  });
 
   return (
     <>
