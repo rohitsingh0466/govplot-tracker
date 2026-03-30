@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import BrandLoader from "./BrandLoader";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -51,10 +53,11 @@ export default function TelegramLinkModal({
 
     setLoading(true);
     setError("");
-    axios
-      .get<TelegramStatus>(`${API}/api/v1/telegram/status`, {
+    withMinimumLoader(
+      axios.get<TelegramStatus>(`${API}/api/v1/telegram/status`, {
         headers: { Authorization: `Bearer ${token}` },
       })
+    )
       .then((response) => setStatus(response.data))
       .catch((err) => setError(err?.response?.data?.detail || "Could not load Telegram status."))
       .finally(() => setLoading(false));
@@ -73,10 +76,12 @@ export default function TelegramLinkModal({
     setError("");
 
     try {
-      const response = await axios.post<TelegramLinkResponse>(
-        `${API}/api/v1/telegram/link`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await withMinimumLoader(
+        axios.post<TelegramLinkResponse>(
+          `${API}/api/v1/telegram/link`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
       );
 
       setStatus({
@@ -102,15 +107,19 @@ export default function TelegramLinkModal({
     setError("");
 
     try {
-      const statusResponse = await axios.get<TelegramStatus>(`${API}/api/v1/telegram/status`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const statusResponse = await withMinimumLoader(
+        axios.get<TelegramStatus>(`${API}/api/v1/telegram/status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
       setStatus(statusResponse.data);
 
       if (statusResponse.data.is_linked) {
-        const me = await axios.get<AuthUser>(`${API}/api/v1/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const me = await withMinimumLoader(
+          axios.get<AuthUser>(`${API}/api/v1/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        );
         window.localStorage.setItem("govplot_auth_user", JSON.stringify(me.data));
         window.dispatchEvent(new Event("govplot-auth-changed"));
         onLinked(me.data);
@@ -144,7 +153,8 @@ export default function TelegramLinkModal({
           </p>
         </div>
 
-        <div className="p-8">
+        <div className="relative p-8">
+          {loading && <BrandLoader overlay compact label="Working on Telegram setup..." />}
           {status?.is_linked ? (
             <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-6">
               <h3 className="text-2xl font-black text-slate-950">Telegram connected</h3>

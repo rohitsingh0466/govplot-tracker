@@ -9,7 +9,9 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AlertModal from "../../components/AlertModal";
 import AdSenseSlot from "../../components/AdSenseSlot";
+import BrandLoader from "../../components/BrandLoader";
 import { normalizeScheme } from "../../lib/schemeStatus";
+import { withMinimumLoader } from "../../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -42,10 +44,10 @@ export default function SchemesPage() {
   async function fetchAll() {
     setLoading(true);
     try {
-      const [sRes, stRes] = await Promise.all([
+      const [sRes, stRes] = await withMinimumLoader(Promise.all([
         axios.get(`${API}/api/v1/schemes/`, { params: { limit: 200, ...(city && { city }) } }),
         axios.get(`${API}/api/v1/schemes/stats`),
-      ]);
+      ]));
       setSchemes(sRes.data);
       setStats(stRes.data);
     } catch {
@@ -105,8 +107,11 @@ export default function SchemesPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(9)].map((_, i) => <div key={i} className="h-72 skeleton" />)}
+          <div className="space-y-6">
+            <BrandLoader compact label="Fetching scheme listings..." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[...Array(9)].map((_, i) => <div key={i} className="h-72 skeleton" />)}
+            </div>
           </div>
         ) : filtered.length === 0 ? (
           <div className="card py-20 text-center">

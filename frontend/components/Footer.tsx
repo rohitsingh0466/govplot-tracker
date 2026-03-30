@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[--ink-900] text-[--ink-300] mt-28">
-      <div className="page-container py-16">
+      <div className="page-container pt-[4.5rem] pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-[--ink-800] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-12 pt-7 border-t border-[--ink-800] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[12px] text-[--ink-600]">© 2026 GovPlot Tracker · Data from official government portals.</p>
           <div className="flex gap-4 text-[12px] text-[--ink-600]">
             <span>🇮🇳 Made in India</span>

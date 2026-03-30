@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../lib/AuthContext";
 import AuthModal from "./AuthModal";
+import BrandLoader from "./BrandLoader";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const CITIES = ["All Cities", "Lucknow", "Bangalore", "Noida", "Gurgaon", "Hyderabad", "Pune", "Mumbai", "Chandigarh", "Agra"];
@@ -41,17 +43,19 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
     setLoading(true);
     setError("");
     try {
-      await axios.post(
-        `${API}/api/v1/alerts/subscribe`,
-        {
-          city: city === "All Cities" ? null : city,
-          channel,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      await withMinimumLoader(
+        axios.post(
+          `${API}/api/v1/alerts/subscribe`,
+          {
+            city: city === "All Cities" ? null : city,
+            channel,
           },
-        }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
       );
       setDone(true);
     } catch (err: any) {
@@ -88,7 +92,8 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
             </p>
           </div>
 
-          <div className="p-6">
+          <div className="relative p-6">
+            {loading && <BrandLoader overlay compact label="Saving your alert..." />}
             {!user ? (
               <div className="text-center py-4">
                 <div className="text-5xl mb-4">🔐</div>

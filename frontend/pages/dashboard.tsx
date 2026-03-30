@@ -7,6 +7,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TelegramLinkModal from "../components/TelegramLinkModal";
 import ProfileEditModal from "../components/ProfileEditModal";
+import BrandLoader from "../components/BrandLoader";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -53,9 +55,11 @@ export default function DashboardPage() {
 
   async function loadAlerts(token: string) {
     try {
-      const { data } = await axios.get<AlertItem[]>(`${API}/api/v1/alerts/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await withMinimumLoader(
+        axios.get<AlertItem[]>(`${API}/api/v1/alerts/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
       setAlerts(data);
     } catch {
       setAlerts([]);
@@ -68,22 +72,21 @@ export default function DashboardPage() {
     const token = localStorage.getItem("govplot_auth_token");
     if (!token) return;
     try {
-      await axios.delete(`${API}/api/v1/alerts/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      setLoading(true);
+      await withMinimumLoader(
+        axios.delete(`${API}/api/v1/alerts/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
       setAlerts(prev => prev.filter(a => a.id !== id));
-    } catch {}
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-[--teal-500] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-[--ink-500]">Loading dashboard…</p>
-        </div>
-      </div>
-    );
+    return <BrandLoader fullScreen label="Loading your dashboard..." />;
   }
 
   const displayName = user.first_name || user.name?.split(" ")[0] || user.email;
@@ -114,34 +117,34 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="flex flex-col gap-5">
               <div className="card p-6">
-                <div className="flex items-start justify-between gap-4 mb-5">
+                <div className="flex items-start gap-4 mb-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[--teal-500] to-[--teal-700] flex items-center justify-center text-white text-2xl font-[Outfit] font-800 shadow-[--shadow-teal]">
                       {displayName[0]?.toUpperCase()}
                     </div>
                     <div>
                       <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900]">{fullName}</h2>
-                      <p className="text-[12.5px] text-[--ink-500]">{user.email}</p>
+                      <p className="text-[12.5px] text-[--ink-500] mt-1">{user.email}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setProfileOpen(true)}
-                    className="btn-ghost text-[12px] py-2 px-3 border border-[--ink-200]"
-                  >
-                    Edit
-                  </button>
                 </div>
 
-                <div className="flex items-center justify-between py-3 border-t border-[--ink-100]">
+                <div className="flex items-center justify-between py-3.5 border-t border-[--ink-100]">
                   <span className="text-[12.5px] text-[--ink-600]">Plan</span>
                   <span className={`text-[11.5px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${TIER_COLORS[tier] || TIER_COLORS.free}`}>
                     {tier}
                   </span>
                 </div>
-                <div className="flex items-center justify-between py-3 border-t border-[--ink-100]">
+                <div className="flex items-center justify-between py-3.5 border-t border-[--ink-100]">
                   <span className="text-[12.5px] text-[--ink-600]">Mobile</span>
                   <span className="text-[12.5px] font-medium text-[--ink-800]">{user.phone || "—"}</span>
                 </div>
+                <button
+                  onClick={() => setProfileOpen(true)}
+                  className="btn-ghost w-full justify-center text-[12px] py-2.5 mt-4 border border-[--ink-200]"
+                >
+                  Edit Profile
+                </button>
                 {tier === "free" && (
                   <Link href="/pricing" className="btn-saffron w-full justify-center text-[13px] py-2.5 mt-4">
                     Upgrade to Pro
@@ -204,7 +207,7 @@ export default function DashboardPage() {
 
             <div className="lg:col-span-2 flex flex-col gap-5">
               <div className="card p-6">
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-[18px] font-[Outfit] font-700 text-[--ink-900]">My Alert Subscriptions</h2>
                   <span className="text-[11px] font-bold uppercase tracking-wider bg-[--ink-50] border border-[--ink-100] text-[--ink-500] px-3 py-1 rounded-full">
                     {alerts.length} active
@@ -255,7 +258,7 @@ export default function DashboardPage() {
                     <div className="flex justify-between p-4 bg-[--teal-100]/40 rounded-2xl border border-[--teal-200]/50">
                       <div>
                         <p className="text-[13.5px] font-semibold text-[--ink-900]">{tier === "premium" ? "Premium Plan" : "Pro Monthly"}</p>
-                        <p className="text-[12px] text-[--ink-500]">Status: {user.subscription_status || "active"}</p>
+                        <p className="text-[12px] text-[--ink-500] mt-2">Status: {user.subscription_status || "active"}</p>
                       </div>
                       <span className={`font-bold text-[12px] px-3 py-1 rounded-full h-fit ${TIER_COLORS[tier]}`}>
                         {tier.toUpperCase()}

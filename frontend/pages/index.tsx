@@ -10,7 +10,9 @@ import AlertModal from "../components/AlertModal";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AdSenseSlot from "../components/AdSenseSlot";
+import BrandLoader from "../components/BrandLoader";
 import { normalizeScheme } from "../lib/schemeStatus";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -48,7 +50,7 @@ export default function Home() {
     try {
       const params: any = { limit: 100 };
       if (city) params.city = city;
-      const { data } = await axios.get(`${API}/api/v1/schemes/`, { params });
+      const { data } = await withMinimumLoader(axios.get(`${API}/api/v1/schemes/`, { params }));
       setSchemes(data.length ? data : MOCK_SCHEMES);
     } catch {
       setSchemes(MOCK_SCHEMES);
@@ -185,10 +187,13 @@ export default function Home() {
         <FilterBar city={city} setCity={setCity} status={status} setStatus={setStatus} search={search} setSearch={setSearch} />
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-72 skeleton" />
-            ))}
+          <div className="space-y-6">
+            <BrandLoader compact label="Loading the latest schemes..." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-72 skeleton" />
+              ))}
+            </div>
           </div>
         ) : filtered.length === 0 ? (
           <div className="card py-20 text-center">

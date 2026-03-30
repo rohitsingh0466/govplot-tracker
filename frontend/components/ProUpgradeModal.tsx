@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 import axios from "axios";
+import BrandLoader from "./BrandLoader";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -71,14 +73,16 @@ export default function ProUpgradeModal({
     setError("");
 
     try {
-      const { data } = await axios.post<SubscriptionStartResponse>(
-        `${API}/api/v1/billing/subscription/start`,
-        { plan_code: "pro_monthly" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const { data } = await withMinimumLoader(
+        axios.post<SubscriptionStartResponse>(
+          `${API}/api/v1/billing/subscription/start`,
+          { plan_code: "pro_monthly" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
       );
 
       const razorpay = new window.Razorpay({
@@ -91,21 +95,25 @@ export default function ProUpgradeModal({
           razorpay_subscription_id: string;
           razorpay_signature: string;
         }) => {
-          await axios.post(
-            `${API}/api/v1/billing/subscription/verify`,
-            response,
-            {
+          await withMinimumLoader(
+            axios.post(
+              `${API}/api/v1/billing/subscription/verify`,
+              response,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          );
+
+          const me = await withMinimumLoader(
+            axios.get<AuthUser>(`${API}/api/v1/auth/me`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            })
           );
-
-          const me = await axios.get<AuthUser>(`${API}/api/v1/auth/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
 
           window.localStorage.setItem("govplot_auth_user", JSON.stringify(me.data));
           window.dispatchEvent(new Event("govplot-auth-changed"));
@@ -160,7 +168,8 @@ export default function ProUpgradeModal({
             </p>
           </div>
 
-          <div className="p-8">
+          <div className="relative p-8">
+            {loading && <BrandLoader overlay compact label="Preparing your upgrade..." />}
             <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Plan</p>
               <div className="mt-3 flex items-end justify-between gap-4">

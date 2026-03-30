@@ -255,6 +255,29 @@ h1, h2, h3, h4, h5, h6 {
   );
 }
 
+.brand-loader-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border-style: solid;
+  animation: orbitPulse 1.9s ease-in-out infinite;
+}
+
+.brand-loader-ring-one {
+  inset: -10px;
+  border-width: 2px;
+  border-color: rgba(15, 158, 135, 0.28);
+  border-top-color: rgba(15, 158, 135, 0.9);
+}
+
+.brand-loader-ring-two {
+  inset: -18px;
+  border-width: 1px;
+  border-color: rgba(232, 116, 34, 0.18);
+  border-bottom-color: rgba(232, 116, 34, 0.82);
+  animation-duration: 2.4s;
+  animation-direction: reverse;
+}
+
 /* ─── Animations ────────────────────────────────────────────────── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(14px); }
@@ -275,6 +298,11 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes orbitPulse {
+  0%   { transform: rotate(0deg) scale(0.98); opacity: 0.65; }
+  50%  { transform: rotate(180deg) scale(1.02); opacity: 1; }
+  100% { transform: rotate(360deg) scale(0.98); opacity: 0.65; }
 }
 
 .animate-fade-in-up {

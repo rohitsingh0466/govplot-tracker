@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BrandLoader from "./BrandLoader";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -48,7 +49,8 @@ export default function AuthModal({
           </p>
         </div>
 
-        <div className="p-6">
+        <div className="relative p-6">
+          {loading && <BrandLoader overlay compact label="Redirecting to Google..." />}
           <div className="rounded-2xl border border-[--ink-100] bg-[--ink-50] p-4 text-[13px] leading-relaxed text-[--ink-600]">
             Email and password sign in has been removed. Google sign in is now the only account access method.
           </div>

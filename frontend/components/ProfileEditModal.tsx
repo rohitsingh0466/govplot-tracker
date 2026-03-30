@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import BrandLoader from "./BrandLoader";
+import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -59,14 +61,16 @@ export default function ProfileEditModal({
     setError("");
 
     try {
-      const { data } = await axios.patch<AuthUser>(
-        `${API}/api/v1/auth/profile`,
-        { phone: normalized || null },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const { data } = await withMinimumLoader(
+        axios.patch<AuthUser>(
+          `${API}/api/v1/auth/profile`,
+          { phone: normalized || null },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
       );
       window.localStorage.setItem("govplot_auth_user", JSON.stringify(data));
       window.dispatchEvent(new Event("govplot-auth-changed"));
@@ -100,7 +104,8 @@ export default function ProfileEditModal({
           <p className="text-[13px] text-[--teal-300]">You can update your mobile number here for future alert channels.</p>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="relative p-6 space-y-4">
+          {loading && <BrandLoader overlay compact label="Saving your profile..." />}
           <div>
             <label className="block text-[11.5px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">First Name</label>
             <input className="input-field bg-[--ink-50] text-[--ink-500] cursor-not-allowed" value={user.first_name || fullName.split(" ")[0] || ""} readOnly />
