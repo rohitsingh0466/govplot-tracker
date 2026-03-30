@@ -33,7 +33,7 @@ export default function BlogPage() {
         <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] text-white px-4 py-12 sm:py-16">
           <div className="max-w-3xl mx-auto">
             <Link href="/" className="inline-flex items-center gap-2 text-[--teal-400] text-[13px] font-semibold mb-6 hover:text-[--teal-300] transition">
-              ← govplottracker.com
+              ← Back to home
             </Link>
             <span className="section-label text-[--teal-400]">Knowledge Base</span>
             <h1 className="text-[36px] sm:text-[48px] font-[Outfit] font-900 text-white mt-2 mb-4">

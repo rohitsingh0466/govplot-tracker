@@ -75,13 +75,6 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 p-4 bg-[--ink-800] rounded-xl border border-[--ink-700]">
-              <p className="text-[12px] font-semibold text-white mb-2">📬 Weekly digest</p>
-              <p className="text-[11.5px] text-[--ink-400] mb-3">New schemes every Sunday morning.</p>
-              <Link href="/auth" className="btn-primary text-[12px] py-2 px-4 w-full justify-center">
-                Subscribe free
-              </Link>
-            </div>
           </div>
         </div>
 

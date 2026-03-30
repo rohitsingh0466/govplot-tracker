@@ -23,7 +23,7 @@ type AuthResponse = {
   user: AuthUser;
 };
 
-type AuthMode = "login" | "register" | "otp";
+type AuthMode = "login" | "register";
 
 export default function AuthModal({
   open,
@@ -40,8 +40,6 @@ export default function AuthModal({
   const [phone, setPhone]         = useState("");
   const [password, setPassword]   = useState("");
   const [showPass, setShowPass]   = useState(false);
-  const [otp, setOtp]             = useState("");
-  const [otpSent, setOtpSent]     = useState(false);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState("");
 
@@ -49,8 +47,6 @@ export default function AuthModal({
     if (!open) {
       setMode("login");
       setError("");
-      setOtpSent(false);
-      setOtp("");
     }
   }, [open]);
 
@@ -86,50 +82,6 @@ export default function AuthModal({
     }
   }
 
-  async function handleSendOTP() {
-    if (!phone || phone.length < 10) {
-      setError("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-    if (mode === "otp" && !firstName) {
-      setError("Please enter your first name.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      await axios.post(`${API}/api/v1/auth/send-otp`, { phone: `+91${phone}` });
-      setOtpSent(true);
-    } catch (err: any) {
-      // In demo mode fall through
-      setOtpSent(true);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleVerifyOTP() {
-    if (!otp || otp.length < 4) {
-      setError("Please enter the OTP.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const { data } = await axios.post<AuthResponse>(`${API}/api/v1/auth/verify-otp`, {
-        phone: `+91${phone}`,
-        otp,
-        first_name: firstName,
-        last_name: lastName,
-      });
-      storeAuth(data);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Invalid OTP. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   function handleGoogleLogin() {
     window.location.href = `${API}/api/v1/auth/google`;
   }
@@ -137,7 +89,6 @@ export default function AuthModal({
   const TABS = [
     { id: "login" as AuthMode,    label: "Sign In" },
     { id: "register" as AuthMode, label: "Email" },
-    { id: "otp" as AuthMode,      label: "Mobile OTP" },
   ];
 
   return (
@@ -154,7 +105,7 @@ export default function AuthModal({
           </button>
           <div className="text-2xl mb-2">🏠</div>
           <h2 className="text-[22px] font-[Outfit] font-800 text-white">
-            {mode === "login" ? "Welcome back" : mode === "register" ? "Create account" : "Sign in with OTP"}
+            {mode === "login" ? "Welcome back" : "Create account"}
           </h2>
           <p className="text-[13px] text-[--teal-300] mt-1">
             Track government plot schemes across India
@@ -167,7 +118,7 @@ export default function AuthModal({
             {TABS.map(({ id, label }) => (
               <button
                 key={id}
-                onClick={() => { setMode(id); setError(""); setOtpSent(false); }}
+                onClick={() => { setMode(id); setError(""); }}
                 className={`flex-1 py-2 rounded-lg text-[12.5px] font-semibold transition-all ${
                   mode === id
                     ? "bg-white text-[--teal-700] shadow-[--shadow-sm]"
@@ -270,58 +221,6 @@ export default function AuthModal({
             </div>
           )}
 
-          {/* OTP form */}
-          {mode === "otp" && (
-            <div className="space-y-3">
-              {!otpSent ? (
-                <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">First Name *</label>
-                      <input className="input-field" placeholder="Rahul" value={firstName} onChange={e => setFirstName(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Last Name</label>
-                      <input className="input-field" placeholder="Sharma" value={lastName} onChange={e => setLastName(e.target.value)} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Mobile Number *</label>
-                    <div className="flex gap-2">
-                      <div className="input-field w-14 text-center text-[13px] font-semibold flex-shrink-0 flex items-center justify-center" style={{ padding: "11px 8px" }}>
-                        +91
-                      </div>
-                      <input
-                        className="input-field flex-1"
-                        placeholder="98xxxxxxxx"
-                        maxLength={10}
-                        value={phone}
-                        onChange={e => setPhone(e.target.value.replace(/\D/g, ""))}
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <label className="block text-[11px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">Enter OTP</label>
-                  <input
-                    className="input-field text-center text-xl font-bold tracking-[0.5em]"
-                    placeholder="• • • •"
-                    maxLength={6}
-                    value={otp}
-                    onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-                  />
-                  <p className="text-[11px] text-[--ink-500] mt-2 text-center">
-                    OTP sent to +91 {phone}.{" "}
-                    <button onClick={() => setOtpSent(false)} className="text-[--teal-600] underline">
-                      Change number
-                    </button>
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Error */}
           {error && (
             <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl text-[12.5px] text-red-700">
@@ -331,21 +230,9 @@ export default function AuthModal({
 
           {/* Submit */}
           <div className="mt-5">
-            {mode === "otp" ? (
-              !otpSent ? (
-                <button onClick={handleSendOTP} disabled={loading} className="btn-primary w-full justify-center text-[14px] py-3" style={{ fontFamily: "var(--font-display)" }}>
-                  {loading ? "Sending…" : "Send OTP →"}
-                </button>
-              ) : (
-                <button onClick={handleVerifyOTP} disabled={loading} className="btn-primary w-full justify-center text-[14px] py-3" style={{ fontFamily: "var(--font-display)" }}>
-                  {loading ? "Verifying…" : "Verify OTP →"}
-                </button>
-              )
-            ) : (
-              <button onClick={handleEmailSubmit} disabled={loading} className="btn-primary w-full justify-center text-[14px] py-3" style={{ fontFamily: "var(--font-display)" }}>
-                {loading ? "Please wait…" : mode === "login" ? "Sign In →" : "Create Free Account →"}
-              </button>
-            )}
+            <button onClick={handleEmailSubmit} disabled={loading} className="btn-primary w-full justify-center text-[14px] py-3" style={{ fontFamily: "var(--font-display)" }}>
+              {loading ? "Please wait…" : mode === "login" ? "Sign In →" : "Create Free Account →"}
+            </button>
           </div>
 
           <p className="text-[11.5px] text-[--ink-400] text-center mt-4">

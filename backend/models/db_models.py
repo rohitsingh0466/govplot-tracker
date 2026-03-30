@@ -1,6 +1,6 @@
 """
 GovPlot Tracker — SQLAlchemy Models + Pydantic Schemas
-v1.2: Added first_name, last_name, google_id, phone_verified, otp fields
+v1.2: Added first_name, last_name, and google_id fields
 """
 
 from __future__ import annotations
@@ -44,15 +44,14 @@ class User(Base):
     __tablename__ = "users"
 
     id                       = Column(Integer, primary_key=True, autoincrement=True)
-    email                    = Column(String(256), unique=True, index=True, nullable=True)  # nullable for phone-only users
-    hashed_password          = Column(String(256), nullable=True)   # nullable for Google / OTP users
+    email                    = Column(String(256), unique=True, index=True, nullable=True)
+    hashed_password          = Column(String(256), nullable=True)   # nullable for Google sign-in users
 
     # v1.2 name fields
     first_name               = Column(String(64), nullable=True)
     last_name                = Column(String(64), nullable=True)
     name                     = Column(String(128), nullable=True)    # legacy / full name fallback
     phone                    = Column(String(20), nullable=True, unique=False, index=True)
-    phone_verified           = Column(Boolean, default=False)
 
     # Google OAuth
     google_id                = Column(String(128), nullable=True, unique=True, index=True)
@@ -71,10 +70,6 @@ class User(Base):
     subscription_expires_at  = Column(DateTime, nullable=True)
     razorpay_customer_id     = Column(String(128), nullable=True)
     razorpay_subscription_id = Column(String(128), nullable=True)
-
-    # OTP state
-    otp_code                 = Column(String(10), nullable=True)
-    otp_expires_at           = Column(DateTime, nullable=True)
 
     is_active                = Column(Boolean, default=True)
     last_login_at            = Column(DateTime, nullable=True)
@@ -180,15 +175,6 @@ class Token(BaseModel):
 
 class AuthResponse(Token):
     user: UserOut
-
-# OTP flows
-class SendOTPRequest(BaseModel):
-    phone: str                          # must be in E.164 format: +91XXXXXXXXXX
-
-class VerifyOTPRequest(BaseModel):
-    phone: str; otp: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
 
 # Subscription
 class SubscriptionStartRequest(BaseModel):

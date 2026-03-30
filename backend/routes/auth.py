@@ -1,15 +1,13 @@
 """
 GovPlot Tracker — Auth Routes v1.2
-Supports: Email/Password, Google OAuth, Mobile OTP
-New fields: first_name, last_name, phone_verified
+Supports: Email/Password and Google OAuth
+New fields: first_name, last_name
 """
 
 from __future__ import annotations
 
 import os
-import random
-import string
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib.parse import urlencode
 
 import httpx
@@ -26,12 +24,10 @@ from backend.auth_utils import (
 from backend.models.database import get_db
 from backend.models.db_models import (
     AuthResponse,
-    SendOTPRequest,
     User,
     UserCreate,
     UserLogin,
     UserOut,
-    VerifyOTPRequest,
 )
 
 router = APIRouter()
@@ -41,9 +37,6 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GOOGLE_REDIRECT_URI  = os.getenv("GOOGLE_REDIRECT_URI", "https://govplottracker-api.railway.app/api/v1/auth/google/callback")
 FRONTEND_URL         = os.getenv("FRONTEND_URL", "https://govplottracker.com")
 
-OTP_EXPIRE_MINUTES   = 10
-
-
 # ─── Helpers ────────────────────────────────────────────────────────────────
 
 def _build_auth_response(user: User) -> AuthResponse:
@@ -51,61 +44,6 @@ def _build_auth_response(user: User) -> AuthResponse:
     token, expires_at = create_access_token(user.email or str(user.id))
     expires_in = max(expires_at - int(datetime.now(timezone.utc).timestamp()), 0)
     return AuthResponse(access_token=token, expires_in=expires_in, user=user)
-
-
-def _generate_otp(length: int = 6) -> str:
-    return "".join(random.choices(string.digits, k=length))
-
-
-async def _send_sms_otp(phone: str, otp: str) -> bool:
-    """
-    Send OTP via SMS. Integrate your SMS provider here.
-    Supported: Twilio, MSG91, Fast2SMS, etc.
-    Returns True if sent successfully.
-    """
-    # --- MSG91 (popular in India) ---
-    api_key = os.getenv("MSG91_API_KEY")
-    sender  = os.getenv("MSG91_SENDER_ID", "GOVPLT")
-    if api_key:
-        try:
-            async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    "https://api.msg91.com/api/v5/otp",
-                    json={
-                        "mobile": phone.lstrip("+"),
-                        "otp": otp,
-                        "sender": sender,
-                        "template_id": os.getenv("MSG91_TEMPLATE_ID", ""),
-                        "authkey": api_key,
-                    },
-                )
-                return resp.status_code == 200
-        except Exception:
-            pass
-
-    # --- Twilio fallback ---
-    twilio_sid   = os.getenv("TWILIO_ACCOUNT_SID")
-    twilio_token = os.getenv("TWILIO_AUTH_TOKEN")
-    twilio_from  = os.getenv("TWILIO_PHONE_FROM")
-    if twilio_sid and twilio_token and twilio_from:
-        try:
-            async with httpx.AsyncClient(auth=(twilio_sid, twilio_token), timeout=10) as client:
-                await client.post(
-                    f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json",
-                    data={
-                        "From": twilio_from,
-                        "To": phone,
-                        "Body": f"Your GovPlot Tracker OTP is {otp}. Valid for {OTP_EXPIRE_MINUTES} minutes.",
-                    },
-                )
-                return True
-        except Exception:
-            pass
-
-    # Dev mode — just log
-    import logging
-    logging.getLogger(__name__).info(f"[DEV] OTP for {phone}: {otp}")
-    return True
 
 
 # ─── Email / Password ────────────────────────────────────────────────────────
@@ -262,75 +200,3 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
     from urllib.parse import quote
     redirect_url = f"{FRONTEND_URL}/auth?token={auth.access_token}&user={quote(user_json)}"
     return RedirectResponse(url=redirect_url)
-
-
-# ─── Mobile OTP ─────────────────────────────────────────────────────────────
-
-@router.post("/send-otp", status_code=200)
-async def send_otp(payload: SendOTPRequest, db: Session = Depends(get_db)):
-    """Generate and send OTP to mobile number."""
-    phone = payload.phone
-    if not phone.startswith("+"):
-        raise HTTPException(status_code=400, detail="Phone must be in E.164 format: +91XXXXXXXXXX")
-
-    otp         = _generate_otp()
-    otp_expires = datetime.utcnow() + timedelta(minutes=OTP_EXPIRE_MINUTES)
-
-    # Upsert OTP into user record (or a temp record keyed on phone)
-    user = db.query(User).filter(User.phone == phone).first()
-    if not user:
-        # Create a placeholder user for OTP verification
-        user = User(
-            phone=phone,
-            subscription_tier="free",
-            subscription_status="active",
-            otp_code=otp,
-            otp_expires_at=otp_expires,
-        )
-        db.add(user)
-    else:
-        user.otp_code      = otp
-        user.otp_expires_at = otp_expires
-
-    db.commit()
-
-    sent = await _send_sms_otp(phone, otp)
-    if not sent:
-        raise HTTPException(status_code=503, detail="Could not send OTP. Please try again.")
-
-    return {"message": f"OTP sent to {phone}", "expires_in": OTP_EXPIRE_MINUTES * 60}
-
-
-@router.post("/verify-otp", response_model=AuthResponse)
-def verify_otp(payload: VerifyOTPRequest, db: Session = Depends(get_db)):
-    """Verify OTP and return auth token. Creates/updates user account."""
-    phone = payload.phone
-    user  = db.query(User).filter(User.phone == phone).first()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="No OTP request found for this number")
-    if not user.otp_code or user.otp_code != payload.otp:
-        raise HTTPException(status_code=400, detail="Invalid OTP")
-    if not user.otp_expires_at or user.otp_expires_at < datetime.utcnow():
-        raise HTTPException(status_code=400, detail="OTP has expired. Please request a new one.")
-
-    # Mark phone verified, update name fields
-    user.phone_verified = True
-    user.otp_code       = None
-    user.otp_expires_at = None
-    user.last_login_at  = datetime.utcnow()
-
-    if payload.first_name and not user.first_name:
-        user.first_name = payload.first_name
-    if payload.last_name and not user.last_name:
-        user.last_name = payload.last_name
-    if (payload.first_name or payload.last_name) and not user.name:
-        user.name = f"{payload.first_name or ''} {payload.last_name or ''}".strip()
-
-    # Ensure user has a usable email or generate a placeholder
-    if not user.email:
-        user.email = f"phone_{phone.replace('+', '')}@govplot.user"
-
-    db.commit()
-    db.refresh(user)
-    return _build_auth_response(user)
