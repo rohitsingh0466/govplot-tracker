@@ -3,21 +3,22 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[--ink-900] text-[--ink-300] mt-28">
-      <div className="page-container pt-[4.5rem] pb-24">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.25fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)] lg:gap-24">
+      <div className="page-container pt-16 pb-24">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_minmax(200px,0.8fr)_minmax(200px,0.8fr)] lg:gap-20">
+
           {/* Brand */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5 mb-4">
+          <div>
+            <div className="flex items-center gap-2.5 mb-5">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[--teal-500] to-[--teal-700] flex items-center justify-center text-lg">🏠</div>
               <div>
                 <div className="text-white font-[Outfit] font-700 text-base">GovPlot Tracker</div>
                 <div className="text-[--ink-500] text-[10px] uppercase tracking-widest">India's #1 Plot Lottery Tracker</div>
               </div>
             </div>
-            <p className="text-[13px] leading-relaxed text-[--ink-400] max-w-[240px]">
+            <p className="text-[13px] leading-relaxed text-[--ink-400] max-w-[260px] mb-6">
               Real-time monitoring of government residential plot lottery schemes across India's top cities — weekly data pull, daily status refresh.
             </p>
-            <div className="mt-5 flex gap-3">
+            <div className="flex gap-3">
               <a href="https://t.me/govplottracker" target="_blank" rel="noopener noreferrer"
                 className="w-8 h-8 rounded-lg bg-[--ink-800] hover:bg-[--teal-800] flex items-center justify-center text-sm transition">✈️</a>
               <a href="https://twitter.com/govplottracker" target="_blank" rel="noopener noreferrer"
@@ -26,9 +27,9 @@ export default function Footer() {
           </div>
 
           {/* Quick links */}
-          <div className="pt-2 lg:pt-4">
+          <div className="pt-2 lg:pt-6">
             <h4 className="text-white font-[Outfit] font-600 text-sm mb-6 uppercase tracking-wider">Explore</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {[
                 { href: "/schemes",  label: "All Schemes" },
                 { href: "/cities",   label: "Top Cities" },
@@ -46,9 +47,9 @@ export default function Footer() {
           </div>
 
           {/* Legal & Contact */}
-          <div className="pt-2 lg:pt-4">
+          <div className="pt-2 lg:pt-6">
             <h4 className="text-white font-[Outfit] font-600 text-sm mb-6 uppercase tracking-wider">Support</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {[
                 { href: "/contact", label: "Contact Us" },
                 { href: "/privacy", label: "Privacy Policy" },
@@ -64,7 +65,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-7 border-t border-[--ink-800] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-14 pt-7 border-t border-[--ink-800] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[12px] text-[--ink-600]">
             © 2026 GovPlot Tracker · Lottery scheme data sourced from official government portals.
           </p>

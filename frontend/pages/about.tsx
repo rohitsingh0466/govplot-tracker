@@ -28,19 +28,39 @@ const DATA_SOURCES = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "01", icon: "🤖", title: "Automated Weekly Scraping",   desc: "GovPlot Tracker continuously monitors official housing authority portals and refreshes scheme availability on a scheduled basis, so newly announced opportunities surface quickly." },
-  { step: "02", icon: "✅", title: "Cross-Verification",          desc: "Each listing goes through an additional confidence check using trusted public signals, helping highlight schemes that appear timely, credible, and relevant before you act." },
-  { step: "03", icon: "📊", title: "Data Normalisation",          desc: "Information from different authorities is cleaned into one consistent format, making scheme names, status, pricing, dates, and plot details easy to compare at a glance." },
-  { step: "04", icon: "🔔", title: "Instant Notifications",       desc: "When a scheme opens, changes status, or moves closer to application deadlines, you can be notified promptly through the channels that work best for you." },
+  {
+    step: "01",
+    icon: "🤖",
+    title: "Automated Monitoring",
+    desc: "GovPlot Tracker continuously monitors official housing authority portals and refreshes scheme availability on a scheduled basis, so newly announced opportunities surface quickly — without you having to check dozens of government websites manually.",
+  },
+  {
+    step: "02",
+    icon: "✅",
+    title: "Independent Verification",
+    desc: "Each scheme listing goes through an additional confidence check using trusted public signals, helping surface schemes that are timely, credible, and relevant — so you spend your time on opportunities worth pursuing.",
+  },
+  {
+    step: "03",
+    icon: "📊",
+    title: "Unified Data Format",
+    desc: "Information from different authorities is cleaned and normalised into one consistent format, making scheme names, status, pricing, dates, and plot details easy to compare across cities and housing boards at a glance.",
+  },
+  {
+    step: "04",
+    icon: "🔔",
+    title: "Instant Notifications",
+    desc: "When a scheme opens, changes status, or moves closer to application deadlines, you are notified promptly through the channels that work best for you — Email, Telegram, or WhatsApp.",
+  },
 ];
 
 const WHY_USE = [
-  { icon: "🚀", title: "Weekly full pull + daily refresh", desc: "Complete data refresh every Sunday. Daily mode updates only active scheme statuses — 85% less scraping load." },
-  { icon: "🔔", title: "Multi-channel alerts",             desc: "Email, Telegram, and WhatsApp — choose what works for you." },
-  { icon: "🏙️", title: "100+ cities, 50+ authorities",    desc: "Every major housing authority in India, all in one dashboard." },
-  { icon: "🆓", title: "Free tier forever",                desc: "Track 2 cities and receive email alerts at no cost, ever." },
-  { icon: "🔒", title: "Official sources only",            desc: "We link directly to government portals. 5-year data filter — no stale schemes." },
-  { icon: "✅", title: "Verified schemes",                 desc: "Each scheme gets a 0–5 verification score based on news and property portals." },
+  { icon: "🚀", title: "Always fresh data",                desc: "Scheme statuses are refreshed regularly. Active and open schemes are prioritised so you always see what matters most right now." },
+  { icon: "🔔", title: "Multi-channel alerts",             desc: "Email, Telegram, and WhatsApp — choose what works for you. Never miss a lottery window again." },
+  { icon: "🏙️", title: "100+ cities, 50+ authorities",    desc: "Every major housing authority in India, all in one dashboard. No more switching between tabs." },
+  { icon: "🆓", title: "Free tier forever",                desc: "Track 2 cities and receive email alerts at no cost, ever. Upgrade only if you need more." },
+  { icon: "🔒", title: "Official sources only",            desc: "We link directly to government portals. Only recent, lottery-based residential plot schemes — no stale data." },
+  { icon: "✅", title: "Confidence-scored listings",       desc: "Each scheme is reviewed for reliability before appearing on your dashboard. Higher-confidence schemes are surfaced first." },
 ];
 
 export default function AboutPage() {
@@ -59,14 +79,13 @@ export default function AboutPage() {
     <>
       <Head>
         <title>About — GovPlot Tracker | India's Government Plot Scheme Monitor</title>
-        <meta name="description" content="GovPlot Tracker monitors government residential plot lottery schemes across 100+ major Indian cities with 58 scrapers. Learn how our automated system works." />
+        <meta name="description" content="GovPlot Tracker monitors government residential plot lottery schemes across 100+ major Indian cities. Learn how our automated system works." />
         <link rel="canonical" href="https://govplottracker.com/about" />
       </Head>
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
       <div className="page-container page-top-offset pb-20">
         <div className="max-w-3xl mb-16 animate-fade-in-up">
-          <span className="section-label">About Us</span>
           <h1 className="text-[40px] sm:text-[52px] font-[Outfit] font-900 text-[--ink-900] mt-2 mb-5" style={{ lineHeight: 1.1 }}>
             India's most complete{" "}
             <span className="bg-gradient-to-r from-[--teal-600] to-[--teal-400] bg-clip-text text-transparent">
@@ -91,7 +110,6 @@ export default function AboutPage() {
         </div>
 
         <div className="mb-12">
-          <span className="section-label">Process</span>
           <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-7">How it works</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {HOW_IT_WORKS.map(({ step, icon, title, desc }) => (
@@ -108,7 +126,6 @@ export default function AboutPage() {
         </div>
 
         <div className="mb-12">
-          <span className="section-label">Benefits</span>
           <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-7">Why use GovPlot Tracker?</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {WHY_USE.map(({ icon, title, desc }) => (
@@ -124,7 +141,6 @@ export default function AboutPage() {
         </div>
 
         <div className="mb-14">
-          <span className="section-label">Data Sources</span>
           <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-3">50+ official government portals</h2>
           <p className="text-[14px] text-[--ink-600] mb-6 max-w-2xl">
             All data is sourced directly from official authority websites across 23 Indian states and UTs. We don't alter, editorialize, or filter any information.

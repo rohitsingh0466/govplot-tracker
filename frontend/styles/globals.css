@@ -86,25 +86,45 @@ body {
   min-height: 100vh;
 }
 
+/* ─── Uniform Font Application ──────────────────────────────────── */
+/* All headings use Outfit by default */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.025em;
   line-height: 1.15;
 }
 
-[class*="font-\\[Outfit\\]"] {
+/* Body text, inputs, buttons use DM Sans */
+p, span, li, a, label, input, select, textarea, button {
+  font-family: var(--font-body);
+}
+
+/* Explicit Outfit overrides for display elements */
+.font-display,
+[class*="font-\\[Outfit\\]"],
+.font-outfit {
   font-family: var(--font-display) !important;
 }
 
-[class*="font-\\[DM Sans\\]"] {
-  font-family: var(--font-body) !important;
+/* Ensure navbar, card titles, badge labels use Outfit */
+nav .font-semibold,
+nav .font-bold {
+  font-family: var(--font-display);
+}
+
+/* Buttons that use display font */
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-saffron {
+  font-family: var(--font-display);
 }
 
 /* ─── Status Badges ─────────────────────────────────────────────── */
-.badge-OPEN     { background: var(--green-100); color: #15803d; border: 1px solid #bbf7d0; }
-.badge-ACTIVE   { background: var(--sky-100);   color: #0369a1; border: 1px solid #bae6fd; }
-.badge-UPCOMING { background: var(--amber-100); color: #b45309; border: 1px solid #fde68a; }
-.badge-CLOSED   { background: var(--slate-100); color: #64748b; border: 1px solid #e2e8f0; }
+.badge-OPEN     { background: var(--green-100); color: #15803d; border: 1px solid #bbf7d0; font-family: var(--font-display); }
+.badge-ACTIVE   { background: var(--sky-100);   color: #0369a1; border: 1px solid #bae6fd; font-family: var(--font-display); }
+.badge-UPCOMING { background: var(--amber-100); color: #b45309; border: 1px solid #fde68a; font-family: var(--font-display); }
+.badge-CLOSED   { background: var(--slate-100); color: #64748b; border: 1px solid #e2e8f0; font-family: var(--font-display); }
 
 /* ─── Reusable Components ───────────────────────────────────────── */
 .card {
@@ -228,6 +248,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .input-field::placeholder { color: var(--ink-400); }
 
+/* ─── Section Label ─────────────────────────────────────────────── */
+/* Hidden by default (used only as structural hook in some places) */
 .section-label {
   display: none;
 }
@@ -347,21 +369,24 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0 20px;
 }
 
+/* ─── Consistent page-top-offset across ALL pages ───────────────── */
+/* This ensures every page with page-top-offset has proper breathing room */
 .page-top-offset {
-  padding-top: 3.5rem;
+  padding-top: 4rem;
 }
 
 @media (min-width: 640px) {
   .page-top-offset {
-    padding-top: 4.25rem;
+    padding-top: 5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-top-offset {
-    padding-top: 4.75rem;
+    padding-top: 5.5rem;
   }
 }
+
 @media (min-width: 640px) {
   .page-container { padding: 0 32px; }
 }
