@@ -11,11 +11,11 @@ export default function Footer() {
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[--teal-500] to-[--teal-700] flex items-center justify-center text-lg">🏠</div>
               <div>
                 <div className="text-white font-[Outfit] font-700 text-base">GovPlot Tracker</div>
-                <div className="text-[--ink-500] text-[10px] uppercase tracking-widest">India's #1 Plot Tracker</div>
+                <div className="text-[--ink-500] text-[10px] uppercase tracking-widest">India's #1 Plot Lottery Tracker</div>
               </div>
             </div>
-            <p className="text-[13px] leading-relaxed text-[--ink-400] max-w-[220px]">
-              Real-time monitoring of government residential plot schemes across 9 major Indian cities.
+            <p className="text-[13px] leading-relaxed text-[--ink-400] max-w-[240px]">
+              Real-time monitoring of government residential plot lottery schemes across India's top cities — weekly data pull, daily status refresh.
             </p>
             <div className="mt-5 flex gap-3">
               <a href="https://t.me/govplottracker" target="_blank" rel="noopener noreferrer"
@@ -31,7 +31,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { href: "/schemes",  label: "All Schemes" },
-                { href: "/cities",   label: "Cities" },
+                { href: "/cities",   label: "Top Cities" },
                 { href: "/pricing",  label: "Pricing" },
                 { href: "/blog",     label: "Blog" },
                 { href: "/about",    label: "About" },
@@ -65,7 +65,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-7 border-t border-[--ink-800] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[12px] text-[--ink-600]">© 2026 GovPlot Tracker · Data from official government portals.</p>
+          <p className="text-[12px] text-[--ink-600]">
+            © 2026 GovPlot Tracker · Lottery scheme data sourced from official government portals.
+          </p>
           <div className="flex gap-4 text-[12px] text-[--ink-600]">
             <span>🇮🇳 Made in India</span>
             <Link href="/sitemap.xml" className="hover:text-[--ink-400]">Sitemap</Link>

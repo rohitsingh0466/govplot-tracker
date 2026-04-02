@@ -17,12 +17,15 @@ import { withMinimumLoader } from "../lib/uiLoading";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const MOCK_SCHEMES = [
-  { scheme_id: "LDA-abc1",   name: "LDA Gomti Nagar Extension Plot Scheme 2025",       city: "Lucknow",   authority: "LDA",   status: "UPCOMING", price_min: 35, price_max: 120, total_plots: 800,  apply_url: "https://lda.up.nic.in",     open_date: "2025-04-01" },
-  { scheme_id: "BDA-abc1",   name: "BDA Arkavathy Layout 2E Residential Sites",        city: "Bangalore", authority: "BDA",   status: "ACTIVE",   price_min: 45, price_max: 300, total_plots: 6588, apply_url: "https://bdabangalore.org",  close_date: "2025-03-31", area_sqft_min: 600, area_sqft_max: 4800 },
-  { scheme_id: "GNIDA-abc1", name: "Greater Noida Residential Plot Scheme 2025",       city: "Noida",     authority: "GNIDA", status: "OPEN",     price_min: 30, price_max: 150, total_plots: 1100, apply_url: "https://greaternoida.in",   close_date: "2025-03-15" },
-  { scheme_id: "YEIDA-abc1", name: "YEIDA Plot Scheme Sector 18 Expressway",           city: "Noida",     authority: "YEIDA", status: "UPCOMING", price_min: 15, price_max: 80,  total_plots: 2000, apply_url: "https://yamunaexpresswayauthority.com", open_date: "2025-06-01" },
-  { scheme_id: "MHADA-abc1", name: "MHADA Mumbai Board Lottery 2025 — Konkan Region", city: "Mumbai",    authority: "MHADA", status: "OPEN",     price_min: 40, price_max: 800, total_plots: 4000, apply_url: "https://mhada.gov.in",      close_date: "2025-03-10" },
-  { scheme_id: "HSVP-abc1",  name: "HSVP Affordable Residential Plot Scheme Pataudi", city: "Gurgaon",   authority: "HSVP",  status: "ACTIVE",   price_min: 25, price_max: 90,  total_plots: 850,  apply_url: "https://hsvphry.gov.in",    close_date: "2025-10-14", area_sqft_min: 900, area_sqft_max: 2700 },
+  { scheme_id: "DDA-abc1",   name: "DDA Awasiya Yojana Lottery 2025 — Dwarka Extension",     city: "Delhi",      authority: "DDA",   status: "UPCOMING", price_min: 40,  price_max: 600, total_plots: 8000, apply_url: "https://dda.gov.in",              open_date: "2025-09-01" },
+  { scheme_id: "LDA-abc1",   name: "LDA Gomti Nagar Extension Residential Plot Scheme 2024", city: "Lucknow",    authority: "LDA",   status: "ACTIVE",   price_min: 35,  price_max: 120, total_plots: 800,  apply_url: "https://lda.up.nic.in",            close_date: "2025-06-30" },
+  { scheme_id: "BDA-abc1",   name: "BDA Arkavathy Layout 2E Residential Sites Lottery",      city: "Bangalore",  authority: "BDA",   status: "ACTIVE",   price_min: 45,  price_max: 300, total_plots: 6588, apply_url: "https://bdabangalore.org",         close_date: "2025-03-31", area_sqft_min: 600, area_sqft_max: 4800 },
+  { scheme_id: "GNIDA-abc1", name: "Greater Noida Residential Plot Lottery Scheme 2025",     city: "Noida",      authority: "GNIDA", status: "OPEN",     price_min: 30,  price_max: 150, total_plots: 1100, apply_url: "https://greaternoida.in",          close_date: "2025-03-15" },
+  { scheme_id: "JDA-abc1",   name: "JDA Jagatpura Residential Plot Lottery Scheme 2025",     city: "Jaipur",     authority: "JDA",   status: "OPEN",     price_min: 22,  price_max: 110, total_plots: 1200, apply_url: "https://jda.gov.in",               close_date: "2025-04-30", area_sqft_min: 900, area_sqft_max: 5400 },
+  { scheme_id: "MHADA-abc1", name: "MHADA Mumbai Board Housing Lottery 2025 — Konkan",      city: "Mumbai",     authority: "MHADA", status: "OPEN",     price_min: 40,  price_max: 800, total_plots: 4000, apply_url: "https://mhada.gov.in",             close_date: "2025-03-10" },
+  { scheme_id: "HSVP-abc1",  name: "HSVP Affordable Residential Plot Lottery Pataudi Road", city: "Gurgaon",    authority: "HSVP",  status: "ACTIVE",   price_min: 25,  price_max: 90,  total_plots: 850,  apply_url: "https://hsvphry.gov.in",           close_date: "2025-10-14", area_sqft_min: 900, area_sqft_max: 2700 },
+  { scheme_id: "IDA-abc1",   name: "IDA Super Corridor Residential Plot Lottery 2025",       city: "Indore",     authority: "IDA",   status: "OPEN",     price_min: 20,  price_max: 95,  total_plots: 1400, apply_url: "https://ida.mp.gov.in",            close_date: "2025-05-31", area_sqft_min: 900, area_sqft_max: 5400 },
+  { scheme_id: "HMDA-abc1",  name: "HMDA ORR Corridor Plot Lottery Scheme Phase 3 2024",    city: "Hyderabad",  authority: "HMDA",  status: "ACTIVE",   price_min: 20,  price_max: 95,  total_plots: 3200, apply_url: "https://hmda.gov.in",              close_date: "2025-06-30" },
 ];
 
 export default function Home() {
@@ -64,31 +67,28 @@ export default function Home() {
       const { data } = await axios.get(`${API}/api/v1/schemes/stats`);
       setStats(data);
     } catch {
-      setStats({ total_schemes: 24, open: 6, active: 8, upcoming: 5, closed: 5, cities_tracked: 9 });
+      setStats({ total_schemes: 80, open: 18, active: 28, upcoming: 20, closed: 14, cities_tracked: 26 });
     }
   }
 
   const normalizedSchemes = schemes.map(normalizeScheme);
-
   const filtered = normalizedSchemes.filter((s) => {
     const matchesStatus = !status || s.status === status;
-    const matchesSearch =
-      !search ||
+    const matchesSearch = !search ||
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.city.toLowerCase().includes(search.toLowerCase()) ||
       s.authority.toLowerCase().includes(search.toLowerCase());
-
     return matchesStatus && matchesSearch;
   });
 
   return (
     <>
       <Head>
-        <title>GovPlot Tracker — Government Plot Schemes India</title>
-        <meta name="description" content="Track government residential plot schemes across Lucknow, Bangalore, Noida, Gurgaon, Hyderabad, Pune, Mumbai and more with real-time alerts." />
-        <meta name="keywords" content="government plot scheme India, LDA plot scheme, BDA residential plots, government land scheme alerts" />
+        <title>GovPlot Tracker — Government Plot Lottery Schemes Across India</title>
+        <meta name="description" content="Track government residential plot lottery schemes across India's top cities — Delhi, Mumbai, Bangalore, Hyderabad, Jaipur, Noida, Pune and 20+ more. Real-time alerts via Email, Telegram & WhatsApp." />
+        <meta name="keywords" content="government plot scheme India, DDA lottery 2025, LDA plot scheme, BDA residential plots, MHADA lottery, government land scheme alerts, plot lottery India" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta property="og:title" content="GovPlot Tracker — Government Plot Schemes India" />
+        <meta property="og:title" content="GovPlot Tracker — Government Plot Lottery Schemes Across India" />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://govplottracker.com" />
         <link rel="icon" href="/favicon.ico" />
@@ -107,13 +107,13 @@ export default function Home() {
           <h1 className="text-[38px] sm:text-[52px] lg:text-[60px] font-[Outfit] font-900 text-[--ink-900] mb-5" style={{ lineHeight: "1.08" }}>
             Never miss a{" "}
             <span className="bg-gradient-to-r from-[--teal-600] to-[--teal-400] bg-clip-text text-transparent">
-              Government Plot
+              Government Plot Lottery
             </span>{" "}
-            Scheme Again
+            across India
           </h1>
           <p className="text-[17px] sm:text-[19px] text-[--ink-600] leading-relaxed mb-8 max-w-2xl">
-            Real-time monitoring of LDA, BDA, GNIDA, HSVP, HMDA &amp; 6 more authorities.
-            Get instant alerts the moment applications open — free.
+            Real-time monitoring of DDA, LDA, BDA, MHADA, GNIDA, JDA, HMDA and 20+ housing authorities.
+            Get instant alerts the moment a lottery scheme opens — free.
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             <button onClick={() => setAlertOpen(true)} className="btn-primary text-[15px] py-3.5 px-7">
@@ -130,7 +130,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex flex-wrap gap-3">
-            {["✅ Free forever", "🏙️ 9 cities", "⚡ Real-time alerts", "🔐 No spam, ever"].map(t => (
+            {["✅ Free forever", "🏙️ 25+ cities", "⚡ Weekly full data pull", "🎯 Lottery schemes only", "🔐 No spam, ever"].map(t => (
               <span key={t} className="text-[12.5px] font-semibold text-[--ink-500] bg-[--ink-50] border border-[--ink-100] px-3 py-1.5 rounded-full">
                 {t}
               </span>
@@ -149,13 +149,18 @@ export default function Home() {
         <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] rounded-3xl p-8 sm:p-12">
           <div className="text-center mb-10">
             <span className="section-label text-[--teal-400]">How it works</span>
-            <h2 className="text-[28px] font-[Outfit] font-800 text-white mt-2">Three steps to never miss a scheme</h2>
+            <h2 className="text-[28px] font-[Outfit] font-800 text-white mt-2">
+              Three steps to never miss a lottery scheme
+            </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: "01", icon: "🤖", title: "We scrape", desc: "Our bots scan LDA, BDA, GNIDA, HMDA and 6 other authorities every 6 hours." },
-              { step: "02", icon: "📊", title: "We normalise", desc: "Scheme data is parsed, enriched with dates, prices, and plot counts." },
-              { step: "03", icon: "🔔", title: "We alert you", desc: "The moment a scheme changes status, you get an Email, Telegram, or WhatsApp notification." },
+              { step: "01", icon: "🤖", title: "We scrape weekly",
+                desc: "Our system scans DDA, LDA, BDA, MHADA, JDA and 20+ other authorities every week for new lottery schemes — and refreshes Open/Active status daily." },
+              { step: "02", icon: "✅", title: "We verify sources",
+                desc: "Schemes are cross-checked against AajTak, 99acres, MagicBricks, NoBroker and Housing.com. Only schemes from the last 5 years are tracked." },
+              { step: "03", icon: "🔔", title: "We alert you instantly",
+                desc: "The moment a scheme changes status — OPEN, UPCOMING, CLOSED — you get an Email, Telegram, or WhatsApp notification." },
             ].map(({ step, icon, title, desc }) => (
               <div key={step} className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[--teal-700]/40 border border-[--teal-600]/30 flex items-center justify-center font-[Outfit] font-800 text-[--teal-400] text-[13px]">
@@ -188,11 +193,9 @@ export default function Home() {
 
         {loading ? (
           <div className="space-y-6">
-            <BrandLoader compact label="Loading the latest schemes..." />
+            <BrandLoader compact label="Loading the latest lottery schemes..." />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-72 skeleton" />
-              ))}
+              {[...Array(6)].map((_, i) => <div key={i} className="h-72 skeleton" />)}
             </div>
           </div>
         ) : filtered.length === 0 ? (
@@ -206,12 +209,9 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.slice(0, 6).map(s => <SchemeCard key={s.scheme_id} scheme={s} />)}
             </div>
-
-            {/* Mid-page ad */}
             <div className="my-8">
               <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_MID} format="horizontal" label="Mid-page — Schemes List" />
             </div>
-
             {filtered.length > 6 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filtered.slice(6).map(s => <SchemeCard key={s.scheme_id} scheme={s} />)}
@@ -226,10 +226,10 @@ export default function Home() {
         <div className="card p-8 sm:p-12 text-center bg-gradient-to-br from-[--saffron-100] to-white border-[--saffron-200]">
           <span className="section-label text-[--saffron-600]">Upgrade to Pro</span>
           <h2 className="text-[28px] font-[Outfit] font-800 text-[--ink-900] mt-2 mb-3">
-            Unlock WhatsApp alerts &amp; unlimited tracking
+            Unlock WhatsApp alerts &amp; unlimited city tracking
           </h2>
           <p className="text-[15px] text-[--ink-600] mb-7 max-w-lg mx-auto">
-            Free plan covers 2 cities. Pro unlocks all 9 cities, WhatsApp delivery, PDF downloads, and priority notifications.
+            Free plan covers 2 cities. Pro unlocks all 25+ cities, WhatsApp delivery, PDF scheme reports, and priority notifications for lottery openings.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/pricing" className="btn-saffron text-[15px] py-3 px-8">
