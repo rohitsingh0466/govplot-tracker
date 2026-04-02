@@ -91,7 +91,7 @@ export default function PricingPage() {
       </Head>
       <Navbar />
 
-      <div className="page-container pt-12 pb-20">
+      <div className="page-container page-top-offset pb-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="section-label">Pricing</span>
           <h1 className="text-[38px] sm:text-[48px] font-[Outfit] font-900 text-[--ink-900] mt-2 mb-4">

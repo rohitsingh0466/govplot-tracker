@@ -65,7 +65,7 @@ export default function CitiesPage() {
       </Head>
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <div className="page-container pt-10 pb-16">
+      <div className="page-container page-top-offset pb-16">
         {/* Header */}
         <div className="mb-10">
           <span className="section-label">Coverage</span>

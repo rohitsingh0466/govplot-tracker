@@ -106,7 +106,7 @@ export default function DashboardPage() {
       </Head>
       <Navbar />
 
-      <div className="page-container pt-10 pb-24">
+      <div className="page-container page-top-offset pb-24">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-[32px] font-[Outfit] font-900 text-[--ink-900]">

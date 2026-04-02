@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-[--ink-900] text-[--ink-300] mt-28">
       <div className="page-container pt-[4.5rem] pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.25fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)] lg:gap-24">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
@@ -26,8 +26,8 @@ export default function Footer() {
           </div>
 
           {/* Quick links */}
-          <div>
-            <h4 className="text-white font-[Outfit] font-600 text-sm mb-4 uppercase tracking-wider">Explore</h4>
+          <div className="pt-2 lg:pt-4">
+            <h4 className="text-white font-[Outfit] font-600 text-sm mb-6 uppercase tracking-wider">Explore</h4>
             <ul className="space-y-2.5">
               {[
                 { href: "/schemes",  label: "All Schemes" },
@@ -46,8 +46,8 @@ export default function Footer() {
           </div>
 
           {/* Legal & Contact */}
-          <div>
-            <h4 className="text-white font-[Outfit] font-600 text-sm mb-4 uppercase tracking-wider">Support</h4>
+          <div className="pt-2 lg:pt-4">
+            <h4 className="text-white font-[Outfit] font-600 text-sm mb-6 uppercase tracking-wider">Support</h4>
             <ul className="space-y-2.5">
               {[
                 { href: "/contact", label: "Contact Us" },

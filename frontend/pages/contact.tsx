@@ -26,7 +26,7 @@ export default function ContactPage() {
       </Head>
       <Navbar />
 
-      <div className="page-container pt-12 pb-20">
+      <div className="page-container page-top-offset pb-20">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-10">

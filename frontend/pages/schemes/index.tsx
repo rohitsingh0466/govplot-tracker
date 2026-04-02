@@ -77,7 +77,7 @@ export default function SchemesPage() {
 
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <div className="page-container pt-10 pb-8">
+      <div className="page-container page-top-offset pb-8">
         <div className="mb-6">
           <span className="section-label">All Schemes</span>
           <h1 className="text-[32px] sm:text-[40px] font-[Outfit] font-900 text-[--ink-900] mt-1">

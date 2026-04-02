@@ -61,7 +61,7 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
         <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SCHEME_TOP} format="horizontal" label="Scheme Detail — Top Ad" />
       </div>
 
-      <div className="page-container pt-8 pb-16">
+      <div className="page-container page-top-offset pb-16">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-[12.5px] text-[--ink-500] mb-6">
           <Link href="/" className="hover:text-[--teal-600]">Home</Link>

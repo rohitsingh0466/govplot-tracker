@@ -92,6 +92,14 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.15;
 }
 
+[class*="font-\\[Outfit\\]"] {
+  font-family: var(--font-display) !important;
+}
+
+[class*="font-\\[DM Sans\\]"] {
+  font-family: var(--font-body) !important;
+}
+
 /* ─── Status Badges ─────────────────────────────────────────────── */
 .badge-OPEN     { background: var(--green-100); color: #15803d; border: 1px solid #bbf7d0; }
 .badge-ACTIVE   { background: var(--sky-100);   color: #0369a1; border: 1px solid #bae6fd; }
@@ -337,6 +345,22 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+.page-top-offset {
+  padding-top: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .page-top-offset {
+    padding-top: 4.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-top-offset {
+    padding-top: 4.75rem;
+  }
 }
 @media (min-width: 640px) {
   .page-container { padding: 0 32px; }

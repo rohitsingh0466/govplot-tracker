@@ -44,7 +44,7 @@ export default function PrivacyPage() {
       </Head>
       <Navbar />
 
-      <div className="page-container pt-12 pb-20">
+      <div className="page-container page-top-offset pb-20">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="bg-gradient-to-br from-[--ink-900] to-[--teal-900] rounded-3xl p-8 sm:p-10 text-white mb-10">

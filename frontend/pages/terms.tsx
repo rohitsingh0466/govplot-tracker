@@ -44,7 +44,7 @@ export default function TermsPage() {
       </Head>
       <Navbar />
 
-      <div className="page-container pt-12 pb-20">
+      <div className="page-container page-top-offset pb-20">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="bg-gradient-to-br from-[--saffron-500] to-[--saffron-600] rounded-3xl p-8 sm:p-10 text-white mb-10">

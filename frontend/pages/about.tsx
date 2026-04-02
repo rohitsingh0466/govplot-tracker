@@ -28,10 +28,10 @@ const DATA_SOURCES = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "01", icon: "🤖", title: "Automated Weekly Scraping",   desc: "Our 58 scrapers run every Sunday via GitHub Actions, scanning all 50+ official government authority portals for new lottery schemes. Daily runs refresh OPEN/ACTIVE scheme status only." },
-  { step: "02", icon: "✅", title: "Cross-Verification",          desc: "Every scheme is cross-checked against 5 independent sources — AajTak, 99acres, MagicBricks, NoBroker, and Housing.com — and assigned a verified score from 0–5." },
-  { step: "03", icon: "📊", title: "Data Normalisation",          desc: "Raw HTML is parsed and standardised — scheme name, status, dates, prices, and plot count are extracted and stored in Supabase PostgreSQL." },
-  { step: "04", icon: "🔔", title: "Instant Notifications",       desc: "The moment a scheme status changes — OPEN, UPCOMING, CLOSED — you get an alert via Email, Telegram, or WhatsApp." },
+  { step: "01", icon: "🤖", title: "Automated Weekly Scraping",   desc: "GovPlot Tracker continuously monitors official housing authority portals and refreshes scheme availability on a scheduled basis, so newly announced opportunities surface quickly." },
+  { step: "02", icon: "✅", title: "Cross-Verification",          desc: "Each listing goes through an additional confidence check using trusted public signals, helping highlight schemes that appear timely, credible, and relevant before you act." },
+  { step: "03", icon: "📊", title: "Data Normalisation",          desc: "Information from different authorities is cleaned into one consistent format, making scheme names, status, pricing, dates, and plot details easy to compare at a glance." },
+  { step: "04", icon: "🔔", title: "Instant Notifications",       desc: "When a scheme opens, changes status, or moves closer to application deadlines, you can be notified promptly through the channels that work best for you." },
 ];
 
 const WHY_USE = [
@@ -64,7 +64,7 @@ export default function AboutPage() {
       </Head>
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      <div className="page-container pt-12 pb-20">
+      <div className="page-container page-top-offset pb-20">
         <div className="max-w-3xl mb-16 animate-fade-in-up">
           <span className="section-label">About Us</span>
           <h1 className="text-[40px] sm:text-[52px] font-[Outfit] font-900 text-[--ink-900] mt-2 mb-5" style={{ lineHeight: 1.1 }}>
@@ -85,7 +85,7 @@ export default function AboutPage() {
               Whether you're looking for a plot from <strong>LDA in Lucknow</strong>, a lottery site from <strong>BDA in Bangalore</strong>, or a mass housing unit from <strong>CIDCO in Navi Mumbai</strong> — GovPlot Tracker gives you instant visibility without checking 50+ different government websites.
             </p>
             <p>
-              Our 58 scrapers do a complete pull every Sunday and refresh Open/Active scheme status daily. Every scheme is cross-verified against AajTak, 99acres, MagicBricks, NoBroker, and Housing.com. Only lottery-based schemes from the last 5 years are tracked.
+              We bring scattered government scheme information into one reliable view, keep the data fresh with scheduled updates, and focus on recent lottery-based residential opportunities that people can still act on.
             </p>
           </div>
         </div>

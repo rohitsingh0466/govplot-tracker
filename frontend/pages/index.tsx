@@ -118,7 +118,7 @@ export default function Home() {
         <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_TOP} format="horizontal" label="Top Leaderboard — Homepage" className="mb-4" />
       </div>
 
-      <section className="page-container pt-10 pb-14">
+      <section className="page-container page-top-offset pb-14">
         <div className="max-w-3xl">
           <h1 className="text-[38px] sm:text-[52px] lg:text-[60px] font-[Outfit] font-900 text-[--ink-900] mb-5" style={{ lineHeight: "1.08" }}>
             Never miss a{" "}
