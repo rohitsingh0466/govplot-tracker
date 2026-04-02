@@ -7,31 +7,40 @@ import Footer from "../components/Footer";
 import AlertModal from "../components/AlertModal";
 
 const DATA_SOURCES = [
-  { city: "Lucknow",    authority: "LDA",       url: "lda.up.nic.in",               emoji: "🏛️" },
-  { city: "Bangalore",  authority: "BDA",        url: "bdabangalore.org",             emoji: "💻" },
-  { city: "Noida",      authority: "GNIDA/NUDA", url: "noidaauthorityonline.in",      emoji: "🏙️" },
-  { city: "Gurgaon",    authority: "HSVP",       url: "hsvphry.gov.in",               emoji: "🏢" },
-  { city: "Hyderabad",  authority: "HMDA",       url: "hmda.gov.in",                  emoji: "🔬" },
-  { city: "Pune",       authority: "PMRDA",      url: "pmrda.gov.in",                 emoji: "🎓" },
-  { city: "Mumbai",     authority: "MHADA",      url: "mhada.gov.in",                 emoji: "🌊" },
-  { city: "Chandigarh", authority: "GMADA",      url: "gmada.gov.in",                 emoji: "🌿" },
-  { city: "Agra",       authority: "ADA",        url: "adaagra.gov.in",               emoji: "🕌" },
+  { city: "Delhi",             authority: "DDA",        url: "dda.gov.in",                   emoji: "🏛️" },
+  { city: "Mumbai",            authority: "MHADA",      url: "mhada.gov.in",                 emoji: "🌊" },
+  { city: "Navi Mumbai",       authority: "CIDCO",      url: "cidcohomes.com",               emoji: "🏙️" },
+  { city: "Lucknow",           authority: "LDA",        url: "lda.up.nic.in",                emoji: "🕌" },
+  { city: "Bangalore",         authority: "BDA",        url: "bdabangalore.org",             emoji: "💻" },
+  { city: "Noida",             authority: "GNIDA/YEIDA",url: "noidaauthorityonline.in",      emoji: "🏙️" },
+  { city: "Gurgaon",           authority: "HSVP",       url: "hsvphry.gov.in",               emoji: "🏢" },
+  { city: "Hyderabad",         authority: "HMDA",       url: "hmda.gov.in",                  emoji: "🔬" },
+  { city: "Pune",              authority: "PMRDA",      url: "pmrda.gov.in",                 emoji: "🎓" },
+  { city: "Jaipur",            authority: "JDA/RHB",    url: "jda.gov.in",                   emoji: "🏰" },
+  { city: "Ahmedabad",         authority: "AUDA",       url: "auda.org.in",                  emoji: "🏭" },
+  { city: "Chandigarh",        authority: "GMADA",      url: "gmada.gov.in",                 emoji: "🌿" },
+  { city: "Chennai",           authority: "CMDA/TNHB",  url: "cmdachennai.gov.in",           emoji: "🎭" },
+  { city: "Indore",            authority: "IDA",        url: "ida.mp.gov.in",                emoji: "🌟" },
+  { city: "Kolkata",           authority: "KMDA/WBHB",  url: "kmda.gov.in",                  emoji: "🌉" },
+  { city: "Bhubaneswar",       authority: "BDA-OD",     url: "bda.odisha.gov.in",            emoji: "⛩️" },
+  { city: "Visakhapatnam",     authority: "VMRDA",      url: "vmrda.gov.in",                 emoji: "⛵" },
+  { city: "Kochi",             authority: "GCDA",       url: "gcda.kerala.gov.in",           emoji: "🚢" },
 ];
 
 const HOW_IT_WORKS = [
-  { step: "01", icon: "🤖", title: "Automated Scraping",     desc: "Our bots run every 6 hours via GitHub Actions, scanning all 9 official government authority portals." },
-  { step: "02", icon: "📊", title: "Data Normalisation",     desc: "Raw HTML is parsed and standardised — scheme name, status, dates, prices, and plot count are extracted." },
-  { step: "03", icon: "🔔", title: "Instant Notifications",  desc: "The moment a scheme status changes — OPEN, UPCOMING, CLOSED — you get an alert via Email, Telegram, or WhatsApp." },
-  { step: "04", icon: "📱", title: "Live Dashboard",         desc: "Every visitor sees scheme data as fresh as 6 hours old. No stale listings, no manual updates." },
+  { step: "01", icon: "🤖", title: "Automated Weekly Scraping",   desc: "Our 58 scrapers run every Sunday via GitHub Actions, scanning all 50+ official government authority portals for new lottery schemes. Daily runs refresh OPEN/ACTIVE scheme status only." },
+  { step: "02", icon: "✅", title: "Cross-Verification",          desc: "Every scheme is cross-checked against 5 independent sources — AajTak, 99acres, MagicBricks, NoBroker, and Housing.com — and assigned a verified score from 0–5." },
+  { step: "03", icon: "📊", title: "Data Normalisation",          desc: "Raw HTML is parsed and standardised — scheme name, status, dates, prices, and plot count are extracted and stored in Supabase PostgreSQL." },
+  { step: "04", icon: "🔔", title: "Instant Notifications",       desc: "The moment a scheme status changes — OPEN, UPCOMING, CLOSED — you get an alert via Email, Telegram, or WhatsApp." },
 ];
 
 const WHY_USE = [
-  { icon: "🚀", title: "Real-time updates",     desc: "6-hour scraper cycle means you always see the latest scheme status." },
-  { icon: "🔔", title: "Multi-channel alerts",  desc: "Email, Telegram, and WhatsApp — choose what works for you." },
-  { icon: "🏙️", title: "Multi-city coverage",   desc: "9 major cities, 12+ authorities, all in one place." },
-  { icon: "🆓", title: "Free tier forever",     desc: "Track 2 cities and receive email alerts at no cost, ever." },
-  { icon: "🔒", title: "Official sources only", desc: "We link directly to government portals — no middlemen, no fabricated data." },
-  { icon: "📊", title: "Scheme comparison",     desc: "Compare prices, plot sizes, and deadlines across cities side by side." },
+  { icon: "🚀", title: "Weekly full pull + daily refresh", desc: "Complete data refresh every Sunday. Daily mode updates only active scheme statuses — 85% less scraping load." },
+  { icon: "🔔", title: "Multi-channel alerts",             desc: "Email, Telegram, and WhatsApp — choose what works for you." },
+  { icon: "🏙️", title: "100+ cities, 50+ authorities",    desc: "Every major housing authority in India, all in one dashboard." },
+  { icon: "🆓", title: "Free tier forever",                desc: "Track 2 cities and receive email alerts at no cost, ever." },
+  { icon: "🔒", title: "Official sources only",            desc: "We link directly to government portals. 5-year data filter — no stale schemes." },
+  { icon: "✅", title: "Verified schemes",                 desc: "Each scheme gets a 0–5 verification score based on news and property portals." },
 ];
 
 export default function AboutPage() {
@@ -50,14 +59,12 @@ export default function AboutPage() {
     <>
       <Head>
         <title>About — GovPlot Tracker | India's Government Plot Scheme Monitor</title>
-        <meta name="description" content="GovPlot Tracker monitors government residential plot schemes across 9 major Indian cities. Learn how our automated scraper works and why 10,000+ buyers trust us." />
+        <meta name="description" content="GovPlot Tracker monitors government residential plot lottery schemes across 100+ major Indian cities with 58 scrapers. Learn how our automated system works." />
         <link rel="canonical" href="https://govplottracker.com/about" />
       </Head>
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
       <div className="page-container pt-12 pb-20">
-
-        {/* Hero */}
         <div className="max-w-3xl mb-16 animate-fade-in-up">
           <span className="section-label">About Us</span>
           <h1 className="text-[40px] sm:text-[52px] font-[Outfit] font-900 text-[--ink-900] mt-2 mb-5" style={{ lineHeight: 1.1 }}>
@@ -67,24 +74,22 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-[17px] text-[--ink-600] leading-relaxed">
-            GovPlot Tracker is a free tool that automatically monitors official housing authority portals across 9 major Indian cities — so you never miss an application window for a government residential plot scheme.
+            GovPlot Tracker is a free tool that automatically monitors official housing authority portals across 100+ major Indian cities — so you never miss an application window for a government residential plot lottery scheme.
           </p>
         </div>
 
-        {/* What is it */}
         <div className="card p-8 sm:p-10 mb-8 bg-gradient-to-br from-[--teal-100]/40 to-white border-[--teal-200]/60">
           <h2 className="text-[24px] font-[Outfit] font-800 text-[--ink-900] mb-4">🏠 What is GovPlot Tracker?</h2>
           <div className="grid sm:grid-cols-2 gap-6 text-[14.5px] text-[--ink-700] leading-relaxed">
             <p>
-              Whether you're looking for an affordable plot from <strong>LDA in Lucknow</strong>, a premium site from <strong>BDA in Bangalore</strong>, or a lottery plot from <strong>MHADA in Mumbai</strong> — GovPlot Tracker gives you instant visibility without checking 9 different government websites.
+              Whether you're looking for a plot from <strong>LDA in Lucknow</strong>, a lottery site from <strong>BDA in Bangalore</strong>, or a mass housing unit from <strong>CIDCO in Navi Mumbai</strong> — GovPlot Tracker gives you instant visibility without checking 50+ different government websites.
             </p>
             <p>
-              Our scrapers run every 6 hours, parsing official portals for scheme name, status, open/close dates, plot count, price range, and application links. When anything changes, we push alerts to your preferred channel.
+              Our 58 scrapers do a complete pull every Sunday and refresh Open/Active scheme status daily. Every scheme is cross-verified against AajTak, 99acres, MagicBricks, NoBroker, and Housing.com. Only lottery-based schemes from the last 5 years are tracked.
             </p>
           </div>
         </div>
 
-        {/* How it works */}
         <div className="mb-12">
           <span className="section-label">Process</span>
           <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-7">How it works</h2>
@@ -102,7 +107,6 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Why use */}
         <div className="mb-12">
           <span className="section-label">Benefits</span>
           <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-7">Why use GovPlot Tracker?</h2>
@@ -119,12 +123,11 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Data sources */}
         <div className="mb-14">
           <span className="section-label">Data Sources</span>
-          <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-3">Official government portals only</h2>
+          <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-3">50+ official government portals</h2>
           <p className="text-[14px] text-[--ink-600] mb-6 max-w-2xl">
-            All data is sourced directly from official authority websites. We don't alter, editorialize, or filter any information.
+            All data is sourced directly from official authority websites across 23 Indian states and UTs. We don't alter, editorialize, or filter any information.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {DATA_SOURCES.map(({ city, authority, url, emoji }) => (
@@ -138,9 +141,9 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+          <p className="text-[12.5px] text-[--ink-500] mt-4">+ 30 more authorities across Rajasthan, Gujarat, Bihar, Jharkhand, Chhattisgarh, Uttarakhand, J&K, Goa, Assam, HP, and Northeast India.</p>
         </div>
 
-        {/* CTA */}
         <div className="bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-3xl p-8 sm:p-12 text-center text-white">
           <h2 className="text-[28px] font-[Outfit] font-800 mb-3">Ready to never miss a scheme?</h2>
           <p className="text-[15px] text-[--teal-300] mb-7 max-w-lg mx-auto">

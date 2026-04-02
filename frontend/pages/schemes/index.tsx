@@ -26,9 +26,7 @@ export default function SchemesPage() {
   const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
-    if (router.isReady) {
-      setCity((router.query.city as string) || "");
-    }
+    if (router.isReady) setCity((router.query.city as string) || "");
   }, [router.isReady, router.query.city]);
 
   useEffect(() => {
@@ -52,14 +50,13 @@ export default function SchemesPage() {
       setStats(stRes.data);
     } catch {
       setSchemes([]);
-      setStats({ total_schemes: 0, open: 0, active: 0, upcoming: 0, closed: 0, cities_tracked: 9 });
+      setStats({ total_schemes: 0, open: 0, active: 0, upcoming: 0, closed: 0, cities_tracked: 100 });
     } finally {
       setLoading(false);
     }
   }
 
   const normalizedSchemes = schemes.map(normalizeScheme);
-
   const filtered = normalizedSchemes.filter((s) => {
     const matchesStatus = !status || s.status === status;
     const matchesSearch =
@@ -67,7 +64,6 @@ export default function SchemesPage() {
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.city.toLowerCase().includes(search.toLowerCase()) ||
       s.authority.toLowerCase().includes(search.toLowerCase());
-
     return matchesStatus && matchesSearch;
   });
 
@@ -75,21 +71,20 @@ export default function SchemesPage() {
     <>
       <Head>
         <title>All Government Plot Schemes — GovPlot Tracker</title>
-        <meta name="description" content="Browse all government residential plot schemes across 9 major Indian cities. Filter by city, status, authority." />
+        <meta name="description" content="Browse all government residential plot lottery schemes across 100+ major Indian cities. Filter by city, status, authority. Weekly data pull, daily status refresh." />
         <link rel="canonical" href="https://govplottracker.com/schemes" />
       </Head>
 
       <Navbar onAlertClick={() => setAlertOpen(true)} />
 
-      {/* Header */}
       <div className="page-container pt-10 pb-8">
         <div className="mb-6">
           <span className="section-label">All Schemes</span>
           <h1 className="text-[32px] sm:text-[40px] font-[Outfit] font-900 text-[--ink-900] mt-1">
-            Government Plot Schemes
+            Government Plot Lottery Schemes
           </h1>
           <p className="text-[--ink-500] text-[15px] mt-1">
-            Live data from 9 city authorities · Updated every 6 hours
+            Live data from 50+ housing authorities across 100+ cities · Weekly full pull · Daily status refresh
           </p>
         </div>
 
@@ -99,7 +94,6 @@ export default function SchemesPage() {
 
         <FilterBar city={city} setCity={setCity} status={status} setStatus={setStatus} search={search} setSearch={setSearch} />
 
-        {/* Results */}
         <div className="mb-4 flex items-center justify-between">
           <p className="text-[13px] text-[--ink-500] font-medium">
             {loading ? "Loading…" : `${filtered.length} scheme${filtered.length !== 1 ? "s" : ""} found`}

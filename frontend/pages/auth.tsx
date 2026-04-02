@@ -19,9 +19,7 @@ export default function AuthPage() {
   function handleGoogleLogin() {
     const next = typeof router.query.next === "string" ? router.query.next : "/dashboard";
     const params = new URLSearchParams({ next });
-    if (router.query.openAlert === "1") {
-      params.set("action", "open-alert");
-    }
+    if (router.query.openAlert === "1") params.set("action", "open-alert");
     window.location.href = `${API}/api/v1/auth/google?${params.toString()}`;
   }
 
@@ -29,10 +27,7 @@ export default function AuthPage() {
     <>
       <Head>
         <title>Sign In — GovPlot Tracker</title>
-        <meta
-          name="description"
-          content="Sign in to GovPlot Tracker with Google to manage dashboard access, alerts, and subscriptions."
-        />
+        <meta name="description" content="Sign in to GovPlot Tracker with Google to manage dashboard access, alerts, and subscriptions across 100+ Indian cities." />
       </Head>
 
       <div className="min-h-screen flex">
@@ -44,21 +39,21 @@ export default function AuthPage() {
 
           <div>
             <blockquote className="text-[--teal-300]/90 text-[18px] leading-relaxed mb-6 font-light">
-              "I got the GNIDA allotment because GovPlot Tracker alerted me the moment applications opened. It was only a 3-day window."
+              "I got the YEIDA allotment because GovPlot Tracker alerted me the moment applications opened. It was only a 3-day window — I would have missed it."
             </blockquote>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[--teal-700] flex items-center justify-center text-white font-bold">R</div>
               <div>
                 <p className="text-white text-[13.5px] font-semibold">Rohit Verma</p>
-                <p className="text-[--teal-400] text-[12px]">Plot allottee, Greater Noida</p>
+                <p className="text-[--teal-400] text-[12px]">Plot allottee, Noida / Yamuna Expressway</p>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             {[
-              { value: "9", label: "Cities" },
-              { value: "24+", label: "Active schemes" },
+              { value: "100+", label: "Cities" },
+              { value: "50+", label: "Authorities" },
               { value: "Google", label: "Sign in" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
@@ -76,23 +71,17 @@ export default function AuthPage() {
           </Link>
 
           <div className="mb-7">
-            <h1 className="text-[28px] font-[Outfit] font-900 text-[--ink-900] mb-1.5">
-              Sign in with Google
-            </h1>
-            <p className="text-[14px] text-[--ink-500]">
-              Email and password sign in has been removed. Use your Google account to manage alerts and subscriptions.
-            </p>
+            <h1 className="text-[28px] font-[Outfit] font-900 text-[--ink-900] mb-1.5">Sign in with Google</h1>
+            <p className="text-[14px] text-[--ink-500]">Use your Google account to manage alerts across 100+ cities, subscriptions, and dashboard access.</p>
           </div>
 
           <div className="rounded-2xl border border-[--ink-100] bg-[--ink-50] p-4 text-[13px] leading-relaxed text-[--ink-600]">
             We keep account access simple: Google sign in only, with your dashboard and alert permissions tied to the same account.
           </div>
 
-          <button
-            onClick={handleGoogleLogin}
+          <button onClick={handleGoogleLogin}
             className="w-full mt-6 flex items-center justify-center gap-3 py-3 border-[1.5px] border-[--ink-200] rounded-xl hover:border-[--ink-300] hover:bg-[--ink-50] transition text-[14px] font-semibold text-[--ink-700]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+            style={{ fontFamily: "var(--font-display)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
