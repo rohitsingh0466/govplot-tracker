@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -68,11 +68,28 @@ export default function Home() {
       const { data } = await axios.get(`${API}/api/v1/schemes/stats`);
       setStats(data);
     } catch {
-      setStats({ total_schemes: 180, open: 42, active: 58, upcoming: 55, closed: 25, cities_tracked: 100 });
+      setStats(null);
     }
   }
 
   const normalizedSchemes = schemes.map(normalizeScheme);
+  const derivedStats = useMemo(() => {
+    const totalSchemes = normalizedSchemes.length;
+    const open = normalizedSchemes.filter((scheme) => scheme.status === "OPEN").length;
+    const active = normalizedSchemes.filter((scheme) => scheme.status === "ACTIVE").length;
+    const upcoming = normalizedSchemes.filter((scheme) => scheme.status === "UPCOMING").length;
+    const citiesTracked = new Set(normalizedSchemes.map((scheme) => scheme.city).filter(Boolean)).size;
+
+    return {
+      total_schemes: totalSchemes,
+      open,
+      active,
+      upcoming,
+      closed: Math.max(totalSchemes - open - active - upcoming, 0),
+      cities_tracked: citiesTracked,
+    };
+  }, [normalizedSchemes]);
+  const resolvedStats = stats && stats.total_schemes > 0 ? stats : derivedStats;
   const filtered = normalizedSchemes.filter(s => {
     const matchesStatus = !status || s.status === status;
     const matchesSearch = !search ||
@@ -127,7 +144,7 @@ export default function Home() {
       </section>
 
       <div className="page-container">
-        {stats && <StatsBar stats={stats} />}
+        {resolvedStats.total_schemes > 0 && <StatsBar stats={resolvedStats} />}
       </div>
 
       <section className="page-container pb-14">
