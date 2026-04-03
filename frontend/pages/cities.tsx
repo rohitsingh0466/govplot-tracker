@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AlertModal from "../components/AlertModal";
+import AuthModal from "../components/AuthModal";
 
 const CITIES = [
   // Tier 1 metros
@@ -46,7 +46,7 @@ const TIER_LABELS: Record<string, string> = {
 
 export default function CitiesPage() {
   const router = useRouter();
-  const [alertOpen, setAlertOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
     if (!router.isReady || router.query.openAlert !== "1") return;
@@ -63,7 +63,7 @@ export default function CitiesPage() {
         <meta name="description" content="Track government residential plot and housing lottery schemes across India's top 25+ cities — Delhi, Mumbai, Bangalore, Hyderabad, Jaipur, Pune, Noida, and more." />
         <link rel="canonical" href="https://govplottracker.com/cities" />
       </Head>
-      <Navbar onAlertClick={() => setAlertOpen(true)} />
+      <Navbar />
 
       <div className="page-container page-top-offset pb-16">
         {/* Header */}
@@ -133,7 +133,7 @@ export default function CitiesPage() {
       </div>
 
       <Footer />
-      <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} />
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </>
   );
 }
