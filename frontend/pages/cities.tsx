@@ -50,7 +50,7 @@ export default function CitiesPage() {
 
   useEffect(() => {
     if (!router.isReady || router.query.openAlert !== "1") return;
-    setAlertOpen(true);
+    setAuthOpen(true);
     const nextQuery = { ...router.query };
     delete nextQuery.openAlert;
     router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true });

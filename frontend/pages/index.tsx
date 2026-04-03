@@ -166,7 +166,6 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl flex-shrink-0">🔓</div>
               <div>
-                <h2 className="text-[18px] font-[Outfit] font-800 text-white mb-1">Sign up to view Open &amp; Active schemes</h2>
                 <p className="text-[13px] text-[--teal-300]/90 leading-relaxed">
                   Free account gives you full access to all scheme details — OPEN, ACTIVE, UPCOMING and CLOSED.
                 </p>

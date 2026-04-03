@@ -79,12 +79,17 @@ export default function BlogPage() {
 
           {/* CTA */}
           <div className="mt-12 bg-gradient-to-br from-[--teal-100] to-white border border-[--teal-200] rounded-3xl p-8 text-center">
-            <div className="text-3xl mb-3">🔔</div>
-            <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">Don't miss a scheme opening</h3>
-            <p className="text-[13.5px] text-[--ink-600] mb-5">Subscribe for free alerts when new schemes open in your city.</p>
-            <Link href="/" className="btn-primary text-[14px] py-3 px-8">
-              Get Free Alerts →
-            </Link>
+            <div className="text-3xl mb-3">🏙️</div>
+            <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">Explore live scheme listings</h3>
+            <p className="text-[13.5px] text-[--ink-600] mb-5">Browse current government plot schemes, compare cities, and review full details in one place.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link href="/schemes" className="btn-primary text-[14px] py-3 px-8">
+                Browse Schemes →
+              </Link>
+              <Link href="/pricing" className="btn-ghost text-[14px] py-3 px-8 text-[--saffron-600] border-[--saffron-200] hover:bg-[--saffron-100]">
+                View Plans
+              </Link>
+            </div>
           </div>
         </div>
 

@@ -131,7 +131,7 @@ export default function AboutPage() {
             <button onClick={() => setAuthOpen(true)} className="btn-primary text-[15px] py-3.5 px-8 bg-white text-[--teal-700] hover:bg-[--teal-50]">
               🔓 Sign Up Free
             </button>
-            <Link href="/pricing" className="btn-ghost text-[15px] py-3.5 px-8 text-white border-white/30 hover:bg-white/10">
+            <Link href="/pricing" className="btn-saffron text-[15px] py-3.5 px-8">
               View Plans →
             </Link>
           </div>
