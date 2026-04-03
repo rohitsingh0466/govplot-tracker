@@ -1,20 +1,24 @@
 """
 GovPlot Tracker — SQLAlchemy Models + Pydantic Schemas
-v2.0: Added verification fields, cleaned unused columns from Scheme model
+v3.0: New subscription model: free | pro | premium
+      Scheme visibility: anonymous=CLOSED+UPCOMING | signed_free=all | pro=all+2city alerts | premium=all+unlimited alerts
 """
 
 from __future__ import annotations
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean, Text, BigInteger, SmallInteger
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, EmailStr
 
 Base = declarative_base()
 
-
 # ──────────────────────────────────────────────────────────────────────────────
-# SQLAlchemy ORM Models
+# Subscription tiers
+# ──────────────────────────────────────────────────────────────────────────────
+# free       → logged in, can see ALL schemes, no city alerts
+# pro        → paid, all schemes + Email/Telegram alerts for up to 2 cities
+# premium    → paid, all schemes + Email/Telegram/WhatsApp alerts, all cities
 # ──────────────────────────────────────────────────────────────────────────────
 
 class Scheme(Base):
@@ -29,7 +33,7 @@ class Scheme(Base):
     open_date        = Column(String(32), nullable=True)
     close_date       = Column(String(32), nullable=True)
     total_plots      = Column(Integer, nullable=True)
-    price_min        = Column(Float, nullable=True)             # in INR lakhs
+    price_min        = Column(Float, nullable=True)
     price_max        = Column(Float, nullable=True)
     area_sqft_min    = Column(Integer, nullable=True)
     area_sqft_max    = Column(Integer, nullable=True)
@@ -38,12 +42,8 @@ class Scheme(Base):
     source_url       = Column(String(1024), nullable=True)
     last_updated     = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active        = Column(Boolean, default=True)
-
-    # ── Verification fields (v2.0) ────────────────────────────────────────
     verification_score = Column(SmallInteger, default=0, nullable=False)
-    # 0=unverified, 1-5 = number of sources that confirmed this scheme
     verified           = Column(Boolean, default=False, nullable=False)
-    # True if verification_score >= 1
 
 
 class User(Base):
@@ -68,11 +68,16 @@ class User(Base):
     telegram_link_expires_at = Column(DateTime, nullable=True)
 
     is_premium               = Column(Boolean, default=False)
+    # Tiers: 'free' | 'pro' | 'premium'
     subscription_tier        = Column(String(32), default="free", nullable=False)
-    subscription_status      = Column(String(32), default="inactive", nullable=False)
+    subscription_status      = Column(String(32), default="active", nullable=False)
     subscription_expires_at  = Column(DateTime, nullable=True)
     razorpay_customer_id     = Column(String(128), nullable=True)
     razorpay_subscription_id = Column(String(128), nullable=True)
+
+    # How many cities this user can subscribe alerts for
+    # free=0, pro=2, premium=999
+    alert_cities_limit       = Column(Integer, default=0, nullable=False)
 
     is_active                = Column(Boolean, default=True)
     last_login_at            = Column(DateTime, nullable=True)
@@ -82,17 +87,39 @@ class User(Base):
     def capabilities(self) -> list[str]:
         tier = (self.subscription_tier or "free").lower()
         capability_map = {
-            "free": ["alerts.email"],
+            "free": [
+                # Can see all schemes after sign-up, but no alerts
+                "schemes.view_all",
+            ],
             "pro": [
-                "alerts.email", "alerts.telegram", "alerts.whatsapp",
-                "profile.phone_edit", "downloads.pdf",
+                "schemes.view_all",
+                "alerts.email",
+                "alerts.telegram",
+                "alerts.max_cities_2",
+                "profile.phone_edit",
+                "downloads.pdf",
             ],
             "premium": [
-                "alerts.email", "alerts.telegram", "alerts.whatsapp",
-                "profile.phone_edit", "downloads.pdf",
+                "schemes.view_all",
+                "alerts.email",
+                "alerts.telegram",
+                "alerts.whatsapp",
+                "alerts.unlimited_cities",
+                "profile.phone_edit",
+                "downloads.pdf",
             ],
         }
         return capability_map.get(tier, capability_map["free"])
+
+    @property
+    def can_view_open_schemes(self) -> bool:
+        """Logged-in users (any tier) can see OPEN/ACTIVE schemes."""
+        return True  # any authenticated user can see all statuses
+
+    @property
+    def max_alert_cities(self) -> int:
+        tier = (self.subscription_tier or "free").lower()
+        return {"free": 0, "pro": 2, "premium": 999}.get(tier, 0)
 
 
 class AlertSubscription(Base):
@@ -100,6 +127,7 @@ class AlertSubscription(Base):
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
     user_email = Column(String(256), index=True, nullable=False)
+    user_id    = Column(Integer, nullable=True, index=True)
     city       = Column(String(128), nullable=True)
     authority  = Column(String(64), nullable=True)
     channel    = Column(String(32), default="email")
@@ -108,14 +136,16 @@ class AlertSubscription(Base):
 
 
 class Subscription(Base):
-    """Razorpay payment records."""
+    """Razorpay payment records — FK to users."""
     __tablename__ = "subscriptions"
 
     id                   = Column(Integer, primary_key=True, autoincrement=True)
-    user_email           = Column(String(256), index=True, nullable=False)
+    user_id              = Column(Integer, nullable=False, index=True)   # FK to users.id
+    user_email           = Column(String(256), index=True, nullable=True)
     razorpay_order_id    = Column(String(64), nullable=True)
     razorpay_payment_id  = Column(String(64), nullable=True)
     razorpay_sub_id      = Column(String(64), nullable=True)
+    razorpay_signature   = Column(String(256), nullable=True)
     plan                 = Column(String(20), nullable=False, default="pro")
     amount_paise         = Column(Integer, nullable=False, default=9900)
     currency             = Column(String(10), default="INR")
@@ -173,6 +203,8 @@ class SchemeOut(BaseModel):
     last_updated: Optional[datetime]
     verification_score: int = 0
     verified: bool = False
+    # Blurred means the user can see the card exists but not the details
+    blurred: bool = False
 
     class Config:
         from_attributes = True
@@ -219,6 +251,8 @@ class UserOut(BaseModel):
     avatar_url: Optional[str] = None
     free_phone_edit_used: bool = False
     capabilities: list[str] = []
+    max_alert_cities: int = 0
+    alert_cities_limit: int = 0
 
     class Config:
         from_attributes = True

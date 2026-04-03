@@ -1,5 +1,9 @@
 """
-GovPlot Tracker — Schemes API Routes
+GovPlot Tracker — Schemes API Routes v3.0
+Visibility rules:
+  - Anonymous (no token): CLOSED + UPCOMING only, OPEN/ACTIVE cards blurred
+  - Free signed-in:       ALL statuses visible (full detail)
+  - Pro / Premium:        ALL statuses + alert subscriptions
 """
 
 import json
@@ -8,16 +12,24 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, Request
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 
 from backend.models.database import get_db
-from backend.models.db_models import Scheme, SchemeOut
+from backend.models.db_models import Scheme, SchemeOut, User
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 LATEST_JSON = Path("data/schemes/latest.json")
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-me")
+ALGORITHM = "HS256"
+
+# ── Statuses visible to anonymous (not logged in) users ──────────────────────
+ANON_VISIBLE_STATUSES = {"CLOSED", "UPCOMING"}
+# OPEN and ACTIVE are blurred for anonymous users
 
 
 def _is_postgres() -> bool:
@@ -36,15 +48,10 @@ def _load_from_json() -> list[dict]:
 
 
 def _seed_db_from_json(db: Session):
-    """
-    Seed DB from JSON only when needed:
-    - SQLite (local dev): always check and seed missing records
-    - Postgres: ONLY seed if table is completely empty (first run only)
-    """
     if _is_postgres():
         count = db.query(Scheme).count()
         if count > 0:
-            return  # Postgres has data — skip JSON seeding entirely
+            return
         logger.info("Postgres schemes table is empty — seeding from latest.json once...")
 
     schemes_data = _load_from_json()
@@ -65,8 +72,54 @@ def _seed_db_from_json(db: Session):
         logger.info(f"Seeded {inserted} schemes from latest.json")
 
 
+def _get_optional_user(request: Request, db: Session) -> Optional[User]:
+    """Extract user from Bearer token if present; returns None for anonymous."""
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header[7:]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        subject = payload.get("sub")
+        if not subject:
+            return None
+    except JWTError:
+        return None
+
+    user = None
+    if subject and subject.isdigit():
+        user = db.query(User).filter(User.id == int(subject), User.is_active == True).first()
+    else:
+        user = db.query(User).filter(User.email == subject, User.is_active == True).first()
+    return user
+
+
+def _apply_visibility(scheme: Scheme, user: Optional[User]) -> SchemeOut:
+    """
+    Apply visibility rules:
+    - No user (anonymous): OPEN/ACTIVE schemes are returned but blurred=True
+    - Signed-in (any tier): full detail, blurred=False
+    """
+    out = SchemeOut.model_validate(scheme)
+
+    if user is None and scheme.status in ("OPEN", "ACTIVE"):
+        # Return card but blur all sensitive details
+        out.blurred = True
+        out.apply_url = None
+        out.source_url = None
+        out.location_details = None
+        out.price_min = None
+        out.price_max = None
+        out.area_sqft_min = None
+        out.area_sqft_max = None
+        out.total_plots = None
+
+    return out
+
+
 @router.get("/", response_model=list[SchemeOut])
 def list_schemes(
+    request: Request,
     city: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
     authority: Optional[str] = Query(None),
@@ -75,6 +128,8 @@ def list_schemes(
     db: Session = Depends(get_db),
 ):
     _seed_db_from_json(db)
+    user = _get_optional_user(request, db)
+
     q = db.query(Scheme).filter(Scheme.is_active == True)
     if city:
         q = q.filter(Scheme.city.ilike(f"%{city}%"))
@@ -82,7 +137,10 @@ def list_schemes(
         q = q.filter(Scheme.status == status.upper())
     if authority:
         q = q.filter(Scheme.authority.ilike(f"%{authority}%"))
-    return q.order_by(Scheme.last_updated.desc()).offset(offset).limit(limit).all()
+
+    schemes = q.order_by(Scheme.last_updated.desc()).offset(offset).limit(limit).all()
+
+    return [_apply_visibility(s, user) for s in schemes]
 
 
 @router.get("/stats")
@@ -105,11 +163,12 @@ def scheme_stats(db: Session = Depends(get_db)):
 
 
 @router.get("/{scheme_id}", response_model=SchemeOut)
-def get_scheme(scheme_id: str, db: Session = Depends(get_db)):
+def get_scheme(scheme_id: str, request: Request, db: Session = Depends(get_db)):
     scheme = db.query(Scheme).filter(Scheme.scheme_id == scheme_id).first()
     if not scheme:
         raise HTTPException(status_code=404, detail="Scheme not found")
-    return scheme
+    user = _get_optional_user(request, db)
+    return _apply_visibility(scheme, user)
 
 
 def _run_scraper_bg():
