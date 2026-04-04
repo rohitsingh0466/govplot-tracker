@@ -1,10 +1,25 @@
 name: GovPlot Scraper — Auto Run
 
+# WORKFLOW DESIGN (two-step separation):
+#
+#   Step A — python -m scraper.main <mode>
+#             Runs scrapers, saves to disk, pushes to Supabase.
+#             Verification is NOT called here (main.py skips it unless mode=verify).
+#             Even if Step A takes 5 min, data is already in Supabase before Step B.
+#
+#   Step B — python -m scraper.main verify  (weekly/manual only)
+#             Runs verification engine against schemes already on disk.
+#             continue-on-error: true — if this times out, data from Step A is safe.
+#             Re-saves to disk and re-pushes with verification scores when done.
+#
+# NO OVERLAP: main.py only runs _run_verification() when mode=verify.
+#             scrape.yml is the single place that decides when verify runs.
+
 on:
   schedule:
-    # Daily at 6:30 AM IST (1:00 UTC) — refresh OPEN/ACTIVE scheme status only
+    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh active schemes only
     - cron: "0 1 * * 1-6"
-    # Weekly full pull every Sunday at 6:30 AM IST (1:00 UTC) — all cities
+    # Sunday 6:30 AM IST (1:00 UTC) — full pull of all cities
     - cron: "0 1 * * 0"
   workflow_dispatch:
     inputs:
@@ -16,7 +31,9 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # 90 minutes: scraping ~2 min + verification ~15 min + buffer.
+    # Step B has continue-on-error so even if verify hits 90 min, Step C commits.
+    timeout-minutes: 90
 
     steps:
       - name: Checkout code
@@ -48,48 +65,59 @@ jobs:
       - name: Detect scraper mode
         id: mode
         run: |
-          # Manual dispatch overrides automatic detection
           if [ "${{ github.event.inputs.mode }}" != "" ]; then
             echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
-          # Sunday = weekly full pull
           elif [ "$(date -u +%u)" = "7" ]; then
             echo "mode=full" >> $GITHUB_OUTPUT
           else
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run scrapers
+      # ── STEP A: SCRAPE → SAVE → PUSH ──────────────────────────────────────
+      # Scrapes all cities, saves JSON, pushes to Supabase.
+      # Verification is NOT triggered here (main.py v2.1 only runs verify
+      # when mode=verify, which this step never passes).
+      - name: Step A — Scrape, save, push to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GOVPLOT_FORCE_FULL: ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
         run: |
-          echo "Running in mode: ${{ steps.mode.outputs.mode }}"
+          echo "▶ Mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
-      - name: Run verification (weekly only)
+      # ── STEP B: VERIFY (weekly full run or explicit verify mode only) ──────
+      # Loads schemes already saved by Step A. Runs verification engine.
+      # If this times out, Step A data is already safe in Supabase.
+      # continue-on-error: true ensures Step C (commit) always runs.
+      - name: Step B — Verify schemes (weekly only)
         if: steps.mode.outputs.mode == 'full' || steps.mode.outputs.mode == 'verify'
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: python -m scraper.main verify
+        run: |
+          echo "▶ Running verification pass (data from Step A already in Supabase)..."
+          python -m scraper.main verify
 
-      - name: Commit updated data files
+      # ── STEP C: COMMIT DATA FILES TO REPO ─────────────────────────────────
+      - name: Step C — Commit data files
         run: |
           git config --local user.email "bot@govplottracker.in"
           git config --local user.name "GovPlot Bot"
           git add data/schemes/latest.json data/schemes/verification_scores.json || true
-          git diff --staged --quiet || git commit -m "chore: update scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
+          git diff --staged --quiet || git commit -m "chore: scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
           git push || true
 
-      - name: Summary
+      # ── STEP D: SUMMARY ────────────────────────────────────────────────────
+      - name: Step D — Summary
         if: always()
         run: |
           SCHEME_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(len(d))" 2>/dev/null || echo "unknown")
-          echo "### 🏠 GovPlot Scraper Run Complete" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏠 GovPlot Scraper Run" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${{ steps.mode.outputs.mode }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Schemes in DB:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Schemes:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
