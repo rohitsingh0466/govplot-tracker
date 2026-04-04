@@ -30,29 +30,25 @@ const CITIES = [
   // Tier 2 - Emerging Markets
   { name: "Visakhapatnam",     authority: "VMRDA",     state: "Andhra Pradesh",  tags: ["Port City", "Beach Corridor"],      emoji: "⛵", color: "#0369a1", bg: "#eff6ff", href: "https://vmrda.gov.in" },
   { name: "Kochi",             authority: "GCDA",      state: "Kerala",          tags: ["Smart Port", "Marine Drive"],       emoji: "🚢", color: "#0891b2", bg: "#ecfeff", href: "https://gcda.kerala.gov.in" },
-  { name: "Coimbatore",        authority: "CIDA/TNHB", state: "Tamil Nadu",      tags: ["Manchester of India", "IT Parks"], emoji: "⚙️", color: "#64748b", bg: "#f8fafc", href: "https://tnhb.gov.in" },
+  { name: "Coimbatore",        authority: "CIDA/TNHB", state: "Tamil Nadu",      tags: ["Manchester of India", "IT Parks"],  emoji: "⚙️", color: "#64748b", bg: "#f8fafc", href: "https://tnhb.gov.in" },
   { name: "Thiruvananthapuram",authority: "TRIDA",     state: "Kerala",          tags: ["Technopark Zone", "Govt Hub"],      emoji: "🌴", color: "#16a34a", bg: "#f0fdf4", href: "https://trida.kerala.gov.in" },
-  { name: "Kolkata (Satellite)",authority: "KMDA",     state: "West Bengal",     tags: ["New Town", "Rajarhat Zone"],        emoji: "🌆", color: "#7c3aed", bg: "#faf5ff", href: "https://kmda.gov.in" },
   { name: "Agra",              authority: "ADA",       state: "Uttar Pradesh",   tags: ["Tourism Zone", "Heritage"],         emoji: "🕌", color: "#c2600a", bg: "#fff7ed", href: "https://adaagra.gov.in" },
   { name: "Patna",             authority: "BSPHCL",    state: "Bihar",           tags: ["State Capital", "Growing Market"],  emoji: "🏛️", color: "#0d7a68", bg: "#f0fdf8", href: "https://bsphcl.gov.in" },
   { name: "Bhubaneswar",       authority: "BDA-OD",    state: "Odisha",          tags: ["Smart City", "Temple City"],        emoji: "⛩️", color: "#d97706", bg: "#fffbeb", href: "https://bda.odisha.gov.in" },
 ];
 
-const TIER_LABELS: Record<string, string> = {
-  "Tier 1 — Metro Cities": ["Delhi", "Mumbai", "Bangalore", "Hyderabad", "Chennai", "Kolkata"].join(","),
-  "Tier 2 — Major Markets": ["Ahmedabad", "Pune", "Jaipur", "Noida", "Gurgaon", "Lucknow", "Surat", "Indore", "Bhopal", "Nagpur", "Chandigarh", "Vadodara"].join(","),
-  "Tier 2 — Emerging Hubs": ["Visakhapatnam", "Kochi", "Coimbatore", "Thiruvananthapuram", "Kolkata (Satellite)", "Agra", "Patna", "Bhubaneswar"].join(","),
-};
+const METRO = ["Delhi","Mumbai","Bangalore","Hyderabad","Chennai","Kolkata"];
+const MAJOR = ["Ahmedabad","Pune","Jaipur","Noida","Gurgaon","Lucknow","Surat","Indore","Bhopal","Nagpur","Chandigarh","Vadodara"];
 
 export default function CitiesPage() {
   const router = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
-    if (!router.isReady || router.query.openAlert !== "1") return;
+    if (!router.isReady || router.query.openAuth !== "1") return;
     setAuthOpen(true);
     const nextQuery = { ...router.query };
-    delete nextQuery.openAlert;
+    delete nextQuery.openAuth;
     router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true });
   }, [router]);
 
@@ -68,20 +64,31 @@ export default function CitiesPage() {
       <div className="page-container page-top-offset pb-16">
         {/* Header */}
         <div className="mb-10">
-          <span className="section-label">Coverage</span>
           <h1 className="text-[36px] sm:text-[44px] font-[Outfit] font-900 text-[--ink-900] mt-1 mb-3">
             Top Cities Across India — One Dashboard
           </h1>
           <p className="text-[15px] text-[--ink-600] max-w-2xl">
-            GovPlot Tracker monitors official housing authority portals across India's largest markets — every week for a full data pull, daily for open and active scheme updates. Focused on lottery-based residential plot schemes from the last 5 years.
+            GovPlot Tracker monitors official housing authority portals across India's largest markets — every week for a full data pull, daily for open and active scheme updates.
           </p>
           <div className="flex flex-wrap gap-3 mt-5">
             {[`${CITIES.length}+ Cities`, "Lottery Schemes Focus", "Last 5 Years Data", "Weekly Full Pull", "Daily Status Refresh"].map(t => (
-              <span key={t} className="text-[12.5px] font-semibold text-[--ink-500] bg-[--ink-50] border border-[--ink-100] px-3 py-1.5 rounded-full">
-                {t}
-              </span>
+              <span key={t} className="text-[12.5px] font-semibold text-[--ink-500] bg-[--ink-50] border border-[--ink-100] px-3 py-1.5 rounded-full">{t}</span>
             ))}
           </div>
+        </div>
+
+        {/* Sign up CTA banner */}
+        <div className="mb-8 bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🔓</span>
+            <div>
+              <p className="text-[14px] font-[Outfit] font-700 text-white">Sign up to view Open &amp; Active scheme details</p>
+              <p className="text-[12px] text-[--teal-300]/90">Free account — full access to all schemes across all cities listed below</p>
+            </div>
+          </div>
+          <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[13px] py-2.5 px-6 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>
+            Sign Up Free →
+          </button>
         </div>
 
         {/* Tier 1 */}
@@ -91,7 +98,7 @@ export default function CitiesPage() {
             Metro Cities
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CITIES.filter(c => ["Delhi","Mumbai","Bangalore","Hyderabad","Chennai","Kolkata"].includes(c.name)).map((city, i) => (
+            {CITIES.filter(c => METRO.includes(c.name)).map((city, i) => (
               <CityCard city={city} key={city.name} index={i} />
             ))}
           </div>
@@ -104,7 +111,7 @@ export default function CitiesPage() {
             Major Markets
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CITIES.filter(c => ["Ahmedabad","Pune","Jaipur","Noida","Gurgaon","Lucknow","Surat","Indore","Bhopal","Nagpur","Chandigarh","Vadodara"].includes(c.name)).map((city, i) => (
+            {CITIES.filter(c => MAJOR.includes(c.name)).map((city, i) => (
               <CityCard city={city} key={city.name} index={i} />
             ))}
           </div>
@@ -117,7 +124,7 @@ export default function CitiesPage() {
             Growing Hubs
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CITIES.filter(c => !["Delhi","Mumbai","Bangalore","Hyderabad","Chennai","Kolkata","Ahmedabad","Pune","Jaipur","Noida","Gurgaon","Lucknow","Surat","Indore","Bhopal","Nagpur","Chandigarh","Vadodara"].includes(c.name)).map((city, i) => (
+            {CITIES.filter(c => !METRO.includes(c.name) && !MAJOR.includes(c.name)).map((city, i) => (
               <CityCard city={city} key={city.name} index={i} />
             ))}
           </div>
@@ -169,11 +176,9 @@ function CityCard({ city, index }: { city: typeof CITIES[0]; index: number }) {
       </div>
 
       <div className="flex gap-2">
-        <Link
-          href={`/schemes?city=${city.name}`}
+        <Link href={`/schemes?city=${city.name}`}
           className="btn-primary flex-1 justify-center text-[13px] py-2.5"
-          style={{ background: `linear-gradient(135deg, ${city.color}, ${city.color}dd)` }}
-        >
+          style={{ background: `linear-gradient(135deg, ${city.color}, ${city.color}dd)` }}>
           View Schemes
         </Link>
         <a href={city.href} target="_blank" rel="noopener noreferrer"

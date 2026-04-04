@@ -160,6 +160,25 @@ export default function Home() {
       </div>
 
       {/* Sign up to see open/active banner — anonymous only */}
+      {!isLoggedIn && (
+        <div className="page-container mb-6">
+          <div className="bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl flex-shrink-0">🔓</div>
+              <div>
+                <h2 className="text-[18px] font-[Outfit] font-800 text-white mb-1">Sign up to view Open &amp; Active schemes</h2>
+                <p className="text-[13px] text-[--teal-300]/90 leading-relaxed">
+                  Free account gives you full access to all scheme details — OPEN, ACTIVE, UPCOMING and CLOSED.
+                </p>
+              </div>
+            </div>
+            <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[14px] py-3 px-7 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>
+              Create Free Account →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* How it works */}
       <section className="page-container pb-14">
         <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] rounded-3xl p-8 sm:p-12">

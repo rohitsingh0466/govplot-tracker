@@ -185,18 +185,47 @@ export default function DashboardPage() {
                   <div>
                     <h3 className="text-[14px] font-[Outfit] font-700 text-[--ink-900] mb-0.5">Telegram Alerts</h3>
                     <p className="text-[12px] text-[--ink-500]">
-                      {isPaid ? (user.telegram_username ? `@${user.telegram_username}` : "Available on your plan") : "Pro / Premium only"}
+                      {isPaid
+                        ? (user.telegram_username
+                            ? `Connected as @${user.telegram_username}`
+                            : "Available on your plan — link your bot below")
+                        : "Pro / Premium only"}
                     </p>
                   </div>
                 </div>
+
                 {isPaid ? (
                   user.telegram_username ? (
-                    <div className="bg-[--teal-100] text-[--teal-700] text-[12px] font-semibold px-3 py-2 rounded-xl text-center">✓ Telegram connected</div>
+                    <div className="bg-[--teal-100] text-[--teal-700] text-[12px] font-semibold px-3 py-2 rounded-xl text-center">
+                      ✓ Telegram connected — alerts will be delivered
+                    </div>
                   ) : (
-                    <button onClick={() => setTelegramOpen(true)} className="btn-secondary w-full justify-center text-[13px] py-2">Connect Telegram →</button>
+                    <>
+                      {/* Warning: telegram alerts subscribed but bot not linked */}
+                      {alerts.some(a => a.channel === "telegram") && (
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                          <p className="text-[11.5px] text-amber-700 font-semibold mb-1">⚠️ Action required</p>
+                          <p className="text-[11px] text-amber-600 leading-relaxed">
+                            You have {alerts.filter(a => a.channel === "telegram").length} Telegram alert(s) subscribed
+                            but your Telegram account is not linked. These alerts will <strong>not be delivered</strong> until you connect the bot below.
+                          </p>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setTelegramOpen(true)}
+                        className="btn-secondary w-full justify-center text-[13px] py-2"
+                      >
+                        Connect Telegram Bot →
+                      </button>
+                      <p className="text-[10.5px] text-[--ink-400] text-center mt-2">
+                        Takes 30 seconds · Open bot, tap Start
+                      </p>
+                    </>
                   )
                 ) : (
-                  <button onClick={() => setUpgradeOpen(true)} className="btn-ghost w-full justify-center text-[12px] py-2 border border-[--ink-200] text-[--saffron-600]">Upgrade to enable</button>
+                  <button onClick={() => setUpgradeOpen(true)} className="btn-ghost w-full justify-center text-[12px] py-2 border border-[--ink-200] text-[--saffron-600]">
+                    Upgrade to enable
+                  </button>
                 )}
               </div>
 
