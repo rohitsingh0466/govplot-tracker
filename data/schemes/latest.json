@@ -4,7 +4,7 @@
     "name": "LDA Gomti Nagar Extension Residential Plot Lottery 2025",
     "city": "Lucknow",
     "authority": "LDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 600,
@@ -15,14 +15,14 @@
     "location_details": "Gomti Nagar Extension, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825216"
+    "last_updated": "2026-04-05T07:53:28.270374"
   },
   {
     "scheme_id": "LDA-c916d8fbfb25",
     "name": "LDA Vrindavan Yojana Residential Plot Lottery 2025",
     "city": "Lucknow",
     "authority": "LDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 480,
@@ -33,14 +33,14 @@
     "location_details": "Vrindavan Yojana, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825238"
+    "last_updated": "2026-04-05T07:53:28.270389"
   },
   {
     "scheme_id": "LDA-6698c49e485e",
     "name": "LDA Amar Shaheed Path Residential Plot Lottery 2025",
     "city": "Lucknow",
     "authority": "LDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-15",
     "close_date": "2025-06-30",
     "total_plots": 320,
@@ -51,14 +51,14 @@
     "location_details": "Amar Shaheed Path, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825243"
+    "last_updated": "2026-04-05T07:53:28.270394"
   },
   {
     "scheme_id": "UPAVP-7d63b1c3bf39",
     "name": "UPAVP Govind Nagar Residential Plot Lottery 2025",
     "city": "Kanpur",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 750,
@@ -69,14 +69,14 @@
     "location_details": "Govind Nagar, Kanpur",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825254"
+    "last_updated": "2026-04-05T07:53:28.270932"
   },
   {
     "scheme_id": "UPAVP-cb2e7763a1a8",
     "name": "UPAVP Panchwati Residential Plot Lottery 2025",
     "city": "Varanasi",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 500,
@@ -87,14 +87,14 @@
     "location_details": "Panchwati, Varanasi",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825259"
+    "last_updated": "2026-04-05T07:53:28.270944"
   },
   {
     "scheme_id": "UPAVP-0607a6e47760",
     "name": "UPAVP Civil Lines Residential Plot Lottery 2025",
     "city": "Prayagraj",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 400,
@@ -105,14 +105,14 @@
     "location_details": "Civil Lines, Prayagraj",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825263"
+    "last_updated": "2026-04-05T07:53:28.270973"
   },
   {
     "scheme_id": "UPAVP-3717abcd38ae",
     "name": "UPAVP Shatabdi Nagar Residential Plot Lottery 2025",
     "city": "Meerut",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 600,
@@ -123,14 +123,14 @@
     "location_details": "Shatabdi Nagar, Meerut",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825267"
+    "last_updated": "2026-04-05T07:53:28.270986"
   },
   {
     "scheme_id": "UPAVP-5bc1e0896d88",
     "name": "UPAVP Pilibhit Bypass Residential Plot Lottery 2025",
     "city": "Bareilly",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 420,
@@ -141,14 +141,14 @@
     "location_details": "Pilibhit Bypass, Bareilly",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825275"
+    "last_updated": "2026-04-05T07:53:28.271000"
   },
   {
     "scheme_id": "UPAVP-603749e0dac3",
     "name": "UPAVP AIIMS Road Residential Plot Lottery 2025",
     "city": "Gorakhpur",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 550,
@@ -159,14 +159,14 @@
     "location_details": "AIIMS Road, Gorakhpur",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825279"
+    "last_updated": "2026-04-05T07:53:28.271005"
   },
   {
     "scheme_id": "UPAVP-b960527f6887",
     "name": "UPAVP Vrindavan Corridor Residential Plot Lottery 2025",
     "city": "Mathura",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 320,
@@ -177,14 +177,14 @@
     "location_details": "Vrindavan Corridor, Mathura",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825283"
+    "last_updated": "2026-04-05T07:53:28.271009"
   },
   {
     "scheme_id": "UPAVP-abdc0adf1c3b",
     "name": "UPAVP Kanth Road Residential Plot Lottery 2025",
     "city": "Moradabad",
     "authority": "UPAVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 350,
@@ -195,14 +195,14 @@
     "location_details": "Kanth Road, Moradabad",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825286"
+    "last_updated": "2026-04-05T07:53:28.271014"
   },
   {
     "scheme_id": "ADA-1114754aebcd",
     "name": "ADA Kalindi Vihar Phase 3 Residential Plot Lottery 2025",
     "city": "Agra",
     "authority": "ADA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-15",
     "close_date": "2025-06-30",
     "total_plots": 580,
@@ -213,14 +213,14 @@
     "location_details": "Kalindi Vihar, Agra",
     "apply_url": "https://adaagra.gov.in",
     "source_url": "https://adaagra.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825294"
+    "last_updated": "2026-04-05T07:53:28.271319"
   },
   {
     "scheme_id": "ADA-da5a1f03fee6",
     "name": "ADA Taj Nagari Phase 2 Residential Plot Lottery 2025",
     "city": "Agra",
     "authority": "ADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-12-01",
     "close_date": "2026-01-31",
     "total_plots": 300,
@@ -231,14 +231,14 @@
     "location_details": "Taj Nagari Zone, Agra",
     "apply_url": "https://adaagra.gov.in",
     "source_url": "https://adaagra.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825298"
+    "last_updated": "2026-04-05T07:53:28.271330"
   },
   {
     "scheme_id": "GDA-5f22d9dd4c7e",
     "name": "GDA Kaushambi Residential Plot Lottery 2025",
     "city": "Ghaziabad",
     "authority": "GDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 680,
@@ -249,14 +249,14 @@
     "location_details": "Kaushambi, Ghaziabad",
     "apply_url": "https://gdaghaziabad.com",
     "source_url": "https://gdaghaziabad.com",
-    "last_updated": "2026-04-05T03:29:39.825303"
+    "last_updated": "2026-04-05T07:53:28.271566"
   },
   {
     "scheme_id": "GDA-31d8bfe16f11",
     "name": "GDA Raj Nagar Extension Residential Plot Lottery 2025",
     "city": "Ghaziabad",
     "authority": "GDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 450,
@@ -267,14 +267,14 @@
     "location_details": "Raj Nagar Extension, Ghaziabad",
     "apply_url": "https://gdaghaziabad.com",
     "source_url": "https://gdaghaziabad.com",
-    "last_updated": "2026-04-05T03:29:39.825307"
+    "last_updated": "2026-04-05T07:53:28.271577"
   },
   {
     "scheme_id": "GNIDA-c25198e6f638",
     "name": "GNIDA Sector Omega Residential Plot Lottery 2025",
     "city": "Noida",
     "authority": "GNIDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-15",
     "close_date": "2025-06-30",
     "total_plots": 900,
@@ -285,14 +285,14 @@
     "location_details": "Sector Omega, Greater Noida",
     "apply_url": "https://greaternoida.in",
     "source_url": "https://greaternoida.in",
-    "last_updated": "2026-04-05T03:29:39.825312"
+    "last_updated": "2026-04-05T07:53:28.271792"
   },
   {
     "scheme_id": "YEIDA-27fb3c6ba668",
     "name": "YEIDA Sector 18 Yamuna Expressway Residential Plot Lottery 2025",
     "city": "Noida",
     "authority": "YEIDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 2000,
@@ -303,14 +303,14 @@
     "location_details": "Sector 18, Yamuna Expressway",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com",
-    "last_updated": "2026-04-05T03:29:39.825319"
+    "last_updated": "2026-04-05T07:53:28.271802"
   },
   {
     "scheme_id": "YEIDA-7b022c57b405",
     "name": "YEIDA Noida International Airport Zone Residential Plot Lottery 2025",
     "city": "Noida",
     "authority": "YEIDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 3500,
@@ -321,14 +321,14 @@
     "location_details": "Near Noida International Airport, Jewar",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com",
-    "last_updated": "2026-04-05T03:29:39.825325"
+    "last_updated": "2026-04-05T07:53:28.271809"
   },
   {
     "scheme_id": "NUDA-87c2232bb183",
     "name": "NUDA Sector 122 Residential Plot Lottery 2025",
     "city": "Noida",
     "authority": "NUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 380,
@@ -339,14 +339,14 @@
     "location_details": "Sector 122, Noida",
     "apply_url": "https://noidaauthorityonline.in",
     "source_url": "https://noidaauthorityonline.in",
-    "last_updated": "2026-04-05T03:29:39.825329"
+    "last_updated": "2026-04-05T07:53:28.271817"
   },
   {
     "scheme_id": "ADA-ALG-a29333d5d988",
     "name": "ADA Aligarh Dhanipur Residential Plot Lottery 2025",
     "city": "Aligarh",
     "authority": "ADA-ALG",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 400,
@@ -357,14 +357,14 @@
     "location_details": "Dhanipur, Aligarh",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825334"
+    "last_updated": "2026-04-05T07:53:28.272056"
   },
   {
     "scheme_id": "JDA-JHS-f117b9ff53b1",
     "name": "JDA Jhansi Sipri Bazar Residential Plot Lottery 2025",
     "city": "Jhansi",
     "authority": "JDA-JHS",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-11-01",
     "close_date": "2025-12-31",
     "total_plots": 300,
@@ -375,14 +375,14 @@
     "location_details": "Sipri Bazar, Jhansi",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825338"
+    "last_updated": "2026-04-05T07:53:28.272067"
   },
   {
     "scheme_id": "DDA-9e3d0127d1a6",
     "name": "DDA Dwarka Extension Residential Plot Lottery 2025",
     "city": "Delhi",
     "authority": "DDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 6000,
@@ -393,14 +393,14 @@
     "location_details": "Dwarka Extension, South West Delhi",
     "apply_url": "https://dda.gov.in",
     "source_url": "https://dda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825344"
+    "last_updated": "2026-04-05T07:53:28.272282"
   },
   {
     "scheme_id": "DDA-57adf7f6167b",
     "name": "DDA Narela Residential Plot Lottery 2025",
     "city": "Delhi",
     "authority": "DDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 4500,
@@ -411,14 +411,14 @@
     "location_details": "Narela, North Delhi",
     "apply_url": "https://dda.gov.in",
     "source_url": "https://dda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825347"
+    "last_updated": "2026-04-05T07:53:28.272293"
   },
   {
     "scheme_id": "MHADA-5d146e3ffa0d",
     "name": "MHADA Mumbai Board Residential Plot Lottery 2025",
     "city": "Mumbai",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 3500,
@@ -429,14 +429,14 @@
     "location_details": "MMR Multiple Locations, Mumbai",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825358"
+    "last_updated": "2026-04-05T07:53:28.272509"
   },
   {
     "scheme_id": "MHADA-7c20b32dddf5",
     "name": "MHADA Pune Board Residential Plot Lottery 2025",
     "city": "Pune",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 5000,
@@ -447,14 +447,14 @@
     "location_details": "Pune, Pimpri Chinchwad, Solapur",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825362"
+    "last_updated": "2026-04-05T07:53:28.272519"
   },
   {
     "scheme_id": "MHADA-bfea4ed7e3e7",
     "name": "MHADA Nashik Board Residential Plot Lottery 2025",
     "city": "Nashik",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-05-01",
     "close_date": "2025-07-31",
     "total_plots": 1000,
@@ -465,14 +465,14 @@
     "location_details": "Nashik, Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825368"
+    "last_updated": "2026-04-05T07:53:28.272526"
   },
   {
     "scheme_id": "MHADA-2a8024cc81e0",
     "name": "MHADA Nagpur Board Residential Plot Lottery 2025",
     "city": "Nagpur",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 400,
@@ -483,14 +483,14 @@
     "location_details": "Nagpur, Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825371"
+    "last_updated": "2026-04-05T07:53:28.272533"
   },
   {
     "scheme_id": "MHADA-697b8c8bfe18",
     "name": "MHADA Chhatrapati Sambhaji Nagar Board Residential Lottery 2025",
     "city": "Aurangabad",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 800,
@@ -501,14 +501,14 @@
     "location_details": "Aurangabad, Marathwada",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825377"
+    "last_updated": "2026-04-05T07:53:28.272537"
   },
   {
     "scheme_id": "MHADA-5af323dce74d",
     "name": "MHADA Thane District Residential Plot Lottery 2025",
     "city": "Thane",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 2500,
@@ -519,14 +519,14 @@
     "location_details": "Thane District, MMR",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825381"
+    "last_updated": "2026-04-05T07:53:28.272541"
   },
   {
     "scheme_id": "MHADA-35718f0f65ef",
     "name": "MHADA Pune Board Kolhapur Residential Plot Lottery 2025",
     "city": "Kolhapur",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 450,
@@ -537,14 +537,14 @@
     "location_details": "Kolhapur, Western Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825384"
+    "last_updated": "2026-04-05T07:53:28.272544"
   },
   {
     "scheme_id": "MHADA-ce5bf4530b96",
     "name": "MHADA Konkan Board Kalyan Dombivli Residential Lottery 2025",
     "city": "Kalyan",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 1000,
@@ -555,14 +555,14 @@
     "location_details": "Kalyan-Dombivli, MMR",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825388"
+    "last_updated": "2026-04-05T07:53:28.272549"
   },
   {
     "scheme_id": "MHADA-a50a0019538c",
     "name": "MHADA Vasai Virar Residential Plot Lottery 2025",
     "city": "Vasai",
     "authority": "MHADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 800,
@@ -573,14 +573,14 @@
     "location_details": "Vasai-Virar, MMR North",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825391"
+    "last_updated": "2026-04-05T07:53:28.272552"
   },
   {
     "scheme_id": "CIDCO-50a93134d9e0",
     "name": "CIDCO Navi Mumbai Residential Plot Lottery 2025",
     "city": "Navi Mumbai",
     "authority": "CIDCO",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-01",
     "close_date": "2025-06-30",
     "total_plots": 15000,
@@ -591,14 +591,14 @@
     "location_details": "Kharghar, Taloja, Dronagiri, Navi Mumbai",
     "apply_url": "https://cidcohomes.com",
     "source_url": "https://cidcohomes.com",
-    "last_updated": "2026-04-05T03:29:39.825398"
+    "last_updated": "2026-04-05T07:53:28.272791"
   },
   {
     "scheme_id": "CIDCO-90fe75a3971b",
     "name": "CIDCO Panvel Kharghar Residential Plot Lottery 2025",
     "city": "Panvel",
     "authority": "CIDCO",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 2000,
@@ -609,14 +609,14 @@
     "location_details": "Panvel-Kharghar, Navi Mumbai South",
     "apply_url": "https://cidcohomes.com",
     "source_url": "https://cidcohomes.com",
-    "last_updated": "2026-04-05T03:29:39.825403"
+    "last_updated": "2026-04-05T07:53:28.272802"
   },
   {
     "scheme_id": "PMRDA-928ca38d2fe5",
     "name": "PMRDA Chakan Integrated Township Residential Plot Lottery 2025",
     "city": "Pune",
     "authority": "PMRDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 800,
@@ -627,14 +627,14 @@
     "location_details": "Chakan, Pune",
     "apply_url": "https://pmrda.gov.in",
     "source_url": "https://pmrda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825409"
+    "last_updated": "2026-04-05T07:53:28.273037"
   },
   {
     "scheme_id": "NIT-6e1496d8d6b6",
     "name": "NIT Hingna Road Residential Plot Lottery 2025",
     "city": "Nagpur",
     "authority": "NIT",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 650,
@@ -645,14 +645,14 @@
     "location_details": "Hingna Road, Nagpur West",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825414"
+    "last_updated": "2026-04-05T07:53:28.273239"
   },
   {
     "scheme_id": "NIT-9f73a86d85cf",
     "name": "NIT MIHAN SEZ Residential Township Plot Lottery 2025",
     "city": "Nagpur",
     "authority": "NIT",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 1500,
@@ -663,14 +663,14 @@
     "location_details": "MIHAN Nagpur Airport Zone",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825417"
+    "last_updated": "2026-04-05T07:53:28.273248"
   },
   {
     "scheme_id": "BDA-d1c21849fcf3",
     "name": "BDA Arkavathy Layout 2E Residential Sites Lottery 2025",
     "city": "Bangalore",
     "authority": "BDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-01",
     "close_date": "2025-06-30",
     "total_plots": 5000,
@@ -681,14 +681,14 @@
     "location_details": "Arkavathy Layout, North Bangalore",
     "apply_url": "https://bdabangalore.org",
     "source_url": "https://bdabangalore.org",
-    "last_updated": "2026-04-05T03:29:39.825426"
+    "last_updated": "2026-04-05T07:53:28.273437"
   },
   {
     "scheme_id": "BDA-92f6131ebfb7",
     "name": "BDA JP Nagar 9th Phase Residential Plot Lottery 2025",
     "city": "Bangalore",
     "authority": "BDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 800,
@@ -699,14 +699,14 @@
     "location_details": "JP Nagar 9th Phase, South Bangalore",
     "apply_url": "https://bdabangalore.org",
     "source_url": "https://bdabangalore.org",
-    "last_updated": "2026-04-05T03:29:39.825430"
+    "last_updated": "2026-04-05T07:53:28.273443"
   },
   {
     "scheme_id": "KHB-907f29ea22f2",
     "name": "KHB Mysuru Outer Ring Road Residential Plot Lottery 2025",
     "city": "Mysuru",
     "authority": "KHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 750,
@@ -717,14 +717,14 @@
     "location_details": "ORR Extension, Mysuru",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825437"
+    "last_updated": "2026-04-05T07:53:28.273556"
   },
   {
     "scheme_id": "KHB-c3e4e89a1faf",
     "name": "KHB Hubballi Dharwad Smart City Residential Plot Lottery 2025",
     "city": "Hubballi",
     "authority": "KHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 550,
@@ -735,14 +735,14 @@
     "location_details": "Smart City Zone, Hubballi-Dharwad",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825440"
+    "last_updated": "2026-04-05T07:53:28.273561"
   },
   {
     "scheme_id": "KHB-1bb5a874840e",
     "name": "KHB Mangalore Deralakatte Residential Plot Lottery 2025",
     "city": "Mangalore",
     "authority": "KHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 420,
@@ -753,14 +753,14 @@
     "location_details": "Deralakatte, Mangalore",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825444"
+    "last_updated": "2026-04-05T07:53:28.273564"
   },
   {
     "scheme_id": "KHB-7207a5dd8d7d",
     "name": "KHB Belagavi Residential Plot Lottery 2025",
     "city": "Belgaum",
     "authority": "KHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 500,
@@ -771,14 +771,14 @@
     "location_details": "Belagavi, North Karnataka",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825447"
+    "last_updated": "2026-04-05T07:53:28.273568"
   },
   {
     "scheme_id": "KHB-16bc162b5d1d",
     "name": "KHB Tumakuru Bangalore Periphery Residential Plot Lottery 2025",
     "city": "Tumkur",
     "authority": "KHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 480,
@@ -789,14 +789,14 @@
     "location_details": "Tumakuru, Bangalore Periphery",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825450"
+    "last_updated": "2026-04-05T07:53:28.273571"
   },
   {
     "scheme_id": "HMDA-03ff2daef936",
     "name": "HMDA Adibatla IT Corridor Residential Plot Lottery 2025",
     "city": "Hyderabad",
     "authority": "HMDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 2000,
@@ -807,14 +807,14 @@
     "location_details": "Adibatla, Hyderabad IT Corridor",
     "apply_url": "https://hmda.gov.in",
     "source_url": "https://hmda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825457"
+    "last_updated": "2026-04-05T07:53:28.273704"
   },
   {
     "scheme_id": "HMDA-564d03e7d089",
     "name": "HMDA ORR Corridor Residential Plot Lottery Phase 3 2025",
     "city": "Hyderabad",
     "authority": "HMDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 2800,
@@ -825,14 +825,14 @@
     "location_details": "ORR Corridor, Hyderabad",
     "apply_url": "https://hmda.gov.in",
     "source_url": "https://hmda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825460"
+    "last_updated": "2026-04-05T07:53:28.273709"
   },
   {
     "scheme_id": "TSIIC-c640336ad374",
     "name": "TSIIC Hanamkonda Residential Plot Lottery 2025",
     "city": "Warangal",
     "authority": "TSIIC",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 700,
@@ -843,14 +843,14 @@
     "location_details": "Hanamkonda, Warangal Urban",
     "apply_url": "https://tsiic.telangana.gov.in",
     "source_url": "https://tsiic.telangana.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825465"
+    "last_updated": "2026-04-05T07:53:28.273815"
   },
   {
     "scheme_id": "TSIIC-0f46ba78caef",
     "name": "TSIIC Karimnagar Smart City Residential Plot Lottery 2025",
     "city": "Karimnagar",
     "authority": "TSIIC",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 480,
@@ -861,14 +861,14 @@
     "location_details": "Karimnagar Smart City Zone",
     "apply_url": "https://tsiic.telangana.gov.in",
     "source_url": "https://tsiic.telangana.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825471"
+    "last_updated": "2026-04-05T07:53:28.273820"
   },
   {
     "scheme_id": "CMDA-f7216d0892bf",
     "name": "CMDA Avadi Residential Plot Lottery 2025",
     "city": "Chennai",
     "authority": "CMDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 900,
@@ -879,14 +879,14 @@
     "location_details": "Avadi, Chennai Metropolitan Region",
     "apply_url": "https://cmdachennai.gov.in",
     "source_url": "https://cmdachennai.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825476"
+    "last_updated": "2026-04-05T07:53:28.273931"
   },
   {
     "scheme_id": "CMDA-c56406403fb9",
     "name": "CMDA Sholinganallur Perungudi Residential Plot Lottery 2025",
     "city": "Chennai",
     "authority": "CMDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 550,
@@ -897,14 +897,14 @@
     "location_details": "Sholinganallur, Chennai South IT Corridor",
     "apply_url": "https://cmdachennai.gov.in",
     "source_url": "https://cmdachennai.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825480"
+    "last_updated": "2026-04-05T07:53:28.273937"
   },
   {
     "scheme_id": "TNHB-28117c17aee8",
     "name": "TNHB Coimbatore Saravanampatti IT Corridor Residential Plot Lottery 2025",
     "city": "Coimbatore",
     "authority": "TNHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 450,
@@ -915,14 +915,14 @@
     "location_details": "Saravanampatti IT Corridor, Coimbatore",
     "apply_url": "https://tnhb.gov.in",
     "source_url": "https://tnhb.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825485"
+    "last_updated": "2026-04-05T07:53:28.273940"
   },
   {
     "scheme_id": "TNHB-f1bf96ccb45b",
     "name": "TNHB Madurai Tallakulam Residential Plot Lottery 2025",
     "city": "Madurai",
     "authority": "TNHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 360,
@@ -933,14 +933,14 @@
     "location_details": "Tallakulam, Madurai",
     "apply_url": "https://tnhb.gov.in",
     "source_url": "https://tnhb.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825488"
+    "last_updated": "2026-04-05T07:53:28.273944"
   },
   {
     "scheme_id": "SIPCOT-90bfd07a7de6",
     "name": "SIPCOT Hosur Electronics Corridor Residential Plot Lottery 2025",
     "city": "Hosur",
     "authority": "SIPCOT",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 500,
@@ -951,14 +951,14 @@
     "location_details": "Hosur Electronics Corridor, Krishnagiri",
     "apply_url": "https://sipcot.in",
     "source_url": "https://sipcot.in",
-    "last_updated": "2026-04-05T03:29:39.825492"
+    "last_updated": "2026-04-05T07:53:28.273947"
   },
   {
     "scheme_id": "JDA-1c295dbb3bb3",
     "name": "JDA Jagatpura Residential Plot Lottery 2025",
     "city": "Jaipur",
     "authority": "JDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-02-01",
     "close_date": "2025-05-31",
     "total_plots": 1000,
@@ -969,14 +969,14 @@
     "location_details": "Jagatpura, Jaipur South",
     "apply_url": "https://jda.gov.in",
     "source_url": "https://jda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825498"
+    "last_updated": "2026-04-05T07:53:28.274102"
   },
   {
     "scheme_id": "JDA-4a3e069ba3b2",
     "name": "JDA Mansarovar Extension Residential Plot Lottery 2025",
     "city": "Jaipur",
     "authority": "JDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 720,
@@ -987,14 +987,14 @@
     "location_details": "Mansarovar Extension, Jaipur",
     "apply_url": "https://jda.gov.in",
     "source_url": "https://jda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825502"
+    "last_updated": "2026-04-05T07:53:28.274107"
   },
   {
     "scheme_id": "RHB-e7a844f0459b",
     "name": "RHB Jodhpur Pratap Nagar Residential Plot Lottery 2025",
     "city": "Jodhpur",
     "authority": "RHB",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-01",
     "close_date": "2025-04-30",
     "total_plots": 580,
@@ -1005,14 +1005,14 @@
     "location_details": "Pratap Nagar, Jodhpur",
     "apply_url": "https://rhb.rajasthan.gov.in",
     "source_url": "https://rhb.rajasthan.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825510"
+    "last_updated": "2026-04-05T07:53:28.274212"
   },
   {
     "scheme_id": "RHB-b5e4e6382c87",
     "name": "RHB Udaipur Ayad Residential Plot Lottery 2025",
     "city": "Udaipur",
     "authority": "RHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 440,
@@ -1023,14 +1023,14 @@
     "location_details": "Ayad Area, Udaipur",
     "apply_url": "https://rhb.rajasthan.gov.in",
     "source_url": "https://rhb.rajasthan.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825514"
+    "last_updated": "2026-04-05T07:53:28.274217"
   },
   {
     "scheme_id": "RHB-a6cf75db6332",
     "name": "RHB Kota Vigyan Nagar Residential Plot Lottery 2025",
     "city": "Kota",
     "authority": "RHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 380,
@@ -1041,14 +1041,14 @@
     "location_details": "Vigyan Nagar, Kota",
     "apply_url": "https://rhb.rajasthan.gov.in",
     "source_url": "https://rhb.rajasthan.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825519"
+    "last_updated": "2026-04-05T07:53:28.274221"
   },
   {
     "scheme_id": "RHB-764778151d4b",
     "name": "RHB Bikaner Naya Shahar Residential Plot Lottery 2025",
     "city": "Bikaner",
     "authority": "RHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-11-01",
     "close_date": "2025-12-31",
     "total_plots": 260,
@@ -1059,14 +1059,14 @@
     "location_details": "Naya Shahar, Bikaner",
     "apply_url": "https://rhb.rajasthan.gov.in",
     "source_url": "https://rhb.rajasthan.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825523"
+    "last_updated": "2026-04-05T07:53:28.274224"
   },
   {
     "scheme_id": "AUDA-874b14a60fb2",
     "name": "AUDA Sanand Ring Road Residential Plot Lottery 2025",
     "city": "Ahmedabad",
     "authority": "AUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 1200,
@@ -1077,14 +1077,14 @@
     "location_details": "Sanand Ring Road, Ahmedabad Metro",
     "apply_url": "https://auda.org.in",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-05T03:29:39.825529"
+    "last_updated": "2026-04-05T07:53:28.274337"
   },
   {
     "scheme_id": "AUDA-15bab6d00425",
     "name": "AUDA GIFT City Peripheral Residential Plot Lottery 2025",
     "city": "Ahmedabad",
     "authority": "AUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 550,
@@ -1095,14 +1095,14 @@
     "location_details": "GIFT City Peripheral, Gandhinagar",
     "apply_url": "https://auda.org.in",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-05T03:29:39.825532"
+    "last_updated": "2026-04-05T07:53:28.274342"
   },
   {
     "scheme_id": "AUDA-cceae3d81650",
     "name": "AUDA Vallabh Vidyanagar Residential Plot Lottery 2025",
     "city": "Anand",
     "authority": "AUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 380,
@@ -1113,14 +1113,14 @@
     "location_details": "Vallabh Vidyanagar, Anand",
     "apply_url": "https://auda.org.in",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-05T03:29:39.825535"
+    "last_updated": "2026-04-05T07:53:28.274346"
   },
   {
     "scheme_id": "SUDA-abb7d4e6e6b9",
     "name": "SUDA Kamrej Residential Plot Lottery 2025",
     "city": "Surat",
     "authority": "SUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 680,
@@ -1131,14 +1131,14 @@
     "location_details": "Kamrej, Surat District",
     "apply_url": "https://suda.gujarat.gov.in",
     "source_url": "https://suda.gujarat.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825540"
+    "last_updated": "2026-04-05T07:53:28.274459"
   },
   {
     "scheme_id": "VUDA-2efd98fb1954",
     "name": "VUDA Waghodia Road Residential Plot Lottery 2025",
     "city": "Vadodara",
     "authority": "VUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 550,
@@ -1149,14 +1149,14 @@
     "location_details": "Waghodia Road, Vadodara East",
     "apply_url": "https://vuda.gujarat.gov.in",
     "source_url": "https://vuda.gujarat.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825544"
+    "last_updated": "2026-04-05T07:53:28.274557"
   },
   {
     "scheme_id": "VUDA-1ebe80a35a27",
     "name": "VUDA Manjalpura Residential Plot Lottery 2025",
     "city": "Vadodara",
     "authority": "VUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 380,
@@ -1167,14 +1167,14 @@
     "location_details": "Manjalpura, Vadodara",
     "apply_url": "https://vuda.gujarat.gov.in",
     "source_url": "https://vuda.gujarat.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825547"
+    "last_updated": "2026-04-05T07:53:28.274562"
   },
   {
     "scheme_id": "RUDA-49582698f2d0",
     "name": "RUDA Rajkot Aji Residential Plot Lottery 2025",
     "city": "Rajkot",
     "authority": "RUDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-03-01",
     "close_date": "2025-06-30",
     "total_plots": 650,
@@ -1185,14 +1185,14 @@
     "location_details": "Aji Area, Rajkot",
     "apply_url": "https://ruda.gujarat.gov.in",
     "source_url": "https://ruda.gujarat.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825551"
+    "last_updated": "2026-04-05T07:53:28.274702"
   },
   {
     "scheme_id": "GUDAH-631139266e29",
     "name": "GUDAH Gandhinagar Sector 28 Residential Plot Lottery 2025",
     "city": "Gandhinagar",
     "authority": "GUDAH",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 560,
@@ -1203,14 +1203,14 @@
     "location_details": "Sector 28, Gandhinagar",
     "apply_url": "https://gudah.gujarat.gov.in",
     "source_url": "https://gudah.gujarat.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825555"
+    "last_updated": "2026-04-05T07:53:28.274814"
   },
   {
     "scheme_id": "HSVP-52e538ddae01",
     "name": "HSVP Pataudi Road Gurugram Residential Plot Lottery 2025",
     "city": "Gurgaon",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 720,
@@ -1221,14 +1221,14 @@
     "location_details": "Pataudi Road, Gurugram",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825568"
+    "last_updated": "2026-04-05T07:53:28.274914"
   },
   {
     "scheme_id": "HSVP-e997d9f3d217",
     "name": "HSVP Faridabad Sector 89 Residential Plot Lottery 2025",
     "city": "Faridabad",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 500,
@@ -1239,14 +1239,14 @@
     "location_details": "Sector 89, Faridabad",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825572"
+    "last_updated": "2026-04-05T07:53:28.274919"
   },
   {
     "scheme_id": "HSVP-5ce9f958848c",
     "name": "HSVP Panchkula Sector 26 Residential Plot Lottery 2025",
     "city": "Panchkula",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 360,
@@ -1257,14 +1257,14 @@
     "location_details": "Sector 26, Panchkula",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825575"
+    "last_updated": "2026-04-05T07:53:28.274923"
   },
   {
     "scheme_id": "HSVP-ebd4aa2b8078",
     "name": "HSVP Hisar Urban Estate Residential Plot Lottery 2025",
     "city": "Hisar",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 380,
@@ -1275,14 +1275,14 @@
     "location_details": "Urban Estate, Hisar",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825578"
+    "last_updated": "2026-04-05T07:53:28.274926"
   },
   {
     "scheme_id": "HSVP-f39bc5108d31",
     "name": "HSVP Sonipat Kundli NCR Residential Plot Lottery 2025",
     "city": "Sonipat",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 540,
@@ -1290,17 +1290,17 @@
     "price_max": 80.0,
     "area_sqft_min": null,
     "area_sqft_max": null,
-    "location_details": "Kundli, Sonipat NCR Periphery",
+    "location_details": "Kundli, Sonipat (NCR Periphery)",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825581"
+    "last_updated": "2026-04-05T07:53:28.274929"
   },
   {
     "scheme_id": "HSVP-582bee8691a6",
     "name": "HSVP Karnal Sector 32 Residential Plot Lottery 2025",
     "city": "Karnal",
     "authority": "HSVP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 320,
@@ -1311,14 +1311,14 @@
     "location_details": "Sector 32, Karnal",
     "apply_url": "https://hsvphry.gov.in",
     "source_url": "https://hsvphry.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825585"
+    "last_updated": "2026-04-05T07:53:28.274933"
   },
   {
     "scheme_id": "IDA-18c72c6d8bcc",
     "name": "IDA Super Corridor Residential Plot Lottery 2025",
     "city": "Indore",
     "authority": "IDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-03-01",
     "close_date": "2025-06-30",
     "total_plots": 1200,
@@ -1329,14 +1329,14 @@
     "location_details": "Super Corridor, Indore near IIM and Airport",
     "apply_url": "https://ida.mp.gov.in",
     "source_url": "https://ida.mp.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825591"
+    "last_updated": "2026-04-05T07:53:28.275134"
   },
   {
     "scheme_id": "IDA-775ca5445ff8",
     "name": "IDA Bypass Road South Indore Residential Plot Lottery 2025",
     "city": "Indore",
     "authority": "IDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 820,
@@ -1347,14 +1347,14 @@
     "location_details": "Bypass Road, Indore South",
     "apply_url": "https://ida.mp.gov.in",
     "source_url": "https://ida.mp.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825594"
+    "last_updated": "2026-04-05T07:53:28.275142"
   },
   {
     "scheme_id": "BDA-MP-2711bc1569bc",
     "name": "BDA Bhopal Katara Hills Residential Plot Lottery 2025",
     "city": "Bhopal",
     "authority": "BDA-MP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 800,
@@ -1365,14 +1365,14 @@
     "location_details": "Katara Hills, Bhopal",
     "apply_url": "https://bda.mp.gov.in",
     "source_url": "https://bda.mp.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825599"
+    "last_updated": "2026-04-05T07:53:28.275335"
   },
   {
     "scheme_id": "BDA-MP-1a8c286430ef",
     "name": "BDA Bhopal Shahpura Extension Residential Plot Lottery 2025",
     "city": "Bhopal",
     "authority": "BDA-MP",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 650,
@@ -1383,14 +1383,14 @@
     "location_details": "Shahpura Extension, Bhopal",
     "apply_url": "https://bda.mp.gov.in",
     "source_url": "https://bda.mp.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825603"
+    "last_updated": "2026-04-05T07:53:28.275344"
   },
   {
     "scheme_id": "GMADA-b8db7b005f1b",
     "name": "GMADA Ecocity New Chandigarh Residential Plot Lottery 2025",
     "city": "Chandigarh",
     "authority": "GMADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 650,
@@ -1401,14 +1401,14 @@
     "location_details": "Ecocity, New Chandigarh Mullanpur",
     "apply_url": "https://gmada.gov.in",
     "source_url": "https://gmada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825610"
+    "last_updated": "2026-04-05T07:53:28.275521"
   },
   {
     "scheme_id": "GMADA-5aec905f905b",
     "name": "GMADA Mohali Phase 11 Residential Plot Lottery 2025",
     "city": "Mohali",
     "authority": "GMADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 500,
@@ -1416,17 +1416,17 @@
     "price_max": 180.0,
     "area_sqft_min": null,
     "area_sqft_max": null,
-    "location_details": "Phase 11, Mohali SAS Nagar",
+    "location_details": "Phase 11, Mohali (SAS Nagar)",
     "apply_url": "https://gmada.gov.in",
     "source_url": "https://gmada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825614"
+    "last_updated": "2026-04-05T07:53:28.275529"
   },
   {
     "scheme_id": "GMADA-894b05dbf14c",
     "name": "GMADA Zirakpur New Chandigarh Periphery Residential Plot Lottery 2025",
     "city": "Zirakpur",
     "authority": "GMADA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 580,
@@ -1437,14 +1437,14 @@
     "location_details": "Zirakpur, Chandigarh Periphery",
     "apply_url": "https://gmada.gov.in",
     "source_url": "https://gmada.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825617"
+    "last_updated": "2026-04-05T07:53:28.275532"
   },
   {
     "scheme_id": "PUDA-a4868a46d4c3",
     "name": "PUDA Ludhiana Sector 32A Residential Plot Lottery 2025",
     "city": "Ludhiana",
     "authority": "PUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 580,
@@ -1455,14 +1455,14 @@
     "location_details": "Sector 32A, Ludhiana",
     "apply_url": "https://puda.gov.in",
     "source_url": "https://puda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825621"
+    "last_updated": "2026-04-05T07:53:28.275721"
   },
   {
     "scheme_id": "PUDA-cb6a77f760cd",
     "name": "PUDA Amritsar Periphery Township Residential Plot Lottery 2025",
     "city": "Amritsar",
     "authority": "PUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 450,
@@ -1473,14 +1473,14 @@
     "location_details": "Amritsar Periphery Township",
     "apply_url": "https://puda.gov.in",
     "source_url": "https://puda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825624"
+    "last_updated": "2026-04-05T07:53:28.275728"
   },
   {
     "scheme_id": "PUDA-512c361c2935",
     "name": "PUDA Jalandhar Development Area Residential Plot Lottery 2025",
     "city": "Jalandhar",
     "authority": "PUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 360,
@@ -1491,14 +1491,14 @@
     "location_details": "Jalandhar Development Area",
     "apply_url": "https://puda.gov.in",
     "source_url": "https://puda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825627"
+    "last_updated": "2026-04-05T07:53:28.275732"
   },
   {
     "scheme_id": "PUDA-04f9fa9e77a2",
     "name": "PUDA Patiala Urban Estate Residential Plot Lottery 2025",
     "city": "Patiala",
     "authority": "PUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 380,
@@ -1509,14 +1509,14 @@
     "location_details": "Urban Estate, Patiala",
     "apply_url": "https://puda.gov.in",
     "source_url": "https://puda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825631"
+    "last_updated": "2026-04-05T07:53:28.275735"
   },
   {
     "scheme_id": "KMDA-b14e8293f610",
     "name": "KMDA New Town Rajarhat Residential Plot Lottery 2025",
     "city": "Kolkata",
     "authority": "KMDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 800,
@@ -1527,14 +1527,14 @@
     "location_details": "New Town Rajarhat, Kolkata East",
     "apply_url": "https://kmda.gov.in",
     "source_url": "https://kmda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825636"
+    "last_updated": "2026-04-05T07:53:28.275917"
   },
   {
     "scheme_id": "HIDCO-c837325a54c5",
     "name": "HIDCO Action Area 3 Residential Plot Lottery 2025",
     "city": "Kolkata",
     "authority": "HIDCO",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 1000,
@@ -1545,14 +1545,14 @@
     "location_details": "Action Area 3, New Town, Kolkata",
     "apply_url": "https://hidcoltd.com",
     "source_url": "https://hidcoltd.com",
-    "last_updated": "2026-04-05T03:29:39.825640"
+    "last_updated": "2026-04-05T07:53:28.275926"
   },
   {
     "scheme_id": "VMRDA-333537d4a4ed",
     "name": "VMRDA Rushikonda Beach Corridor Residential Plot Lottery 2025",
     "city": "Visakhapatnam",
     "authority": "VMRDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 580,
@@ -1563,14 +1563,14 @@
     "location_details": "Rushikonda, Visakhapatnam Waterfront",
     "apply_url": "https://vmrda.gov.in",
     "source_url": "https://vmrda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825644"
+    "last_updated": "2026-04-05T07:53:28.276128"
   },
   {
     "scheme_id": "VMRDA-274650e3aa5d",
     "name": "VMRDA Pendurthi Township Residential Plot Lottery 2025",
     "city": "Visakhapatnam",
     "authority": "VMRDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 700,
@@ -1581,14 +1581,14 @@
     "location_details": "Pendurthi Township, Vizag",
     "apply_url": "https://vmrda.gov.in",
     "source_url": "https://vmrda.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825656"
+    "last_updated": "2026-04-05T07:53:28.276135"
   },
   {
     "scheme_id": "CRDA-f3f00f12440f",
     "name": "CRDA Amaravati Capital City Residential Plot Lottery 2025",
     "city": "Vijayawada",
     "authority": "CRDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-12-31",
     "total_plots": 2800,
@@ -1599,14 +1599,14 @@
     "location_details": "Amaravati Capital Region, Andhra Pradesh",
     "apply_url": "https://crda.ap.gov.in",
     "source_url": "https://crda.ap.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825664"
+    "last_updated": "2026-04-05T07:53:28.276310"
   },
   {
     "scheme_id": "CRDA-97114484cd25",
     "name": "CRDA Guntur Nallapadu Residential Plot Lottery 2025",
     "city": "Vijayawada",
     "authority": "CRDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-07-01",
     "close_date": "2025-09-30",
     "total_plots": 800,
@@ -1617,14 +1617,14 @@
     "location_details": "Nallapadu, Guntur",
     "apply_url": "https://crda.ap.gov.in",
     "source_url": "https://crda.ap.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825667"
+    "last_updated": "2026-04-05T07:53:28.276318"
   },
   {
     "scheme_id": "TUDA-7c8fa8251bed",
     "name": "TUDA Tirupati Pilgrim City Residential Plot Lottery 2025",
     "city": "Tirupati",
     "authority": "TUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 750,
@@ -1635,14 +1635,14 @@
     "location_details": "Tirupati, Chittoor District",
     "apply_url": "https://uda.ap.gov.in",
     "source_url": "https://uda.ap.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825671"
+    "last_updated": "2026-04-05T07:53:28.276500"
   },
   {
     "scheme_id": "GCDA-e53a5cf6c9bc",
     "name": "GCDA Marine Drive Smart City Residential Plot Lottery 2025",
     "city": "Kochi",
     "authority": "GCDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-11-01",
     "close_date": "2025-12-31",
     "total_plots": 280,
@@ -1653,14 +1653,14 @@
     "location_details": "Marine Drive, Ernakulam, Kochi",
     "apply_url": "https://gcda.kerala.gov.in",
     "source_url": "https://gcda.kerala.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825677"
+    "last_updated": "2026-04-05T07:53:28.276672"
   },
   {
     "scheme_id": "TRIDA-355b6c8de21a",
     "name": "TRIDA Technopark Periphery Residential Plot Lottery 2025",
     "city": "Thiruvananthapuram",
     "authority": "TRIDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-12-01",
     "close_date": "2026-02-28",
     "total_plots": 420,
@@ -1671,14 +1671,14 @@
     "location_details": "Technopark Periphery, Thiruvananthapuram",
     "apply_url": "https://trida.kerala.gov.in",
     "source_url": "https://trida.kerala.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825680"
+    "last_updated": "2026-04-05T07:53:28.276846"
   },
   {
     "scheme_id": "KSHB-24622159df1e",
     "name": "KSHB Kozhikode Beypore Residential Plot Lottery 2025",
     "city": "Kozhikode",
     "authority": "KSHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 320,
@@ -1689,14 +1689,14 @@
     "location_details": "Beypore, Kozhikode",
     "apply_url": "https://kshb.kerala.gov.in",
     "source_url": "https://kshb.kerala.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825684"
+    "last_updated": "2026-04-05T07:53:28.277055"
   },
   {
     "scheme_id": "KSHB-e52339f6ec16",
     "name": "KSHB Thrissur Cultural Capital Residential Plot Lottery 2025",
     "city": "Thrissur",
     "authority": "KSHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 300,
@@ -1707,14 +1707,14 @@
     "location_details": "Thrissur, Central Kerala",
     "apply_url": "https://kshb.kerala.gov.in",
     "source_url": "https://kshb.kerala.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825687"
+    "last_updated": "2026-04-05T07:53:28.277066"
   },
   {
     "scheme_id": "BDA-OD-0bf6ff9d340c",
     "name": "BDA Bhubaneswar Smart City Residential Plot Lottery 2025",
     "city": "Bhubaneswar",
     "authority": "BDA-OD",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 780,
@@ -1725,14 +1725,14 @@
     "location_details": "Chandrasekharpur, Bhubaneswar Smart City Zone",
     "apply_url": "https://bda.odisha.gov.in",
     "source_url": "https://bda.odisha.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825692"
+    "last_updated": "2026-04-05T07:53:28.277248"
   },
   {
     "scheme_id": "BSPHCL-56a0fe2228a0",
     "name": "BSPHCL Patna Danapur Road Residential Plot Lottery 2025",
     "city": "Patna",
     "authority": "BSPHCL",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 1000,
@@ -1743,14 +1743,14 @@
     "location_details": "Danapur Road, Patna",
     "apply_url": "https://bsphcl.gov.in",
     "source_url": "https://bsphcl.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825697"
+    "last_updated": "2026-04-05T07:53:28.277415"
   },
   {
     "scheme_id": "JUIDCO-743389579d68",
     "name": "JUIDCO Ranchi Kanke Road Residential Plot Lottery 2025",
     "city": "Ranchi",
     "authority": "JUIDCO",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-11-01",
     "close_date": "2025-12-31",
     "total_plots": 520,
@@ -1761,14 +1761,14 @@
     "location_details": "Kanke Road, Ranchi",
     "apply_url": "https://juidco.jharkhand.gov.in",
     "source_url": "https://juidco.jharkhand.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825703"
+    "last_updated": "2026-04-05T07:53:28.277582"
   },
   {
     "scheme_id": "JUIDCO-24d87faa22ef",
     "name": "JUIDCO Jamshedpur Steel City Residential Plot Lottery 2025",
     "city": "Jamshedpur",
     "authority": "JUIDCO",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 480,
@@ -1779,14 +1779,14 @@
     "location_details": "Jamshedpur, Steel City Jharkhand",
     "apply_url": "https://juidco.jharkhand.gov.in",
     "source_url": "https://juidco.jharkhand.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825706"
+    "last_updated": "2026-04-05T07:53:28.277591"
   },
   {
     "scheme_id": "CGHB-c37c7709533c",
     "name": "CGHB Naya Raipur Smart City Residential Plot Lottery 2025",
     "city": "Raipur",
     "authority": "CGHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 750,
@@ -1797,14 +1797,14 @@
     "location_details": "Naya Raipur Smart City, Chhattisgarh",
     "apply_url": "https://csidcl.nic.in",
     "source_url": "https://csidcl.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825710"
+    "last_updated": "2026-04-05T07:53:28.277760"
   },
   {
     "scheme_id": "CGHB-f41bf4aeda01",
     "name": "CSIDCO Bhilai Steel Township Residential Plot Lottery 2025",
     "city": "Bhilai",
     "authority": "CGHB",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-10-01",
     "close_date": "2025-12-31",
     "total_plots": 550,
@@ -1815,14 +1815,14 @@
     "location_details": "Bhilai Industrial Township",
     "apply_url": "https://csidcl.nic.in",
     "source_url": "https://csidcl.nic.in",
-    "last_updated": "2026-04-05T03:29:39.825714"
+    "last_updated": "2026-04-05T07:53:28.277768"
   },
   {
     "scheme_id": "MDDA-013b189d8af4",
     "name": "MDDA Dehradun ISBT Road Residential Plot Lottery 2025",
     "city": "Dehradun",
     "authority": "MDDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-03-01",
     "close_date": "2025-06-30",
     "total_plots": 580,
@@ -1833,14 +1833,14 @@
     "location_details": "ISBT Road, Dehradun",
     "apply_url": "https://mdda.uk.gov.in",
     "source_url": "https://mdda.uk.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825719"
+    "last_updated": "2026-04-05T07:53:28.277946"
   },
   {
     "scheme_id": "MDDA-82789d36c36f",
     "name": "MDDA Haridwar Jwalapur Residential Plot Lottery 2025",
     "city": "Haridwar",
     "authority": "MDDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 420,
@@ -1851,14 +1851,14 @@
     "location_details": "Jwalapur, Haridwar",
     "apply_url": "https://mdda.uk.gov.in",
     "source_url": "https://mdda.uk.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825722"
+    "last_updated": "2026-04-05T07:53:28.277980"
   },
   {
     "scheme_id": "KDA-ca0d813c3c20",
     "name": "KDA Haldwani Kathgodam Kumaon Gate Residential Plot Lottery 2025",
     "city": "Haldwani",
     "authority": "KDA",
-    "status": "OPEN",
+    "status": "CLOSED",
     "open_date": "2025-01-01",
     "close_date": "2025-05-31",
     "total_plots": 500,
@@ -1866,17 +1866,17 @@
     "price_max": 110.0,
     "area_sqft_min": null,
     "area_sqft_max": null,
-    "location_details": "Kathgodam, Haldwani Kumaon Gate",
+    "location_details": "Kathgodam, Haldwani (Kumaon Gate)",
     "apply_url": "https://mdda.uk.gov.in",
     "source_url": "https://mdda.uk.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825726"
+    "last_updated": "2026-04-05T07:53:28.277985"
   },
   {
     "scheme_id": "HIMUDA-4cba3b19d125",
     "name": "HIMUDA Shimla Pandeypur Residential Plot Lottery 2025",
     "city": "Shimla",
     "authority": "HIMUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 280,
@@ -1887,14 +1887,14 @@
     "location_details": "Pandeypur, Shimla",
     "apply_url": "https://himuda.com",
     "source_url": "https://himuda.com",
-    "last_updated": "2026-04-05T03:29:39.825732"
+    "last_updated": "2026-04-05T07:53:28.278166"
   },
   {
     "scheme_id": "HIMUDA-50845354954e",
     "name": "HIMUDA Dharamsala Smart City Residential Plot Lottery 2025",
     "city": "Dharamsala",
     "authority": "HIMUDA",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-09-01",
     "close_date": "2025-11-30",
     "total_plots": 220,
@@ -1905,14 +1905,14 @@
     "location_details": "Dharamsala Smart City Zone",
     "apply_url": "https://himuda.com",
     "source_url": "https://himuda.com",
-    "last_updated": "2026-04-05T03:29:39.825736"
+    "last_updated": "2026-04-05T07:53:28.278174"
   },
   {
     "scheme_id": "JDA-JK-16448fcb39ab",
     "name": "JDA Jammu Narwal Residential Plot Lottery 2025",
     "city": "Jammu",
     "authority": "JDA-JK",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-06-01",
     "close_date": "2025-08-31",
     "total_plots": 420,
@@ -1923,14 +1923,14 @@
     "location_details": "Narwal, Jammu",
     "apply_url": "https://jda.jk.gov.in",
     "source_url": "https://jda.jk.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825741"
+    "last_updated": "2026-04-05T07:53:28.278348"
   },
   {
     "scheme_id": "JDA-JK-c30470b02e93",
     "name": "JDA Srinagar HIG Residential Plot Lottery 2025",
     "city": "Srinagar",
     "authority": "JDA-JK",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-08-01",
     "close_date": "2025-10-31",
     "total_plots": 280,
@@ -1941,14 +1941,14 @@
     "location_details": "Srinagar, J&K",
     "apply_url": "https://jda.jk.gov.in",
     "source_url": "https://jda.jk.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825747"
+    "last_updated": "2026-04-05T07:53:28.278355"
   },
   {
     "scheme_id": "GMDA-AS-e0da2536f4f7",
     "name": "GMDA Guwahati North Guwahati Residential Plot Lottery 2025",
     "city": "Guwahati",
     "authority": "GMDA-AS",
-    "status": "UPCOMING",
+    "status": "CLOSED",
     "open_date": "2025-11-01",
     "close_date": "2025-12-31",
     "total_plots": 450,
@@ -1959,6 +1959,6 @@
     "location_details": "North Guwahati, Assam",
     "apply_url": "https://gmda.assam.gov.in",
     "source_url": "https://gmda.assam.gov.in",
-    "last_updated": "2026-04-05T03:29:39.825752"
+    "last_updated": "2026-04-05T07:53:28.278530"
   }
 ]
