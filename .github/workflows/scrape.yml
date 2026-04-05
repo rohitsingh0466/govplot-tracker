@@ -1,34 +1,42 @@
-name: GovPlot Scraper — Auto Run
+name: GovPlot Scraper — Auto Run v3.2
 
-# WORKFLOW DESIGN (v3.1):
+# WORKFLOW v3.2:
 #
 #   FULL PULL (Sunday 6:30 AM IST):
-#     Step A — python -m scraper.main full
-#              Runs all 58 scrapers, filters schemes, recalculates statuses.
-#              Upserts ALL schemes into Supabase (INSERT new + UPDATE existing).
-#              Saves latest.json to git.
-#     No eAuction / LIG / EWS schemes included.
-#     Scheme name format: "Authority Name + Scheme Name + Year of Launch"
+#     - Runs all scrapers in scraper/registry.py (NOT all_cities.py — deleted)
+#     - Live HTTP + Selenium scraping per authority
+#     - Falls back to STATIC data if live fails
+#     - Marks each scheme: data_source = LIVE | STATIC
+#     - Upserts all schemes to Supabase (scheme_id conflict key)
+#     - Sends failure summary email if any scrapers fell back to STATIC
+#     - Commits latest.json to git
 #
-#   REFRESH (Mon–Sat 6:30 AM IST):
-#     Step A — python -m scraper.main refresh
-#              Fetches only OPEN + UPCOMING schemes from Supabase.
-#              Recalculates status from today's date vs open/close dates.
-#              Updates changed statuses in Supabase (no new inserts).
-#              Saves updated latest.json to git.
+#   REFRESH (Mon-Sat 6:30 AM IST):
+#     - Re-checks OPEN + UPCOMING schemes in Supabase
+#     - Updates status if close_date has passed (OPEN → CLOSED etc.)
+#     - No new inserts in refresh mode
+#     - Commits updated latest.json to git
 #
-#   DATE WINDOW: close_date >= (today - 365 days) OR close_date is null
-#   PRICE FILTER: price_min >= ₹25L
+#   FILTERS (enforced in Python):
+#     - Residential Plot lottery schemes ONLY
+#     - No LIG / EWS / eAuction / commercial / flat schemes
+#     - close_date within last 1 year OR null
+#     - price_min >= ₹25L
 #
 # REQUIRED SECRETS:
-#   SUPABASE_URL          — your Supabase project URL
-#   SUPABASE_SERVICE_KEY  — your Supabase service role key (not anon key)
+#   SUPABASE_URL          — Supabase project URL
+#   SUPABASE_SERVICE_KEY  — Supabase service role key (not anon key)
+#   SENDGRID_API_KEY      — For failure alert emails
+#   DATABASE_URL          — PostgreSQL URL (for schema migrations)
+#
+# ENVIRONMENT VARS SET IN WORKFLOW:
+#   FROM_EMAIL            — sender address for alerts (alerts@govplottracker.com)
 
 on:
   schedule:
-    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh OPEN/UPCOMING statuses only
+    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh OPEN/UPCOMING statuses
     - cron: "0 1 * * 1-6"
-    # Sunday 6:30 AM IST (1:00 UTC) — full pull of all 58 scrapers
+    # Sunday 6:30 AM IST (1:00 UTC) — full pull all authorities
     - cron: "0 1 * * 0"
   workflow_dispatch:
     inputs:
@@ -40,7 +48,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45   # Live HTTP + Selenium needs more time
 
     steps:
       - name: Checkout code
@@ -52,6 +60,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Install Chromium for Selenium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq chromium-browser chromium-chromedriver
+          echo "CHROME_BIN=/usr/bin/chromium-browser" >> $GITHUB_ENV
+          echo "CHROMEDRIVER_PATH=/usr/bin/chromedriver" >> $GITHUB_ENV
+          chromium-browser --version
 
       - name: Cache pip packages
         uses: actions/cache@v4
@@ -73,72 +89,66 @@ jobs:
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
 
-      # ── STEP A: SCRAPE → FILTER → SUPABASE PUSH → SAVE ───────────────────
-      - name: Step A — Scrape, filter, push to Supabase, save to disk
+      # ── STEP A: Scrape → Push to Supabase → Send alert if failures ────────
+      - name: Step A — Scrape, push to Supabase, alert on failures
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          GOVPLOT_FORCE_FULL: ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
+          SENDGRID_API_KEY:     ${{ secrets.SENDGRID_API_KEY }}
+          DATABASE_URL:         ${{ secrets.DATABASE_URL }}
+          FROM_EMAIL:           "alerts@govplottracker.com"
+          GOVPLOT_FORCE_FULL:   ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
+          CHROME_BIN:           /usr/bin/chromium-browser
+          CHROMEDRIVER_PATH:    /usr/bin/chromedriver
         run: |
           echo "▶ Mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
-      # ── STEP B: COMMIT DATA FILES ─────────────────────────────────────────
-      - name: Step B — Commit updated latest.json to git
+      # ── STEP B: Commit latest.json to git ─────────────────────────────────
+      - name: Step B — Commit data to git
         run: |
           git config --local user.email "bot@govplottracker.in"
-          git config --local user.name "GovPlot Bot"
+          git config --local user.name  "GovPlot Bot"
           git add data/schemes/latest.json || true
-          git diff --staged --quiet || git commit -m "chore: scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
+          git diff --staged --quiet || git commit -m \
+            "chore: scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
           git push || true
 
-      # ── STEP C: SUMMARY ───────────────────────────────────────────────────
-      - name: Step C — Job summary
+      # ── STEP C: Job summary ────────────────────────────────────────────────
+      - name: Step C — Summary
         if: always()
         run: |
-          SCHEME_COUNT=$(python -c "
-          import json
+          python - <<'EOF'
+          import json, sys
           try:
-              d = json.load(open('data/schemes/latest.json'))
-              print(len(d))
-          except:
-              print('unknown')
-          " 2>/dev/null || echo "unknown")
+              d = json.load(open("data/schemes/latest.json"))
+              total    = len(d)
+              open_c   = sum(1 for s in d if s.get("status") == "OPEN")
+              upcoming = sum(1 for s in d if s.get("status") == "UPCOMING")
+              closed   = sum(1 for s in d if s.get("status") == "CLOSED")
+              live     = sum(1 for s in d if s.get("data_source") == "LIVE")
+              static   = sum(1 for s in d if s.get("data_source") == "STATIC")
+              print(f"TOTAL={total} OPEN={open_c} UPCOMING={upcoming} CLOSED={closed} LIVE={live} STATIC={static}")
+          except Exception as e:
+              print(f"TOTAL=unknown ERROR={e}")
+          EOF
 
-          OPEN_COUNT=$(python -c "
-          import json
-          try:
-              d = json.load(open('data/schemes/latest.json'))
-              print(len([s for s in d if s.get('status') == 'OPEN']))
-          except:
-              print('unknown')
-          " 2>/dev/null || echo "unknown")
+          SCHEME_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(len(d))" 2>/dev/null || echo "unknown")
+          OPEN_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('status')=='OPEN'))" 2>/dev/null || echo "unknown")
+          UPCOMING_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('status')=='UPCOMING'))" 2>/dev/null || echo "unknown")
+          LIVE_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('data_source')=='LIVE'))" 2>/dev/null || echo "unknown")
+          STATIC_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('data_source')=='STATIC'))" 2>/dev/null || echo "unknown")
 
-          UPCOMING_COUNT=$(python -c "
-          import json
-          try:
-              d = json.load(open('data/schemes/latest.json'))
-              print(len([s for s in d if s.get('status') == 'UPCOMING']))
-          except:
-              print('unknown')
-          " 2>/dev/null || echo "unknown")
-
-          CLOSED_COUNT=$(python -c "
-          import json
-          try:
-              d = json.load(open('data/schemes/latest.json'))
-              print(len([s for s in d if s.get('status') == 'CLOSED']))
-          except:
-              print('unknown')
-          " 2>/dev/null || echo "unknown")
-
-          echo "### 🏠 GovPlot Scraper Run" >> $GITHUB_STEP_SUMMARY
-          echo "- **Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Mode:** ${{ steps.mode.outputs.mode }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Schemes:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Open:** ${OPEN_COUNT}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Upcoming:** ${UPCOMING_COUNT}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Closed:** ${CLOSED_COUNT}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Filters:** Last 1 year | Residential Plot only | Min ₹25L | No eAuction/LIG/EWS" >> $GITHUB_STEP_SUMMARY
-          echo "- **Supabase:** Push enabled (full=upsert, refresh=status-update only)" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏠 GovPlot Scraper v3.2 Run" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Time** | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Mode** | ${{ steps.mode.outputs.mode }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Schemes** | ${SCHEME_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Open** | ${OPEN_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Upcoming** | ${UPCOMING_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **🟢 LIVE scraped** | ${LIVE_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **🟡 STATIC fallback** | ${STATIC_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Filters** | Residential Plot only · No LIG/EWS/eAuction · ≥₹25L · Last 1 year |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Alert** | rohit0904singh@gmail.com on fallback |" >> $GITHUB_STEP_SUMMARY
