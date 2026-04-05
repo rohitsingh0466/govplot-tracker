@@ -1,25 +1,34 @@
 name: GovPlot Scraper — Auto Run
 
-# WORKFLOW DESIGN (simplified v3.0):
+# WORKFLOW DESIGN (v3.1):
 #
-#   Step A — python -m scraper.main <mode>
-#             Runs scrapers, saves JSON to data/schemes/latest.json.
-#             No verification engine. No database push.
-#             No external site hits beyond the authority portals.
+#   FULL PULL (Sunday 6:30 AM IST):
+#     Step A — python -m scraper.main full
+#              Runs all 58 scrapers, filters schemes, recalculates statuses.
+#              Upserts ALL schemes into Supabase (INSERT new + UPDATE existing).
+#              Saves latest.json to git.
+#     No eAuction / LIG / EWS schemes included.
+#     Scheme name format: "Authority Name + Scheme Name + Year of Launch"
 #
-#   Step B — Commit data files to repo
-#             Commits latest.json with timestamp.
+#   REFRESH (Mon–Sat 6:30 AM IST):
+#     Step A — python -m scraper.main refresh
+#              Fetches only OPEN + UPCOMING schemes from Supabase.
+#              Recalculates status from today's date vs open/close dates.
+#              Updates changed statuses in Supabase (no new inserts).
+#              Saves updated latest.json to git.
 #
-# MODES:
-#   full    → Sunday: all cities, all scrapers
-#   refresh → Mon–Sat: active/open schemes only
-#   auto    → Detects day automatically
+#   DATE WINDOW: close_date >= (today - 365 days) OR close_date is null
+#   PRICE FILTER: price_min >= ₹25L
+#
+# REQUIRED SECRETS:
+#   SUPABASE_URL          — your Supabase project URL
+#   SUPABASE_SERVICE_KEY  — your Supabase service role key (not anon key)
 
 on:
   schedule:
-    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh active schemes only
+    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh OPEN/UPCOMING statuses only
     - cron: "0 1 * * 1-6"
-    # Sunday 6:30 AM IST (1:00 UTC) — full pull of all cities
+    # Sunday 6:30 AM IST (1:00 UTC) — full pull of all 58 scrapers
     - cron: "0 1 * * 0"
   workflow_dispatch:
     inputs:
@@ -64,16 +73,18 @@ jobs:
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
 
-      # ── STEP A: SCRAPE → SAVE ─────────────────────────────────────────────
-      - name: Step A — Scrape and save to disk
+      # ── STEP A: SCRAPE → FILTER → SUPABASE PUSH → SAVE ───────────────────
+      - name: Step A — Scrape, filter, push to Supabase, save to disk
         env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GOVPLOT_FORCE_FULL: ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
         run: |
           echo "▶ Mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
       # ── STEP B: COMMIT DATA FILES ─────────────────────────────────────────
-      - name: Step B — Commit data files
+      - name: Step B — Commit updated latest.json to git
         run: |
           git config --local user.email "bot@govplottracker.in"
           git config --local user.name "GovPlot Bot"
@@ -82,7 +93,7 @@ jobs:
           git push || true
 
       # ── STEP C: SUMMARY ───────────────────────────────────────────────────
-      - name: Step C — Summary
+      - name: Step C — Job summary
         if: always()
         run: |
           SCHEME_COUNT=$(python -c "
@@ -93,18 +104,41 @@ jobs:
           except:
               print('unknown')
           " 2>/dev/null || echo "unknown")
+
           OPEN_COUNT=$(python -c "
           import json
           try:
               d = json.load(open('data/schemes/latest.json'))
-              print(len([s for s in d if s.get('status') in ('OPEN','ACTIVE')]))
+              print(len([s for s in d if s.get('status') == 'OPEN']))
           except:
               print('unknown')
           " 2>/dev/null || echo "unknown")
+
+          UPCOMING_COUNT=$(python -c "
+          import json
+          try:
+              d = json.load(open('data/schemes/latest.json'))
+              print(len([s for s in d if s.get('status') == 'UPCOMING']))
+          except:
+              print('unknown')
+          " 2>/dev/null || echo "unknown")
+
+          CLOSED_COUNT=$(python -c "
+          import json
+          try:
+              d = json.load(open('data/schemes/latest.json'))
+              print(len([s for s in d if s.get('status') == 'CLOSED']))
+          except:
+              print('unknown')
+          " 2>/dev/null || echo "unknown")
+
           echo "### 🏠 GovPlot Scraper Run" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${{ steps.mode.outputs.mode }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Total Schemes:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Open/Active:** ${OPEN_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Open:** ${OPEN_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Upcoming:** ${UPCOMING_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Closed:** ${CLOSED_COUNT}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Filters:** 2025+ only | Residential Plot only | Min ₹25L" >> $GITHUB_STEP_SUMMARY
+          echo "- **Filters:** Last 1 year | Residential Plot only | Min ₹25L | No eAuction/LIG/EWS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Supabase:** Push enabled (full=upsert, refresh=status-update only)" >> $GITHUB_STEP_SUMMARY

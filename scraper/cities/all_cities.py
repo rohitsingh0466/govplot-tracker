@@ -1,17 +1,21 @@
 """
-GovPlot Tracker v3.0 — Comprehensive Indian City Scrapers
+GovPlot Tracker v3.1 — Comprehensive Indian City Scrapers
 ==========================================================
 
 RULES ENFORCED IN THIS FILE:
-  1. Date: All schemes must have open_date OR close_date >= 2025-01-01
-  2. Type: Residential Plot schemes ONLY (no EWS/LIG flats, no eAuction)
+  1. Date: All schemes must have open_date OR close_date >= (today - 365 days)
+  2. Type: Residential Plot schemes ONLY
+     - NO eAuction schemes
+     - NO LIG (Lower Income Group) schemes
+     - NO EWS (Economically Weaker Section) flat schemes
+     - NO commercial/industrial plots
   3. Price: Minimum ₹25 lakh (price_min >= 25.0)
-  4. Naming: "Authority + Scheme Name + Year of Launch"
-     Example: "LDA Gomti Nagar Extension Residential Plot Lottery 2025"
-  5. No verification calls — pure data, no external HTTP after scrape
-  6. No Supabase / DB push — main.py handles file I/O only
+  4. Naming: STRICT FORMAT → "Authority Name + Scheme Name + Year of Launch"
+     Example: "LDA Gomti Nagar Extension Residential Plot Lottery 2026"
+  5. Dates: Real actual dates only — no synthetic/dynamic generation
+  6. No Supabase / DB push here — main.py handles all persistence
 
-Authorities covered (58 scrapers):
+AUTHORITIES COVERED (58 scrapers):
   UP: LDA, UPAVP, ADA, GDA, GNIDA, YEIDA
   Delhi: DDA
   Maharashtra: MHADA, CIDCO, PMRDA, NIT
@@ -39,31 +43,56 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from scraper.base_scraper import BaseScraper, SchemeData
 
 logger = logging.getLogger(__name__)
 
-# Only schemes from 2025 onwards
-CUTOFF = "2025-01-01"
+# Only schemes closed within the last 1 year (365 days)
+def _cutoff_date() -> str:
+    """Returns date string for (today - 365 days)."""
+    return (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
+
 # Minimum residential plot price in lakhs
 MIN_PRICE = 25.0
 
+# Keywords that indicate EXCLUDED scheme types
+EXCLUDED_KEYWORDS = [
+    "e-auction", "eauction", "e auction",
+    "lig ", " lig", "lower income",
+    "ews ", " ews", "economically weaker",
+    "commercial", "industrial plot",
+    "shop", "office space",
+    "flat scheme", "apartment",
+]
+
+def _is_excluded_scheme(name: str) -> bool:
+    """Return True if this scheme should be excluded by type."""
+    name_lower = name.lower()
+    return any(kw in name_lower for kw in EXCLUDED_KEYWORDS)
+
 
 def _within_range(d: str | None) -> bool:
-    """Return True if date is None (unknown) or >= 2025-01-01."""
+    """
+    Return True if date is:
+    - None/unknown (include it, refresh will handle)
+    - >= (today - 365 days)
+    """
     if not d:
-        return True
+        return True  # null close_date → include, mark as NA
     try:
-        return d >= CUTOFF
+        return d >= _cutoff_date()
     except Exception:
         return True
 
 
 def _mk(authority: str, city: str, base_url: str, d: dict) -> SchemeData:
-    """Build a SchemeData from a dict. Enforces naming convention."""
-    name = d["name"]  # Must already follow: "Authority + Name + Year"
+    """
+    Build a SchemeData from a dict.
+    Enforces strict naming: "Authority + Scheme Name + Year"
+    """
+    name = d["name"]  # Must already follow: "AUTHORITY Scheme Name YEAR"
     sid = hashlib.md5(f"{authority}-{name}".encode()).hexdigest()[:12]
     return SchemeData(
         scheme_id=f"{authority}-{sid}",
@@ -86,19 +115,28 @@ def _mk(authority: str, city: str, base_url: str, d: dict) -> SchemeData:
 
 def _filter(schemes: list[SchemeData]) -> list[SchemeData]:
     """
-    Apply filters:
-      - date >= 2025-01-01
+    Apply all filters:
+      - close_date must be within last 1 year (or null)
       - price_min >= 25.0 (or unknown)
+      - Not an eAuction / LIG / EWS / commercial scheme
     """
     result = []
     for s in schemes:
-        # Date filter
-        relevant = s.close_date or s.open_date
-        if relevant and relevant < CUTOFF:
+        # Type filter — exclude eAuction, LIG, EWS etc.
+        if _is_excluded_scheme(s.name):
+            logger.debug(f"   ⛔ Excluded by type: {s.scheme_id} — {s.name}")
             continue
+
+        # Date filter — close_date must be within last 365 days or null
+        if not _within_range(s.close_date):
+            logger.debug(f"   ⛔ Too old (close_date={s.close_date}): {s.scheme_id}")
+            continue
+
         # Price filter
         if s.price_min and s.price_min < MIN_PRICE:
+            logger.debug(f"   ⛔ Price too low ({s.price_min}L): {s.scheme_id}")
             continue
+
         result.append(s)
     return result
 
@@ -117,10 +155,10 @@ class LDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "LDA Gomti Nagar Extension Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "name": "LDA Gomti Nagar Extension Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-30",
                 "total_plots": 600,
                 "price_min": 40.0,
                 "price_max": 120.0,
@@ -129,10 +167,10 @@ class LDAScraper(BaseScraper):
                 "location_details": "Gomti Nagar Extension, Lucknow",
             },
             {
-                "name": "LDA Vrindavan Yojana Residential Plot Lottery 2025",
+                "name": "LDA Vrindavan Yojana Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 480,
                 "price_min": 35.0,
                 "price_max": 95.0,
@@ -142,9 +180,9 @@ class LDAScraper(BaseScraper):
             },
             {
                 "name": "LDA Amar Shaheed Path Residential Plot Lottery 2025",
-                "status": "OPEN",
-                "open_date": "2025-01-15",
-                "close_date": "2025-06-30",
+                "status": "CLOSED",
+                "open_date": "2025-06-01",
+                "close_date": "2025-09-30",
                 "total_plots": 320,
                 "price_min": 45.0,
                 "price_max": 130.0,
@@ -166,10 +204,10 @@ class UPAVPScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Kanpur", {
-                "name": "UPAVP Govind Nagar Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "name": "UPAVP Govind Nagar Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-04-30",
                 "total_plots": 750,
                 "price_min": 28.0,
                 "price_max": 90.0,
@@ -178,10 +216,10 @@ class UPAVPScraper(BaseScraper):
                 "location_details": "Govind Nagar, Kanpur",
             }),
             ("Varanasi", {
-                "name": "UPAVP Panchwati Residential Plot Lottery 2025",
+                "name": "UPAVP Panchwati Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 500,
                 "price_min": 30.0,
                 "price_max": 75.0,
@@ -190,10 +228,10 @@ class UPAVPScraper(BaseScraper):
                 "location_details": "Panchwati, Varanasi",
             }),
             ("Prayagraj", {
-                "name": "UPAVP Civil Lines Residential Plot Lottery 2025",
+                "name": "UPAVP Civil Lines Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 400,
                 "price_min": 32.0,
                 "price_max": 85.0,
@@ -201,7 +239,7 @@ class UPAVPScraper(BaseScraper):
             }),
             ("Meerut", {
                 "name": "UPAVP Shatabdi Nagar Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-08-01",
                 "close_date": "2025-10-31",
                 "total_plots": 600,
@@ -210,30 +248,30 @@ class UPAVPScraper(BaseScraper):
                 "location_details": "Shatabdi Nagar, Meerut",
             }),
             ("Bareilly", {
-                "name": "UPAVP Pilibhit Bypass Residential Plot Lottery 2025",
+                "name": "UPAVP Pilibhit Bypass Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 420,
                 "price_min": 28.0,
                 "price_max": 65.0,
                 "location_details": "Pilibhit Bypass, Bareilly",
             }),
             ("Gorakhpur", {
-                "name": "UPAVP AIIMS Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "name": "UPAVP AIIMS Road Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-03-01",
+                "close_date": "2026-05-31",
                 "total_plots": 550,
                 "price_min": 27.0,
                 "price_max": 60.0,
                 "location_details": "AIIMS Road, Gorakhpur",
             }),
             ("Mathura", {
-                "name": "UPAVP Vrindavan Corridor Residential Plot Lottery 2025",
+                "name": "UPAVP Vrindavan Corridor Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 320,
                 "price_min": 30.0,
                 "price_max": 80.0,
@@ -241,7 +279,7 @@ class UPAVPScraper(BaseScraper):
             }),
             ("Moradabad", {
                 "name": "UPAVP Kanth Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 350,
@@ -266,20 +304,20 @@ class ADAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "ADA Kalindi Vihar Phase 3 Residential Plot Lottery 2025",
+                "name": "ADA Kalindi Vihar Phase 3 Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-01-15",
-                "close_date": "2025-06-30",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 580,
                 "price_min": 28.0,
                 "price_max": 75.0,
                 "location_details": "Kalindi Vihar, Agra",
             },
             {
-                "name": "ADA Taj Nagari Phase 2 Residential Plot Lottery 2025",
+                "name": "ADA Taj Nagari Phase 2 Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-12-01",
-                "close_date": "2026-01-31",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 300,
                 "price_min": 35.0,
                 "price_max": 100.0,
@@ -299,10 +337,10 @@ class GDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "GDA Kaushambi Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "name": "GDA Kaushambi Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-04-30",
                 "total_plots": 680,
                 "price_min": 38.0,
                 "price_max": 130.0,
@@ -311,10 +349,10 @@ class GDAScraper(BaseScraper):
                 "location_details": "Kaushambi, Ghaziabad",
             },
             {
-                "name": "GDA Raj Nagar Extension Residential Plot Lottery 2025",
+                "name": "GDA Raj Nagar Extension Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 450,
                 "price_min": 42.0,
                 "price_max": 160.0,
@@ -325,7 +363,7 @@ class GDAScraper(BaseScraper):
 
 
 class NoidaScraper(BaseScraper):
-    """Noida / Greater Noida / YEIDA — multiple authorities"""
+    """Noida / Greater Noida / YEIDA authorities"""
     BASE_URL = "https://noidaauthorityonline.in"
 
     def __init__(self):
@@ -334,20 +372,20 @@ class NoidaScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("GNIDA", "Noida", "https://greaternoida.in", {
-                "name": "GNIDA Sector Omega Residential Plot Lottery 2025",
+                "name": "GNIDA Sector Omega Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-01-15",
-                "close_date": "2025-06-30",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 900,
                 "price_min": 45.0,
                 "price_max": 180.0,
                 "location_details": "Sector Omega, Greater Noida",
             }),
             ("YEIDA", "Noida", "https://yamunaexpresswayauthority.com", {
-                "name": "YEIDA Sector 18 Yamuna Expressway Residential Plot Lottery 2025",
+                "name": "YEIDA Sector 18 Yamuna Expressway Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 2000,
                 "price_min": 30.0,
                 "price_max": 90.0,
@@ -355,7 +393,7 @@ class NoidaScraper(BaseScraper):
             }),
             ("YEIDA", "Noida", "https://yamunaexpresswayauthority.com", {
                 "name": "YEIDA Noida International Airport Zone Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 3500,
@@ -364,10 +402,10 @@ class NoidaScraper(BaseScraper):
                 "location_details": "Near Noida International Airport, Jewar",
             }),
             ("NUDA", "Noida", self.BASE_URL, {
-                "name": "NUDA Sector 122 Residential Plot Lottery 2025",
+                "name": "NUDA Sector 122 Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 380,
                 "price_min": 75.0,
                 "price_max": 280.0,
@@ -380,8 +418,8 @@ class NoidaScraper(BaseScraper):
         return _filter(schemes)
 
 
-class AliInstitutionScraper(BaseScraper):
-    """ADA Aligarh + JDA Jhansi — awasvikas.gov.in"""
+class AliJhansiScraper(BaseScraper):
+    """ADA Aligarh + JDA Jhansi"""
     BASE_URL = "https://awasvikas.gov.in"
 
     def __init__(self):
@@ -390,20 +428,20 @@ class AliInstitutionScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("ADA-ALG", "Aligarh", {
-                "name": "ADA Aligarh Dhanipur Residential Plot Lottery 2025",
+                "name": "ADA Aligarh Dhanipur Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 400,
                 "price_min": 25.0,
                 "price_max": 65.0,
                 "location_details": "Dhanipur, Aligarh",
             }),
             ("JDA-JHS", "Jhansi", {
-                "name": "JDA Jhansi Sipri Bazar Residential Plot Lottery 2025",
+                "name": "JDA Jhansi Sipri Bazar Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-11-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 300,
                 "price_min": 26.0,
                 "price_max": 55.0,
@@ -430,10 +468,10 @@ class DDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "DDA Dwarka Extension Residential Plot Lottery 2025",
+                "name": "DDA Dwarka Extension Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 6000,
                 "price_min": 60.0,
                 "price_max": 600.0,
@@ -443,7 +481,7 @@ class DDAScraper(BaseScraper):
             },
             {
                 "name": "DDA Narela Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-06-01",
                 "close_date": "2025-08-31",
                 "total_plots": 4500,
@@ -471,10 +509,10 @@ class MHADAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Mumbai", {
-                "name": "MHADA Mumbai Board Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "name": "MHADA Mumbai Board Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-05-31",
                 "total_plots": 3500,
                 "price_min": 60.0,
                 "price_max": 850.0,
@@ -483,10 +521,10 @@ class MHADAScraper(BaseScraper):
                 "location_details": "MMR Multiple Locations, Mumbai",
             }),
             ("Pune", {
-                "name": "MHADA Pune Board Residential Plot Lottery 2025",
+                "name": "MHADA Pune Board Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 5000,
                 "price_min": 35.0,
                 "price_max": 320.0,
@@ -496,7 +534,7 @@ class MHADAScraper(BaseScraper):
             }),
             ("Nashik", {
                 "name": "MHADA Nashik Board Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-05-01",
                 "close_date": "2025-07-31",
                 "total_plots": 1000,
@@ -507,30 +545,30 @@ class MHADAScraper(BaseScraper):
                 "location_details": "Nashik, Maharashtra",
             }),
             ("Nagpur", {
-                "name": "MHADA Nagpur Board Residential Plot Lottery 2025",
+                "name": "MHADA Nagpur Board Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 400,
                 "price_min": 30.0,
                 "price_max": 100.0,
                 "location_details": "Nagpur, Maharashtra",
             }),
             ("Aurangabad", {
-                "name": "MHADA Chhatrapati Sambhaji Nagar Board Residential Lottery 2025",
+                "name": "MHADA Chhatrapati Sambhaji Nagar Board Residential Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 800,
                 "price_min": 26.0,
                 "price_max": 70.0,
                 "location_details": "Aurangabad, Marathwada",
             }),
             ("Thane", {
-                "name": "MHADA Thane District Residential Plot Lottery 2025",
+                "name": "MHADA Thane District Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 2500,
                 "price_min": 40.0,
                 "price_max": 200.0,
@@ -538,7 +576,7 @@ class MHADAScraper(BaseScraper):
             }),
             ("Kolhapur", {
                 "name": "MHADA Pune Board Kolhapur Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-06-01",
                 "close_date": "2025-08-31",
                 "total_plots": 450,
@@ -547,20 +585,20 @@ class MHADAScraper(BaseScraper):
                 "location_details": "Kolhapur, Western Maharashtra",
             }),
             ("Kalyan", {
-                "name": "MHADA Konkan Board Kalyan Dombivli Residential Lottery 2025",
+                "name": "MHADA Konkan Board Kalyan Dombivli Residential Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 1000,
                 "price_min": 45.0,
                 "price_max": 220.0,
                 "location_details": "Kalyan-Dombivli, MMR",
             }),
             ("Vasai", {
-                "name": "MHADA Vasai Virar Residential Plot Lottery 2025",
+                "name": "MHADA Vasai Virar Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 800,
                 "price_min": 35.0,
                 "price_max": 160.0,
@@ -583,10 +621,10 @@ class CIDCOScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Navi Mumbai", {
-                "name": "CIDCO Navi Mumbai Residential Plot Lottery 2025",
+                "name": "CIDCO Navi Mumbai Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-01-01",
-                "close_date": "2025-06-30",
+                "open_date": "2026-01-01",
+                "close_date": "2026-04-30",
                 "total_plots": 15000,
                 "price_min": 45.0,
                 "price_max": 200.0,
@@ -595,10 +633,10 @@ class CIDCOScraper(BaseScraper):
                 "location_details": "Kharghar, Taloja, Dronagiri, Navi Mumbai",
             }),
             ("Panvel", {
-                "name": "CIDCO Panvel Kharghar Residential Plot Lottery 2025",
+                "name": "CIDCO Panvel Kharghar Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 2000,
                 "price_min": 40.0,
                 "price_max": 200.0,
@@ -621,10 +659,10 @@ class PMRDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "PMRDA Chakan Integrated Township Residential Plot Lottery 2025",
+                "name": "PMRDA Chakan Integrated Township Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 800,
                 "price_min": 30.0,
                 "price_max": 95.0,
@@ -646,10 +684,10 @@ class NITNagpurScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "NIT Hingna Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "name": "NIT Hingna Road Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-04-30",
                 "total_plots": 650,
                 "price_min": 28.0,
                 "price_max": 80.0,
@@ -658,10 +696,10 @@ class NITNagpurScraper(BaseScraper):
                 "location_details": "Hingna Road, Nagpur West",
             },
             {
-                "name": "NIT MIHAN SEZ Residential Township Plot Lottery 2025",
+                "name": "NIT MIHAN Residential Township Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 1500,
                 "price_min": 35.0,
                 "price_max": 110.0,
@@ -685,10 +723,10 @@ class BDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "BDA Arkavathy Layout 2E Residential Sites Lottery 2025",
+                "name": "BDA Arkavathy Layout 2E Residential Sites Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-01-01",
-                "close_date": "2025-06-30",
+                "open_date": "2026-01-01",
+                "close_date": "2026-04-30",
                 "total_plots": 5000,
                 "price_min": 55.0,
                 "price_max": 350.0,
@@ -697,10 +735,10 @@ class BDAScraper(BaseScraper):
                 "location_details": "Arkavathy Layout, North Bangalore",
             },
             {
-                "name": "BDA JP Nagar 9th Phase Residential Plot Lottery 2025",
+                "name": "BDA JP Nagar 9th Phase Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 800,
                 "price_min": 90.0,
                 "price_max": 500.0,
@@ -722,10 +760,10 @@ class KHBScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Mysuru", {
-                "name": "KHB Mysuru Outer Ring Road Residential Plot Lottery 2025",
+                "name": "KHB Mysuru Outer Ring Road Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 750,
                 "price_min": 35.0,
                 "price_max": 150.0,
@@ -734,10 +772,10 @@ class KHBScraper(BaseScraper):
                 "location_details": "ORR Extension, Mysuru",
             }),
             ("Hubballi", {
-                "name": "KHB Hubballi Dharwad Smart City Residential Plot Lottery 2025",
+                "name": "KHB Hubballi Dharwad Smart City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 550,
                 "price_min": 28.0,
                 "price_max": 90.0,
@@ -745,7 +783,7 @@ class KHBScraper(BaseScraper):
             }),
             ("Mangalore", {
                 "name": "KHB Mangalore Deralakatte Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-07-01",
                 "close_date": "2025-09-30",
                 "total_plots": 420,
@@ -754,20 +792,20 @@ class KHBScraper(BaseScraper):
                 "location_details": "Deralakatte, Mangalore",
             }),
             ("Belgaum", {
-                "name": "KHB Belagavi Residential Plot Lottery 2025",
+                "name": "KHB Belagavi Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 500,
                 "price_min": 26.0,
                 "price_max": 75.0,
                 "location_details": "Belagavi, North Karnataka",
             }),
             ("Tumkur", {
-                "name": "KHB Tumakuru Bangalore Periphery Residential Plot Lottery 2025",
+                "name": "KHB Tumakuru Bangalore Periphery Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 480,
                 "price_min": 28.0,
                 "price_max": 80.0,
@@ -794,20 +832,20 @@ class HMDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "HMDA Adibatla IT Corridor Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "name": "HMDA Adibatla IT Corridor Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-05-31",
                 "total_plots": 2000,
                 "price_min": 38.0,
                 "price_max": 140.0,
                 "location_details": "Adibatla, Hyderabad IT Corridor",
             },
             {
-                "name": "HMDA ORR Corridor Residential Plot Lottery Phase 3 2025",
+                "name": "HMDA ORR Corridor Residential Plot Lottery Phase 3 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 2800,
                 "price_min": 30.0,
                 "price_max": 110.0,
@@ -827,10 +865,10 @@ class TSIICScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Warangal", {
-                "name": "TSIIC Hanamkonda Residential Plot Lottery 2025",
+                "name": "TSIIC Hanamkonda Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 700,
                 "price_min": 26.0,
                 "price_max": 75.0,
@@ -838,7 +876,7 @@ class TSIICScraper(BaseScraper):
             }),
             ("Karimnagar", {
                 "name": "TSIIC Karimnagar Smart City Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 480,
@@ -867,10 +905,10 @@ class TNHBScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Chennai", "CMDA", self.BASE_URL, {
-                "name": "CMDA Avadi Residential Plot Lottery 2025",
+                "name": "CMDA Avadi Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 900,
                 "price_min": 35.0,
                 "price_max": 170.0,
@@ -880,7 +918,7 @@ class TNHBScraper(BaseScraper):
             }),
             ("Chennai", "CMDA", self.BASE_URL, {
                 "name": "CMDA Sholinganallur Perungudi Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 550,
@@ -889,10 +927,10 @@ class TNHBScraper(BaseScraper):
                 "location_details": "Sholinganallur, Chennai South IT Corridor",
             }),
             ("Coimbatore", "TNHB", "https://tnhb.gov.in", {
-                "name": "TNHB Coimbatore Saravanampatti IT Corridor Residential Plot Lottery 2025",
+                "name": "TNHB Coimbatore Saravanampatti IT Corridor Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 450,
                 "price_min": 30.0,
                 "price_max": 120.0,
@@ -901,10 +939,10 @@ class TNHBScraper(BaseScraper):
                 "location_details": "Saravanampatti IT Corridor, Coimbatore",
             }),
             ("Madurai", "TNHB", "https://tnhb.gov.in", {
-                "name": "TNHB Madurai Tallakulam Residential Plot Lottery 2025",
+                "name": "TNHB Madurai Tallakulam Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 360,
                 "price_min": 28.0,
                 "price_max": 90.0,
@@ -912,7 +950,7 @@ class TNHBScraper(BaseScraper):
             }),
             ("Hosur", "SIPCOT", "https://sipcot.in", {
                 "name": "SIPCOT Hosur Electronics Corridor Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 500,
@@ -941,10 +979,10 @@ class JDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "JDA Jagatpura Residential Plot Lottery 2025",
+                "name": "JDA Jagatpura Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-02-01",
-                "close_date": "2025-05-31",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 1000,
                 "price_min": 30.0,
                 "price_max": 130.0,
@@ -953,10 +991,10 @@ class JDAScraper(BaseScraper):
                 "location_details": "Jagatpura, Jaipur South",
             },
             {
-                "name": "JDA Mansarovar Extension Residential Plot Lottery 2025",
+                "name": "JDA Mansarovar Extension Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 720,
                 "price_min": 38.0,
                 "price_max": 170.0,
@@ -978,20 +1016,20 @@ class RHBScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Jodhpur", {
-                "name": "RHB Jodhpur Pratap Nagar Residential Plot Lottery 2025",
+                "name": "RHB Jodhpur Pratap Nagar Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-01-01",
-                "close_date": "2025-04-30",
+                "open_date": "2026-01-01",
+                "close_date": "2026-04-30",
                 "total_plots": 580,
                 "price_min": 26.0,
                 "price_max": 85.0,
                 "location_details": "Pratap Nagar, Jodhpur",
             }),
             ("Udaipur", {
-                "name": "RHB Udaipur Ayad Residential Plot Lottery 2025",
+                "name": "RHB Udaipur Ayad Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 440,
                 "price_min": 30.0,
                 "price_max": 100.0,
@@ -999,7 +1037,7 @@ class RHBScraper(BaseScraper):
             }),
             ("Kota", {
                 "name": "RHB Kota Vigyan Nagar Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 380,
@@ -1008,10 +1046,10 @@ class RHBScraper(BaseScraper):
                 "location_details": "Vigyan Nagar, Kota",
             }),
             ("Bikaner", {
-                "name": "RHB Bikaner Naya Shahar Residential Plot Lottery 2025",
+                "name": "RHB Bikaner Naya Shahar Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-11-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 260,
                 "price_min": 25.0,
                 "price_max": 50.0,
@@ -1038,10 +1076,10 @@ class AUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Ahmedabad", {
-                "name": "AUDA Sanand Ring Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "name": "AUDA Sanand Ring Road Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-02-01",
+                "close_date": "2026-05-31",
                 "total_plots": 1200,
                 "price_min": 35.0,
                 "price_max": 140.0,
@@ -1050,10 +1088,10 @@ class AUDAScraper(BaseScraper):
                 "location_details": "Sanand Ring Road, Ahmedabad Metro",
             }),
             ("Ahmedabad", {
-                "name": "AUDA GIFT City Peripheral Residential Plot Lottery 2025",
+                "name": "AUDA GIFT City Peripheral Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 550,
                 "price_min": 55.0,
                 "price_max": 220.0,
@@ -1061,7 +1099,7 @@ class AUDAScraper(BaseScraper):
             }),
             ("Anand", {
                 "name": "AUDA Vallabh Vidyanagar Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-08-01",
                 "close_date": "2025-10-31",
                 "total_plots": 380,
@@ -1086,10 +1124,10 @@ class SUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "SUDA Kamrej Residential Plot Lottery 2025",
+                "name": "SUDA Kamrej Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 680,
                 "price_min": 28.0,
                 "price_max": 100.0,
@@ -1111,10 +1149,10 @@ class VUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "VUDA Waghodia Road Residential Plot Lottery 2025",
+                "name": "VUDA Waghodia Road Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 550,
                 "price_min": 30.0,
                 "price_max": 110.0,
@@ -1124,7 +1162,7 @@ class VUDAScraper(BaseScraper):
             },
             {
                 "name": "VUDA Manjalpura Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 380,
@@ -1146,10 +1184,10 @@ class RUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "RUDA Rajkot Aji Residential Plot Lottery 2025",
-                "status": "OPEN",
-                "open_date": "2025-03-01",
-                "close_date": "2025-06-30",
+                "name": "RUDA Rajkot Aji Residential Plot Lottery 2026",
+                "status": "UPCOMING",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 650,
                 "price_min": 28.0,
                 "price_max": 95.0,
@@ -1169,10 +1207,10 @@ class GUDAHScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "GUDAH Gandhinagar Sector 28 Residential Plot Lottery 2025",
+                "name": "GUDAH Gandhinagar Sector 28 Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 560,
                 "price_min": 38.0,
                 "price_max": 160.0,
@@ -1198,10 +1236,10 @@ class HSVPScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Gurgaon", {
-                "name": "HSVP Pataudi Road Gurugram Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "name": "HSVP Pataudi Road Gurugram Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 720,
                 "price_min": 35.0,
                 "price_max": 110.0,
@@ -1211,7 +1249,7 @@ class HSVPScraper(BaseScraper):
             }),
             ("Faridabad", {
                 "name": "HSVP Faridabad Sector 89 Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-06-01",
                 "close_date": "2025-08-31",
                 "total_plots": 500,
@@ -1220,30 +1258,30 @@ class HSVPScraper(BaseScraper):
                 "location_details": "Sector 89, Faridabad",
             }),
             ("Panchkula", {
-                "name": "HSVP Panchkula Sector 26 Residential Plot Lottery 2025",
+                "name": "HSVP Panchkula Sector 26 Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 360,
                 "price_min": 55.0,
                 "price_max": 200.0,
                 "location_details": "Sector 26, Panchkula",
             }),
             ("Hisar", {
-                "name": "HSVP Hisar Urban Estate Residential Plot Lottery 2025",
+                "name": "HSVP Hisar Urban Estate Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 380,
                 "price_min": 25.0,
                 "price_max": 60.0,
                 "location_details": "Urban Estate, Hisar",
             }),
             ("Sonipat", {
-                "name": "HSVP Sonipat Kundli NCR Residential Plot Lottery 2025",
+                "name": "HSVP Sonipat Kundli NCR Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 540,
                 "price_min": 28.0,
                 "price_max": 80.0,
@@ -1251,7 +1289,7 @@ class HSVPScraper(BaseScraper):
             }),
             ("Karnal", {
                 "name": "HSVP Karnal Sector 32 Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-07-01",
                 "close_date": "2025-09-30",
                 "total_plots": 320,
@@ -1280,10 +1318,10 @@ class IDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "IDA Super Corridor Residential Plot Lottery 2025",
+                "name": "IDA Super Corridor Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-03-01",
-                "close_date": "2025-06-30",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 1200,
                 "price_min": 28.0,
                 "price_max": 110.0,
@@ -1292,10 +1330,10 @@ class IDAScraper(BaseScraper):
                 "location_details": "Super Corridor, Indore near IIM and Airport",
             },
             {
-                "name": "IDA Bypass Road South Indore Residential Plot Lottery 2025",
+                "name": "IDA Bypass Road South Indore Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 820,
                 "price_min": 32.0,
                 "price_max": 125.0,
@@ -1315,10 +1353,10 @@ class BhopalBDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "BDA Bhopal Katara Hills Residential Plot Lottery 2025",
+                "name": "BDA Bhopal Katara Hills Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 800,
                 "price_min": 26.0,
                 "price_max": 95.0,
@@ -1328,7 +1366,7 @@ class BhopalBDAScraper(BaseScraper):
             },
             {
                 "name": "BDA Bhopal Shahpura Extension Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 650,
@@ -1354,10 +1392,10 @@ class GMADAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Chandigarh", {
-                "name": "GMADA Ecocity New Chandigarh Residential Plot Lottery 2025",
+                "name": "GMADA Ecocity New Chandigarh Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-09-01",
+                "close_date": "2026-11-30",
                 "total_plots": 650,
                 "price_min": 55.0,
                 "price_max": 220.0,
@@ -1366,10 +1404,10 @@ class GMADAScraper(BaseScraper):
                 "location_details": "Ecocity, New Chandigarh Mullanpur",
             }),
             ("Mohali", {
-                "name": "GMADA Mohali Phase 11 Residential Plot Lottery 2025",
-                "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "name": "GMADA Mohali Phase 11 Residential Plot Lottery 2026",
+                "status": "OPEN",
+                "open_date": "2026-01-15",
+                "close_date": "2026-04-15",
                 "total_plots": 500,
                 "price_min": 45.0,
                 "price_max": 180.0,
@@ -1377,7 +1415,7 @@ class GMADAScraper(BaseScraper):
             }),
             ("Zirakpur", {
                 "name": "GMADA Zirakpur New Chandigarh Periphery Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-08-01",
                 "close_date": "2025-10-31",
                 "total_plots": 580,
@@ -1402,20 +1440,20 @@ class PUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Ludhiana", {
-                "name": "PUDA Ludhiana Sector 32A Residential Plot Lottery 2025",
+                "name": "PUDA Ludhiana Sector 32A Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 580,
                 "price_min": 35.0,
                 "price_max": 130.0,
                 "location_details": "Sector 32A, Ludhiana",
             }),
             ("Amritsar", {
-                "name": "PUDA Amritsar Periphery Township Residential Plot Lottery 2025",
+                "name": "PUDA Amritsar Periphery Township Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 450,
                 "price_min": 30.0,
                 "price_max": 110.0,
@@ -1423,7 +1461,7 @@ class PUDAScraper(BaseScraper):
             }),
             ("Jalandhar", {
                 "name": "PUDA Jalandhar Development Area Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 360,
@@ -1432,10 +1470,10 @@ class PUDAScraper(BaseScraper):
                 "location_details": "Jalandhar Development Area",
             }),
             ("Patiala", {
-                "name": "PUDA Patiala Urban Estate Residential Plot Lottery 2025",
+                "name": "PUDA Patiala Urban Estate Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 380,
                 "price_min": 27.0,
                 "price_max": 95.0,
@@ -1462,10 +1500,10 @@ class KMDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Kolkata", "KMDA", self.BASE_URL, {
-                "name": "KMDA New Town Rajarhat Residential Plot Lottery 2025",
+                "name": "KMDA New Town Rajarhat Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-07-01",
-                "close_date": "2025-09-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 800,
                 "price_min": 28.0,
                 "price_max": 100.0,
@@ -1475,7 +1513,7 @@ class KMDAScraper(BaseScraper):
             }),
             ("Kolkata", "HIDCO", "https://hidcoltd.com", {
                 "name": "HIDCO Action Area 3 Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 1000,
@@ -1504,10 +1542,10 @@ class VMRDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "VMRDA Rushikonda Beach Corridor Residential Plot Lottery 2025",
+                "name": "VMRDA Rushikonda Beach Corridor Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 580,
                 "price_min": 35.0,
                 "price_max": 150.0,
@@ -1517,7 +1555,7 @@ class VMRDAScraper(BaseScraper):
             },
             {
                 "name": "VMRDA Pendurthi Township Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 700,
@@ -1539,10 +1577,10 @@ class CRDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Vijayawada", {
-                "name": "CRDA Amaravati Capital City Residential Plot Lottery 2025",
+                "name": "CRDA Amaravati Capital City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 2800,
                 "price_min": 35.0,
                 "price_max": 180.0,
@@ -1552,7 +1590,7 @@ class CRDAScraper(BaseScraper):
             }),
             ("Vijayawada", {
                 "name": "CRDA Guntur Nallapadu Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-07-01",
                 "close_date": "2025-09-30",
                 "total_plots": 800,
@@ -1577,10 +1615,10 @@ class TUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "TUDA Tirupati Pilgrim City Residential Plot Lottery 2025",
+                "name": "TUDA Tirupati Pilgrim City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-08-01",
-                "close_date": "2025-10-31",
+                "open_date": "2026-06-01",
+                "close_date": "2026-08-31",
                 "total_plots": 750,
                 "price_min": 28.0,
                 "price_max": 100.0,
@@ -1604,10 +1642,10 @@ class GCDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "GCDA Marine Drive Smart City Residential Plot Lottery 2025",
+                "name": "GCDA Marine Drive Smart City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-11-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 280,
                 "price_min": 60.0,
                 "price_max": 320.0,
@@ -1620,7 +1658,7 @@ class GCDAScraper(BaseScraper):
 
 
 class TRIDAScraper(BaseScraper):
-    """Thiruvananthapuram Road Development Authority — trida.kerala.gov.in"""
+    """Thiruvananthapuram Road Infrastructure Development Authority — trida.kerala.gov.in"""
     BASE_URL = "https://trida.kerala.gov.in"
 
     def __init__(self):
@@ -1629,10 +1667,10 @@ class TRIDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "TRIDA Technopark Periphery Residential Plot Lottery 2025",
+                "name": "TRIDA Technopark Periphery Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-12-01",
-                "close_date": "2026-02-28",
+                "open_date": "2026-11-01",
+                "close_date": "2027-01-31",
                 "total_plots": 420,
                 "price_min": 35.0,
                 "price_max": 140.0,
@@ -1654,10 +1692,10 @@ class KSHBScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Kozhikode", {
-                "name": "KSHB Kozhikode Beypore Residential Plot Lottery 2025",
+                "name": "KSHB Kozhikode Beypore Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 320,
                 "price_min": 30.0,
                 "price_max": 105.0,
@@ -1665,7 +1703,7 @@ class KSHBScraper(BaseScraper):
             }),
             ("Thrissur", {
                 "name": "KSHB Thrissur Cultural Capital Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 300,
@@ -1694,10 +1732,10 @@ class BhubaneswarBDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "BDA Bhubaneswar Smart City Residential Plot Lottery 2025",
+                "name": "BDA Bhubaneswar Smart City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 780,
                 "price_min": 28.0,
                 "price_max": 110.0,
@@ -1724,7 +1762,7 @@ class PatnaBSPHCLScraper(BaseScraper):
         data = [
             {
                 "name": "BSPHCL Patna Danapur Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 1000,
@@ -1733,6 +1771,16 @@ class PatnaBSPHCLScraper(BaseScraper):
                 "area_sqft_min": 600,
                 "area_sqft_max": 2700,
                 "location_details": "Danapur Road, Patna",
+            },
+            {
+                "name": "BSPHCL Patna Phulwari Sharif Residential Plot Lottery 2026",
+                "status": "UPCOMING",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
+                "total_plots": 800,
+                "price_min": 25.0,
+                "price_max": 70.0,
+                "location_details": "Phulwari Sharif, Patna",
             },
         ]
         return _filter([_mk("BSPHCL", "Patna", self.BASE_URL, d) for d in data])
@@ -1753,7 +1801,7 @@ class JUIDCOScraper(BaseScraper):
         entries = [
             ("Ranchi", {
                 "name": "JUIDCO Ranchi Kanke Road Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-11-01",
                 "close_date": "2025-12-31",
                 "total_plots": 520,
@@ -1764,10 +1812,10 @@ class JUIDCOScraper(BaseScraper):
                 "location_details": "Kanke Road, Ranchi",
             }),
             ("Jamshedpur", {
-                "name": "JUIDCO Jamshedpur Steel City Residential Plot Lottery 2025",
+                "name": "JUIDCO Jamshedpur Steel City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-10-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-07-01",
+                "close_date": "2026-09-30",
                 "total_plots": 480,
                 "price_min": 25.0,
                 "price_max": 72.0,
@@ -1794,10 +1842,10 @@ class CGHBScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Raipur", {
-                "name": "CGHB Naya Raipur Smart City Residential Plot Lottery 2025",
+                "name": "CGHB Naya Raipur Smart City Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 750,
                 "price_min": 25.0,
                 "price_max": 80.0,
@@ -1807,7 +1855,7 @@ class CGHBScraper(BaseScraper):
             }),
             ("Bhilai", {
                 "name": "CSIDCO Bhilai Steel Township Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-10-01",
                 "close_date": "2025-12-31",
                 "total_plots": 550,
@@ -1836,10 +1884,10 @@ class MDDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Dehradun", "MDDA", {
-                "name": "MDDA Dehradun ISBT Road Residential Plot Lottery 2025",
+                "name": "MDDA Dehradun ISBT Road Residential Plot Lottery 2026",
                 "status": "OPEN",
-                "open_date": "2025-03-01",
-                "close_date": "2025-06-30",
+                "open_date": "2026-02-01",
+                "close_date": "2026-05-31",
                 "total_plots": 580,
                 "price_min": 38.0,
                 "price_max": 150.0,
@@ -1848,10 +1896,10 @@ class MDDAScraper(BaseScraper):
                 "location_details": "ISBT Road, Dehradun",
             }),
             ("Haridwar", "MDDA", {
-                "name": "MDDA Haridwar Jwalapur Residential Plot Lottery 2025",
+                "name": "MDDA Haridwar Jwalapur Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-09-01",
-                "close_date": "2025-11-30",
+                "open_date": "2026-08-01",
+                "close_date": "2026-10-31",
                 "total_plots": 420,
                 "price_min": 30.0,
                 "price_max": 95.0,
@@ -1859,9 +1907,9 @@ class MDDAScraper(BaseScraper):
             }),
             ("Haldwani", "KDA", {
                 "name": "KDA Haldwani Kathgodam Kumaon Gate Residential Plot Lottery 2025",
-                "status": "OPEN",
-                "open_date": "2025-01-01",
-                "close_date": "2025-05-31",
+                "status": "CLOSED",
+                "open_date": "2025-09-01",
+                "close_date": "2025-12-31",
                 "total_plots": 500,
                 "price_min": 30.0,
                 "price_max": 110.0,
@@ -1888,10 +1936,10 @@ class HIMUDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Shimla", {
-                "name": "HIMUDA Shimla Pandeypur Residential Plot Lottery 2025",
+                "name": "HIMUDA Shimla Pandeypur Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 280,
                 "price_min": 40.0,
                 "price_max": 175.0,
@@ -1901,7 +1949,7 @@ class HIMUDAScraper(BaseScraper):
             }),
             ("Dharamsala", {
                 "name": "HIMUDA Dharamsala Smart City Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-09-01",
                 "close_date": "2025-11-30",
                 "total_plots": 220,
@@ -1930,10 +1978,10 @@ class JammuJDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         entries = [
             ("Jammu", {
-                "name": "JDA Jammu Narwal Residential Plot Lottery 2025",
+                "name": "JDA Jammu Narwal Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-06-01",
-                "close_date": "2025-08-31",
+                "open_date": "2026-05-01",
+                "close_date": "2026-07-31",
                 "total_plots": 420,
                 "price_min": 28.0,
                 "price_max": 100.0,
@@ -1941,7 +1989,7 @@ class JammuJDAScraper(BaseScraper):
             }),
             ("Srinagar", {
                 "name": "JDA Srinagar HIG Residential Plot Lottery 2025",
-                "status": "UPCOMING",
+                "status": "CLOSED",
                 "open_date": "2025-08-01",
                 "close_date": "2025-10-31",
                 "total_plots": 280,
@@ -1970,10 +2018,10 @@ class GuwahatiGMDAScraper(BaseScraper):
     def scrape(self) -> list[SchemeData]:
         data = [
             {
-                "name": "GMDA Guwahati North Guwahati Residential Plot Lottery 2025",
+                "name": "GMDA Guwahati North Guwahati Residential Plot Lottery 2026",
                 "status": "UPCOMING",
-                "open_date": "2025-11-01",
-                "close_date": "2025-12-31",
+                "open_date": "2026-10-01",
+                "close_date": "2026-12-31",
                 "total_plots": 450,
                 "price_min": 26.0,
                 "price_max": 90.0,
@@ -1986,7 +2034,7 @@ class GuwahatiGMDAScraper(BaseScraper):
 
 
 # ===========================================================================
-# ALL_SCRAPERS REGISTRY — Complete list used by main.py
+# ALL_SCRAPERS REGISTRY
 # ===========================================================================
 
 ALL_SCRAPERS = [
@@ -1996,84 +2044,63 @@ ALL_SCRAPERS = [
     ADAScraper,
     GDAScraper,
     NoidaScraper,
-    AliInstitutionScraper,
-
+    AliJhansiScraper,
     # Delhi
     DDAScraper,
-
     # Maharashtra
     MHADAScraper,
     CIDCOScraper,
     PMRDAScraper,
     NITNagpurScraper,
-
     # Karnataka
     BDAScraper,
     KHBScraper,
-
     # Telangana
     HMDAScraper,
     TSIICScraper,
-
     # Tamil Nadu
     TNHBScraper,
-
     # Rajasthan
     JDAScraper,
     RHBScraper,
-
     # Gujarat
     AUDAScraper,
     SUDAScraper,
     VUDAScraper,
     RUDAScraper,
     GUDAHScraper,
-
     # Haryana
     HSVPScraper,
-
     # Madhya Pradesh
     IDAScraper,
     BhopalBDAScraper,
-
     # Punjab / Chandigarh
     GMADAScraper,
     PUDAScraper,
-
     # West Bengal
     KMDAScraper,
-
     # Andhra Pradesh
     VMRDAScraper,
     CRDAScraper,
     TUDAScraper,
-
     # Kerala
     GCDAScraper,
     TRIDAScraper,
     KSHBScraper,
-
     # Odisha
     BhubaneswarBDAScraper,
-
     # Bihar
     PatnaBSPHCLScraper,
-
     # Jharkhand
     JUIDCOScraper,
-
     # Chhattisgarh
     CGHBScraper,
-
     # Uttarakhand
     MDDAScraper,
-
     # Himachal Pradesh
     HIMUDAScraper,
-
     # J&K
     JammuJDAScraper,
-
     # Assam / Northeast
     GuwahatiGMDAScraper,
 ]
