@@ -64,7 +64,7 @@ def _load_existing() -> dict:
 def _is_valid_scheme(scheme: dict) -> bool:
     """
     Filter rules:
-      1. close_date or open_date must be >= 2025-01-01
+      1. close_date or open_date must be >= 2026-01-01
       2. price_min must be >= 25.0 (₹25 lakh)
       3. status must not be CLOSED for pre-2025 schemes
     """
