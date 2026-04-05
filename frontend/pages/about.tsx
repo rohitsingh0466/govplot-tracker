@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AuthModal from "../components/AuthModal";
@@ -44,6 +44,15 @@ const WHY_USE = [
 
 export default function AboutPage() {
   const [authOpen, setAuthOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("govplot_auth_user") : null;
+    setIsLoggedIn(!!raw);
+    const handler = () => setIsLoggedIn(!!localStorage.getItem("govplot_auth_user"));
+    window.addEventListener("govplot-auth-changed", handler);
+    return () => window.removeEventListener("govplot-auth-changed", handler);
+  }, []);
 
   return (
     <>
@@ -128,9 +137,15 @@ export default function AboutPage() {
             Sign up free to see all scheme details. Upgrade to stay updated with active scheme opening alerts.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <button onClick={() => setAuthOpen(true)} className="btn-primary text-[15px] py-3.5 px-8 bg-white text-[--teal-700] hover:bg-[--teal-50]">
-              🔓 Sign Up Free
-            </button>
+            {!isLoggedIn ? (
+              <button onClick={() => setAuthOpen(true)} className="btn-primary text-[15px] py-3.5 px-8 bg-white text-[--teal-700] hover:bg-[--teal-50]">
+                🔓 Sign Up Free
+              </button>
+            ) : (
+              <Link href="/dashboard" className="btn-primary text-[15px] py-3.5 px-8 bg-white text-[--teal-700] hover:bg-[--teal-50]">
+                My Dashboard
+              </Link>
+            )}
             <Link href="/pricing" className="btn-ghost text-[15px] py-3.5 px-8 text-white border-white/30 hover:bg-white/10">
               View Plans →
             </Link>

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthModal from "../../components/AuthModal";
 
 const POSTS = [
@@ -21,6 +21,15 @@ const TAG_COLORS: Record<string, string> = {
 
 export default function BlogPage() {
   const [authOpen, setAuthOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("govplot_auth_user") : null;
+    setIsLoggedIn(!!raw);
+    const handler = () => setIsLoggedIn(!!localStorage.getItem("govplot_auth_user"));
+    window.addEventListener("govplot-auth-changed", handler);
+    return () => window.removeEventListener("govplot-auth-changed", handler);
+  }, []);
 
   return (
     <>
@@ -72,16 +81,28 @@ export default function BlogPage() {
 
           {/* CTA — updated to Sign Up, no AlertModal */}
           <div className="mt-12 bg-gradient-to-br from-[--teal-100] to-white border border-[--teal-200] rounded-3xl p-8 text-center">
-            <div className="text-3xl mb-3">🔓</div>
-            <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">Sign up to view Open &amp; Active schemes</h3>
-            <p className="text-[13.5px] text-[--ink-600] mb-3">Free account gives you full access to all scheme details across 100+ cities.</p>
+            <div className="text-3xl mb-3">{isLoggedIn ? "📚" : "🔓"}</div>
+            <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">
+              {isLoggedIn ? "Explore live scheme listings" : "Sign up to view Open & Active schemes"}
+            </h3>
+            <p className="text-[13.5px] text-[--ink-600] mb-3">
+              {isLoggedIn
+                ? "You already have access to full scheme details across 100+ cities."
+                : "Free account gives you full access to all scheme details across 100+ cities."}
+            </p>
             <p className="text-[12.5px] text-[--ink-500] mb-5">
               Upgrade to Pro (₹99/mo) to get Email + Telegram alerts when a scheme opens in your city.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
-              <button onClick={() => setAuthOpen(true)} className="btn-primary text-[14px] py-3 px-8">
-                Sign Up Free →
-              </button>
+              {!isLoggedIn ? (
+                <button onClick={() => setAuthOpen(true)} className="btn-primary text-[14px] py-3 px-8">
+                  Sign Up Free →
+                </button>
+              ) : (
+                <Link href="/schemes" className="btn-primary text-[14px] py-3 px-8">
+                  Browse Schemes →
+                </Link>
+              )}
               <Link href="/pricing" className="btn-secondary text-[14px] py-3 px-8">
                 View Plans
               </Link>

@@ -43,6 +43,15 @@ const MAJOR = ["Ahmedabad","Pune","Jaipur","Noida","Gurgaon","Lucknow","Surat","
 export default function CitiesPage() {
   const router = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("govplot_auth_user") : null;
+    setIsLoggedIn(!!raw);
+    const handler = () => setIsLoggedIn(!!localStorage.getItem("govplot_auth_user"));
+    window.addEventListener("govplot-auth-changed", handler);
+    return () => window.removeEventListener("govplot-auth-changed", handler);
+  }, []);
 
   useEffect(() => {
     if (!router.isReady || router.query.openAuth !== "1") return;
@@ -77,19 +86,20 @@ export default function CitiesPage() {
           </div>
         </div>
 
-        {/* Sign up CTA banner */}
-        <div className="mb-8 bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🔓</span>
-            <div>
-              <p className="text-[14px] font-[Outfit] font-700 text-white">Sign up to view Open &amp; Active scheme details</p>
-              <p className="text-[12px] text-[--teal-300]/90">Free account — full access to all schemes across all cities listed below</p>
+        {!isLoggedIn && (
+          <div className="mb-8 bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔓</span>
+              <div>
+                <p className="text-[14px] font-[Outfit] font-700 text-white">Sign up to view Open &amp; Active scheme details</p>
+                <p className="text-[12px] text-[--teal-300]/90">Free account — full access to all schemes across all cities listed below</p>
+              </div>
             </div>
+            <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[13px] py-2.5 px-6 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>
+              Sign Up Free →
+            </button>
           </div>
-          <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[13px] py-2.5 px-6 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>
-            Sign Up Free →
-          </button>
-        </div>
+        )}
 
         {/* Tier 1 */}
         <div className="mb-10">

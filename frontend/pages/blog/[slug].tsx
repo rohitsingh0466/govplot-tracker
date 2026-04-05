@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import type { GetServerSideProps } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdSenseSlot from "../../components/AdSenseSlot";
 import AuthModal from "../../components/AuthModal";
 
@@ -70,6 +70,15 @@ Allotted applicants receive a letter with payment timeline. Typically, 10-25% is
 
 export default function BlogPostPage({ post, slug }: { post: any; slug: string }) {
   const [authOpen, setAuthOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("govplot_auth_user") : null;
+    setIsLoggedIn(!!raw);
+    const handler = () => setIsLoggedIn(!!localStorage.getItem("govplot_auth_user"));
+    window.addEventListener("govplot-auth-changed", handler);
+    return () => window.removeEventListener("govplot-auth-changed", handler);
+  }, []);
 
   if (!post) return <div className="p-20 text-center">Post not found</div>;
 
@@ -134,20 +143,28 @@ export default function BlogPostPage({ post, slug }: { post: any; slug: string }
 
           {/* CTA — updated: no AlertModal, sign up + upgrade messaging */}
           <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] rounded-3xl p-8 text-center mt-10">
-            <div className="text-3xl mb-3">🔔</div>
+            <div className="text-3xl mb-3">{isLoggedIn ? "📈" : "🔔"}</div>
             <h3 className="text-[20px] font-[Outfit] font-700 text-white mb-2">
-              Never miss a scheme opening
+              {isLoggedIn ? "Track more live schemes" : "Never miss a scheme opening"}
             </h3>
             <p className="text-[--teal-300]/90 text-[13.5px] mb-2">
-              Sign up free to view all Open &amp; Active scheme details.
+              {isLoggedIn
+                ? "You already have access to full Open and Active scheme details."
+                : "Sign up free to view all Open & Active scheme details."}
             </p>
             <p className="text-[--teal-400]/80 text-[12.5px] mb-5">
               Upgrade to Pro (₹99/mo) to get instant Email + Telegram alerts for {post.authority || "any authority"}.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
-              <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[14px] py-3 px-6">
-                Sign Up Free →
-              </button>
+              {!isLoggedIn ? (
+                <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[14px] py-3 px-6">
+                  Sign Up Free →
+                </button>
+              ) : (
+                <Link href="/schemes" className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[14px] py-3 px-6">
+                  Browse Schemes →
+                </Link>
+              )}
               <Link href="/pricing" className="btn-ghost text-white border-white/30 hover:bg-white/10 text-[14px] py-3 px-6">
                 View Plans
               </Link>
