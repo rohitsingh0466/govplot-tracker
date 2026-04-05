@@ -1,19 +1,19 @@
 name: GovPlot Scraper — Auto Run
 
-# WORKFLOW DESIGN (two-step separation):
+# WORKFLOW DESIGN (simplified v3.0):
 #
 #   Step A — python -m scraper.main <mode>
-#             Runs scrapers, saves to disk, pushes to Supabase.
-#             Verification is NOT called here (main.py skips it unless mode=verify).
-#             Even if Step A takes 5 min, data is already in Supabase before Step B.
+#             Runs scrapers, saves JSON to data/schemes/latest.json.
+#             No verification engine. No database push.
+#             No external site hits beyond the authority portals.
 #
-#   Step B — python -m scraper.main verify  (weekly/manual only)
-#             Runs verification engine against schemes already on disk.
-#             continue-on-error: true — if this times out, data from Step A is safe.
-#             Re-saves to disk and re-pushes with verification scores when done.
+#   Step B — Commit data files to repo
+#             Commits latest.json with timestamp.
 #
-# NO OVERLAP: main.py only runs _run_verification() when mode=verify.
-#             scrape.yml is the single place that decides when verify runs.
+# MODES:
+#   full    → Sunday: all cities, all scrapers
+#   refresh → Mon–Sat: active/open schemes only
+#   auto    → Detects day automatically
 
 on:
   schedule:
@@ -24,16 +24,14 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Scraper mode: auto | full | refresh | verify"
+        description: "Scraper mode: auto | full | refresh"
         required: false
         default: "auto"
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    # 90 minutes: scraping ~2 min + verification ~15 min + buffer.
-    # Step B has continue-on-error so even if verify hits 90 min, Step C commits.
-    timeout-minutes: 90
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -55,13 +53,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Install Chrome (for Selenium scrapers)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-          echo "CHROME_BIN=/usr/bin/chromium-browser" >> $GITHUB_ENV
-          echo "CHROMEDRIVER_PATH=/usr/bin/chromedriver" >> $GITHUB_ENV
-
       - name: Detect scraper mode
         id: mode
         run: |
@@ -73,51 +64,47 @@ jobs:
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
 
-      # ── STEP A: SCRAPE → SAVE → PUSH ──────────────────────────────────────
-      # Scrapes all cities, saves JSON, pushes to Supabase.
-      # Verification is NOT triggered here (main.py v2.1 only runs verify
-      # when mode=verify, which this step never passes).
-      - name: Step A — Scrape, save, push to Supabase
+      # ── STEP A: SCRAPE → SAVE ─────────────────────────────────────────────
+      - name: Step A — Scrape and save to disk
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GOVPLOT_FORCE_FULL: ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
         run: |
           echo "▶ Mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
-      # ── STEP B: VERIFY (weekly full run or explicit verify mode only) ──────
-      # Loads schemes already saved by Step A. Runs verification engine.
-      # If this times out, Step A data is already safe in Supabase.
-      # continue-on-error: true ensures Step C (commit) always runs.
-      - name: Step B — Verify schemes (weekly only)
-        if: steps.mode.outputs.mode == 'full' || steps.mode.outputs.mode == 'verify'
-        continue-on-error: true
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "▶ Running verification pass (data from Step A already in Supabase)..."
-          python -m scraper.main verify
-
-      # ── STEP C: COMMIT DATA FILES TO REPO ─────────────────────────────────
-      - name: Step C — Commit data files
+      # ── STEP B: COMMIT DATA FILES ─────────────────────────────────────────
+      - name: Step B — Commit data files
         run: |
           git config --local user.email "bot@govplottracker.in"
           git config --local user.name "GovPlot Bot"
-          git add data/schemes/latest.json data/schemes/verification_scores.json || true
+          git add data/schemes/latest.json || true
           git diff --staged --quiet || git commit -m "chore: scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
           git push || true
 
-      # ── STEP D: SUMMARY ────────────────────────────────────────────────────
-      - name: Step D — Summary
+      # ── STEP C: SUMMARY ───────────────────────────────────────────────────
+      - name: Step C — Summary
         if: always()
         run: |
-          SCHEME_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(len(d))" 2>/dev/null || echo "unknown")
+          SCHEME_COUNT=$(python -c "
+          import json
+          try:
+              d = json.load(open('data/schemes/latest.json'))
+              print(len(d))
+          except:
+              print('unknown')
+          " 2>/dev/null || echo "unknown")
+          OPEN_COUNT=$(python -c "
+          import json
+          try:
+              d = json.load(open('data/schemes/latest.json'))
+              print(len([s for s in d if s.get('status') in ('OPEN','ACTIVE')]))
+          except:
+              print('unknown')
+          " 2>/dev/null || echo "unknown")
           echo "### 🏠 GovPlot Scraper Run" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${{ steps.mode.outputs.mode }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Schemes:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Schemes:** ${SCHEME_COUNT}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Open/Active:** ${OPEN_COUNT}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Filters:** 2025+ only | Residential Plot only | Min ₹25L" >> $GITHUB_STEP_SUMMARY

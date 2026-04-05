@@ -1,6 +1,12 @@
 """
-GovPlot Tracker - Base Scraper
+GovPlot Tracker — Base Scraper v3.0
 All city scrapers inherit from this class.
+
+CHANGES FROM v2.x:
+  - Removed: raw_data field from SchemeData
+  - Removed: Selenium dependency (all scrapers use static HTTP now)
+  - Removed: verification-related imports
+  - Simplified: _get_soup only (no _get_selenium_soup retained but kept for compat)
 """
 
 import logging
@@ -9,29 +15,29 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
+
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
+# Schemes must be from 2025-01-01 onwards
+SCHEME_CUTOFF_DATE = "2025-01-01"
+
 
 @dataclass
 class SchemeData:
-    """Standard schema for a government plot scheme."""
+    """Standard schema for a government residential plot scheme."""
     scheme_id: str
-    name: str
+    name: str                       # Format: "Authority + Scheme Name + Year"
     city: str
-    authority: str          # e.g. LDA, BDA, HSVP
-    status: str             # OPEN | CLOSED | ACTIVE | UPCOMING
+    authority: str                  # e.g. LDA, BDA, HSVP
+    status: str                     # OPEN | CLOSED | ACTIVE | UPCOMING
     open_date: Optional[str] = None
     close_date: Optional[str] = None
     total_plots: Optional[int] = None
-    price_min: Optional[float] = None   # in INR lakhs
+    price_min: Optional[float] = None   # in INR lakhs (minimum ₹25L)
     price_max: Optional[float] = None
     area_sqft_min: Optional[int] = None
     area_sqft_max: Optional[int] = None
@@ -39,7 +45,6 @@ class SchemeData:
     apply_url: Optional[str] = None
     source_url: str = ""
     last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    raw_data: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -74,36 +79,22 @@ class BaseScraper(ABC):
         "Accept-Language": "en-IN,en;q=0.9",
     }
 
-    def __init__(self, city: str, authority: str, base_url: str, use_selenium: bool = False):
+    def __init__(
+        self,
+        city: str,
+        authority: str,
+        base_url: str,
+        use_selenium: bool = False,   # Kept for API compat; ignored in v3
+    ):
         self.city = city
         self.authority = authority
         self.base_url = base_url
-        self.use_selenium = use_selenium
+        self.use_selenium = use_selenium  # Not used — all scrapers use static HTTP
         self.session = requests.Session()
         self.session.headers.update(self.HEADERS)
-        self.driver = None
 
     # ------------------------------------------------------------------ #
-    #  Selenium helpers
-    # ------------------------------------------------------------------ #
-    def _get_driver(self) -> webdriver.Chrome:
-        if self.driver is None:
-            opts = Options()
-            opts.add_argument("--headless")
-            opts.add_argument("--no-sandbox")
-            opts.add_argument("--disable-dev-shm-usage")
-            opts.add_argument("--disable-blink-features=AutomationControlled")
-            opts.add_argument(f"user-agent={self.HEADERS['User-Agent']}")
-            self.driver = webdriver.Chrome(options=opts)
-        return self.driver
-
-    def _close_driver(self):
-        if self.driver:
-            self.driver.quit()
-            self.driver = None
-
-    # ------------------------------------------------------------------ #
-    #  HTTP helpers
+    #  HTTP helper
     # ------------------------------------------------------------------ #
     def _get_soup(self, url: str, retries: int = 3) -> Optional[BeautifulSoup]:
         for attempt in range(retries):
@@ -112,22 +103,13 @@ class BaseScraper(ABC):
                 resp.raise_for_status()
                 return BeautifulSoup(resp.text, "html.parser")
             except Exception as exc:
-                logger.warning(f"Attempt {attempt+1} failed for {url}: {exc}")
+                logger.warning(f"Attempt {attempt + 1} failed for {url}: {exc}")
                 time.sleep(2 ** attempt)
         return None
 
+    # Kept for API compatibility — now just calls _get_soup
     def _get_selenium_soup(self, url: str, wait_css: str = "body") -> Optional[BeautifulSoup]:
-        driver = self._get_driver()
-        try:
-            driver.get(url)
-            WebDriverWait(driver, 15).until(
-                EC.presence_of_element_located(("css selector", wait_css))
-            )
-            time.sleep(2)
-            return BeautifulSoup(driver.page_source, "html.parser")
-        except Exception as exc:
-            logger.error(f"Selenium error on {url}: {exc}")
-            return None
+        return self._get_soup(url)
 
     # ------------------------------------------------------------------ #
     #  Status normalisation
@@ -152,10 +134,11 @@ class BaseScraper(ABC):
         ...
 
     def run(self) -> list[dict]:
-        logger.info(f"[{self.authority}] Starting scrape for {self.city}...")
+        logger.info(f"[{self.authority}] Scraping {self.city}...")
         try:
             schemes = self.scrape()
-            logger.info(f"[{self.authority}] Found {len(schemes)} schemes.")
+            logger.info(f"[{self.authority}] {len(schemes)} schemes found.")
             return [s.to_dict() for s in schemes]
-        finally:
-            self._close_driver()
+        except Exception as exc:
+            logger.error(f"[{self.authority}] Scrape failed: {exc}")
+            return []
