@@ -15,7 +15,7 @@
     "location_details": "Gomti Nagar Extension, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T12:42:14.237555+00:00",
+    "last_updated": "2026-04-06T18:44:52.887587+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -35,7 +35,7 @@
     "location_details": "Vrindavan Yojana, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T12:42:14.237583+00:00",
+    "last_updated": "2026-04-06T18:44:52.887619+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -55,7 +55,7 @@
     "location_details": "Amar Shaheed Path, Lucknow",
     "apply_url": "https://lda.up.nic.in",
     "source_url": "https://lda.up.nic.in",
-    "last_updated": "2026-04-05T12:42:14.237603+00:00",
+    "last_updated": "2026-04-06T18:44:52.887632+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -75,7 +75,7 @@
     "location_details": "Govind Nagar, Kanpur",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317516+00:00",
+    "last_updated": "2026-04-06T18:44:55.978927+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -95,7 +95,7 @@
     "location_details": "Panchwati, Varanasi",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317540+00:00",
+    "last_updated": "2026-04-06T18:44:55.978948+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -115,7 +115,7 @@
     "location_details": "Civil Lines, Prayagraj",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317557+00:00",
+    "last_updated": "2026-04-06T18:44:55.978960+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -135,7 +135,7 @@
     "location_details": "AIIMS Road, Gorakhpur",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317572+00:00",
+    "last_updated": "2026-04-06T18:44:55.978969+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -155,7 +155,7 @@
     "location_details": "Pilibhit Bypass, Bareilly",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317591+00:00",
+    "last_updated": "2026-04-06T18:44:55.978984+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -175,7 +175,7 @@
     "location_details": "Vrindavan Corridor, Mathura",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317606+00:00",
+    "last_updated": "2026-04-06T18:44:55.978994+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -195,7 +195,7 @@
     "location_details": "Shatabdi Nagar, Meerut",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:42:17.317619+00:00",
+    "last_updated": "2026-04-06T18:44:55.979003+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -215,7 +215,7 @@
     "location_details": "Kalindi Vihar, Agra",
     "apply_url": "https://adaagra.gov.in",
     "source_url": "https://adaagra.gov.in",
-    "last_updated": "2026-04-05T12:42:20.358488+00:00",
+    "last_updated": "2026-04-06T18:44:59.014642+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -235,7 +235,7 @@
     "location_details": "Taj Nagari Zone, Agra",
     "apply_url": "https://adaagra.gov.in",
     "source_url": "https://adaagra.gov.in",
-    "last_updated": "2026-04-05T12:42:20.358511+00:00",
+    "last_updated": "2026-04-06T18:44:59.014666+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -255,7 +255,7 @@
     "location_details": "Kaushambi, Ghaziabad",
     "apply_url": "https://gdaghaziabad.com",
     "source_url": "https://gdaghaziabad.com",
-    "last_updated": "2026-04-05T12:42:20.871701+00:00",
+    "last_updated": "2026-04-06T18:44:59.112260+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -275,7 +275,7 @@
     "location_details": "Raj Nagar Extension, Ghaziabad",
     "apply_url": "https://gdaghaziabad.com",
     "source_url": "https://gdaghaziabad.com",
-    "last_updated": "2026-04-05T12:42:20.871729+00:00",
+    "last_updated": "2026-04-06T18:44:59.112272+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -295,7 +295,7 @@
     "location_details": "Sector Omega, Greater Noida",
     "apply_url": "https://greaternoida.in",
     "source_url": "https://greaternoida.in",
-    "last_updated": "2026-04-05T12:43:40.422588+00:00",
+    "last_updated": "2026-04-06T18:46:12.116867+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -315,7 +315,7 @@
     "location_details": "Sector 18, Yamuna Expressway",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com",
-    "last_updated": "2026-04-05T12:43:40.422607+00:00",
+    "last_updated": "2026-04-06T18:46:12.116888+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -335,7 +335,7 @@
     "location_details": "Near Noida International Airport, Jewar",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com",
-    "last_updated": "2026-04-05T12:43:40.422617+00:00",
+    "last_updated": "2026-04-06T18:46:12.116904+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -355,7 +355,7 @@
     "location_details": "Sector 122, Noida",
     "apply_url": "https://noidaauthorityonline.in",
     "source_url": "https://noidaauthorityonline.in",
-    "last_updated": "2026-04-05T12:43:40.422624+00:00",
+    "last_updated": "2026-04-06T18:46:12.116916+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -375,7 +375,7 @@
     "location_details": "Dhanipur, Aligarh",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:43:43.469697+00:00",
+    "last_updated": "2026-04-06T18:46:15.147765+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -395,7 +395,7 @@
     "location_details": "Sipri Bazar, Jhansi",
     "apply_url": "https://awasvikas.gov.in",
     "source_url": "https://awasvikas.gov.in",
-    "last_updated": "2026-04-05T12:43:43.469713+00:00",
+    "last_updated": "2026-04-06T18:46:15.147786+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -415,7 +415,7 @@
     "location_details": "Dwarka Extension, South West Delhi",
     "apply_url": "https://dda.gov.in",
     "source_url": "https://dda.gov.in",
-    "last_updated": "2026-04-05T12:44:10.002893+00:00",
+    "last_updated": "2026-04-06T18:46:41.857831+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -435,7 +435,7 @@
     "location_details": "Narela, North Delhi",
     "apply_url": "https://dda.gov.in",
     "source_url": "https://dda.gov.in",
-    "last_updated": "2026-04-05T12:44:10.002912+00:00",
+    "last_updated": "2026-04-06T18:46:41.857850+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -455,7 +455,7 @@
     "location_details": "Rohini, North West Delhi",
     "apply_url": "https://dda.gov.in",
     "source_url": "https://dda.gov.in",
-    "last_updated": "2026-04-05T12:44:10.002925+00:00",
+    "last_updated": "2026-04-06T18:46:41.857865+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -475,7 +475,7 @@
     "location_details": "MMR Multiple Locations, Mumbai",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165054+00:00",
+    "last_updated": "2026-04-06T18:46:45.683743+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -495,7 +495,7 @@
     "location_details": "Pune, Pimpri Chinchwad",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165075+00:00",
+    "last_updated": "2026-04-06T18:46:45.683762+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -515,7 +515,7 @@
     "location_details": "Nashik, Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165091+00:00",
+    "last_updated": "2026-04-06T18:46:45.683775+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -535,7 +535,7 @@
     "location_details": "Nagpur, Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165105+00:00",
+    "last_updated": "2026-04-06T18:46:45.683787+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -555,7 +555,7 @@
     "location_details": "Thane District, MMR",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165134+00:00",
+    "last_updated": "2026-04-06T18:46:45.683810+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -575,7 +575,7 @@
     "location_details": "Vasai-Virar, MMR North",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165164+00:00",
+    "last_updated": "2026-04-06T18:46:45.683836+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -595,7 +595,7 @@
     "location_details": "Kolhapur, Western Maharashtra",
     "apply_url": "https://mhada.gov.in",
     "source_url": "https://mhada.gov.in",
-    "last_updated": "2026-04-05T12:44:14.165173+00:00",
+    "last_updated": "2026-04-06T18:46:45.683848+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -615,7 +615,7 @@
     "location_details": "Kharghar, Taloja, Dronagiri, Navi Mumbai",
     "apply_url": "https://cidcohomes.com",
     "source_url": "https://cidcohomes.com",
-    "last_updated": "2026-04-05T12:44:16.198983+00:00",
+    "last_updated": "2026-04-06T18:46:47.778944+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -635,7 +635,7 @@
     "location_details": "Panvel-Kharghar, Navi Mumbai South",
     "apply_url": "https://cidcohomes.com",
     "source_url": "https://cidcohomes.com",
-    "last_updated": "2026-04-05T12:44:16.199005+00:00",
+    "last_updated": "2026-04-06T18:46:47.778961+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -655,7 +655,7 @@
     "location_details": "Chakan, Pune",
     "apply_url": "https://pmrda.gov.in",
     "source_url": "https://pmrda.gov.in",
-    "last_updated": "2026-04-05T12:44:30.538884+00:00",
+    "last_updated": "2026-04-06T18:47:00.811813+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -675,7 +675,7 @@
     "location_details": "Urse Node, Pune Metropolitan Region",
     "apply_url": "https://pmrda.gov.in",
     "source_url": "https://pmrda.gov.in",
-    "last_updated": "2026-04-05T12:44:30.538895+00:00",
+    "last_updated": "2026-04-06T18:47:00.811825+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -695,7 +695,7 @@
     "location_details": "Hingna Road, Nagpur West",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in",
-    "last_updated": "2026-04-05T12:44:36.627681+00:00",
+    "last_updated": "2026-04-06T18:47:06.873379+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -715,7 +715,7 @@
     "location_details": "MIHAN Nagpur Airport Zone",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in",
-    "last_updated": "2026-04-05T12:44:36.627703+00:00",
+    "last_updated": "2026-04-06T18:47:06.873401+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -735,7 +735,7 @@
     "location_details": "Arkavathy Layout, North Bangalore",
     "apply_url": "https://bdabangalore.org/site-allotment/",
     "source_url": "https://bdabangalore.org",
-    "last_updated": "2026-04-05T12:46:21.624104+00:00",
+    "last_updated": "2026-04-06T18:48:50.534641+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -755,7 +755,7 @@
     "location_details": "JP Nagar 9th Phase, South Bangalore",
     "apply_url": "https://bdabangalore.org/site-allotment/",
     "source_url": "https://bdabangalore.org",
-    "last_updated": "2026-04-05T12:46:21.624122+00:00",
+    "last_updated": "2026-04-06T18:48:50.534656+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -775,7 +775,7 @@
     "location_details": "Kempegowda Layout, Bangalore",
     "apply_url": "https://bdabangalore.org/site-allotment/",
     "source_url": "https://bdabangalore.org",
-    "last_updated": "2026-04-05T12:46:21.624135+00:00",
+    "last_updated": "2026-04-06T18:48:50.534665+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -795,7 +795,7 @@
     "location_details": "ORR Extension, Mysuru",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T12:46:32.214020+00:00",
+    "last_updated": "2026-04-06T18:49:00.561629+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -815,7 +815,7 @@
     "location_details": "Smart City Zone, Hubballi-Dharwad",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T12:46:32.214047+00:00",
+    "last_updated": "2026-04-06T18:49:00.561653+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -835,7 +835,7 @@
     "location_details": "Deralakatte, Mangalore",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T12:46:32.214064+00:00",
+    "last_updated": "2026-04-06T18:49:00.561670+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -855,7 +855,7 @@
     "location_details": "Belagavi, North Karnataka",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T12:46:32.214079+00:00",
+    "last_updated": "2026-04-06T18:49:00.561684+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   },
@@ -875,7 +875,7 @@
     "location_details": "Tumakuru, Bangalore Periphery",
     "apply_url": "https://khb.kar.nic.in",
     "source_url": "https://khb.kar.nic.in",
-    "last_updated": "2026-04-05T12:46:32.214095+00:00",
+    "last_updated": "2026-04-06T18:49:00.561702+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback"
   }
