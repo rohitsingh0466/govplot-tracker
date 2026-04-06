@@ -91,18 +91,44 @@ jobs:
       # Playwright always works on GitHub Actions because it downloads its
       # own pinned Chromium binary — no dependency on system packages.
       # This is our PRIMARY JS scraper (replaces Selenium for complex portals).
+      #
+      # WHY WE DON'T USE "playwright install-deps chromium":
+      #   That command calls apt-get install libasound2 — but Ubuntu 24.04
+      #   renamed it to libasound2t64. Playwright's script doesn't know this,
+      #   so it exits with code 100 and kills the entire job.
+      #   Fix: skip install-deps entirely, install the renamed packages manually.
       - name: Install Playwright browsers
         run: |
           pip install playwright==1.44.0
           python -m playwright install chromium
-          # On Ubuntu 24.04, Playwright 1.44's install-deps script requests
-          # libasound2 (now a virtual package), which causes CI failure.
-          # Skip this call on 24.04; Chrome install above already provides core deps.
-          if [ "$(lsb_release -rs)" = "24.04" ]; then
-            echo "Skipping 'playwright install-deps chromium' on Ubuntu 24.04"
-          else
-            python -m playwright install-deps chromium
-          fi
+          # ── DO NOT run: python -m playwright install-deps chromium ──
+          # It fails on Ubuntu 24.04 (libasound2 → renamed to libasound2t64).
+          # Install Chromium runtime deps manually instead:
+          sudo apt-get install -y -qq \
+            libasound2t64 \
+            libatk1.0-0t64 \
+            libatk-bridge2.0-0t64 \
+            libcups2t64 \
+            libdrm2 \
+            libgbm1 \
+            libgtk-3-0t64 \
+            libnspr4 \
+            libnss3 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxfixes3 \
+            libxkbcommon0 \
+            libxrandr2 \
+            xvfb || true
+          # Smoke-test: launch and close Playwright Chromium — must print ✅
+          python -c "
+          from playwright.sync_api import sync_playwright
+          pw = sync_playwright().start()
+          b  = pw.chromium.launch(headless=True)
+          b.close()
+          pw.stop()
+          print('✅ Playwright Chromium OK')
+          "
 
       # ── 7. Detect mode ───────────────────────────────────────────────────
       - name: Detect scraper mode
