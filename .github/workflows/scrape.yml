@@ -1,83 +1,103 @@
-name: GovPlot Scraper — Auto Run v3.2
+name: GovPlot Scraper — Auto Run v3.3
 
-# WORKFLOW v3.2:
+# ─────────────────────────────────────────────────────────────────────────────
+# WHAT CHANGED IN v3.3 (fixes from April 5 run):
 #
-#   FULL PULL (Sunday 6:30 AM IST):
-#     - Runs all scrapers in scraper/registry.py (NOT all_cities.py — deleted)
-#     - Live HTTP + Selenium scraping per authority
-#     - Falls back to STATIC data if live fails
-#     - Marks each scheme: data_source = LIVE | STATIC
-#     - Upserts all schemes to Supabase (scheme_id conflict key)
-#     - Sends failure summary email if any scrapers fell back to STATIC
-#     - Commits latest.json to git
+#  FIX 1: Chrome binary path
+#    OLD: apt-get install chromium-browser  → installs a snap STUB, not real chrome
+#    NEW: Install google-chrome-stable via official Google repo → /usr/bin/google-chrome
 #
-#   REFRESH (Mon-Sat 6:30 AM IST):
-#     - Re-checks OPEN + UPCOMING schemes in Supabase
-#     - Updates status if close_date has passed (OPEN → CLOSED etc.)
-#     - No new inserts in refresh mode
-#     - Commits updated latest.json to git
+#  FIX 2: Playwright added as primary scraper for JS-heavy portals
+#    OLD: Selenium looking for /usr/bin/google-chrome (wrong path from snap)
+#    NEW: Playwright installs its own bundled Chromium — always works on Actions
 #
-#   FILTERS (enforced in Python):
-#     - Residential Plot lottery schemes ONLY
-#     - No LIG / EWS / eAuction / commercial / flat schemes
-#     - close_date within last 1 year OR null
-#     - price_min >= ₹25L
+#  FIX 3: DNS/firewall workaround for .gov.in / .nic.in domains
+#    GitHub Actions runners (Azure US) are blocked by NIC India firewall.
+#    We now use httpx with Indian DNS resolver + retry logic.
+#    Sites that are genuinely unreachable fall through cleanly to STATIC.
 #
-# REQUIRED SECRETS:
-#   SUPABASE_URL          — Supabase project URL
-#   SUPABASE_SERVICE_KEY  — Supabase service role key (not anon key)
-#   SENDGRID_API_KEY      — For failure alert emails
-#   DATABASE_URL          — PostgreSQL URL (for schema migrations)
-#
-# ENVIRONMENT VARS SET IN WORKFLOW:
-#   FROM_EMAIL            — sender address for alerts (alerts@govplottracker.com)
+#  FIX 4: SCRAPER_API_KEY secret added (optional)
+#    When set, .gov.in requests are routed through ScraperAPI (Indian proxy).
+#    Get free 5000 req/month at scraperapi.com — add as GitHub Secret.
+#    Without it: scraper still runs, uses STATIC fallback for blocked domains.
+# ─────────────────────────────────────────────────────────────────────────────
 
 on:
   schedule:
-    # Mon–Sat 6:30 AM IST (1:00 UTC) — refresh OPEN/UPCOMING statuses
-    - cron: "0 1 * * 1-6"
-    # Sunday 6:30 AM IST (1:00 UTC) — full pull all authorities
+    # Sunday 1:00 UTC (6:30 AM IST) — full pull
     - cron: "0 1 * * 0"
+    # Mon–Sat 1:00 UTC (6:30 AM IST) — refresh only
+    - cron: "0 1 * * 1-6"
   workflow_dispatch:
     inputs:
       mode:
         description: "Scraper mode: auto | full | refresh"
         required: false
-        default: "auto"
+        default: "full"
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 45   # Live HTTP + Selenium needs more time
+    timeout-minutes: 60
 
     steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # ── 2. Python ────────────────────────────────────────────────────────
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install Chromium for Selenium
+      # ── 3. Install Google Chrome (official binary — NOT snap) ─────────────
+      # This is the KEY FIX for "no chrome binary at /usr/bin/google-chrome"
+      # snap chromium-browser installs a stub at /usr/bin that calls snap
+      # which requires snap confinement — it breaks in CI.
+      # The official Google repo installs the real binary at /usr/bin/google-chrome
+      - name: Install Google Chrome (stable, official)
         run: |
+          # Add Google's official signing key and repo
+          wget -q -O /tmp/google-signing-key.pub \
+            https://dl.google.com/linux/linux_signing_key.pub
+          sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+            /tmp/google-signing-key.pub
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
+            http://dl.google.com/linux/chrome/deb/ stable main" \
+            | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update -qq
-          sudo apt-get install -y -qq chromium-browser chromium-chromedriver
-          echo "CHROME_BIN=/usr/bin/chromium-browser" >> $GITHUB_ENV
-          echo "CHROMEDRIVER_PATH=/usr/bin/chromedriver" >> $GITHUB_ENV
-          chromium-browser --version
+          sudo apt-get install -y -qq google-chrome-stable
+          # Verify — this MUST print a version, not "not found"
+          google-chrome --version
+          which google-chrome
 
+      # ── 4. Cache pip ─────────────────────────────────────────────────────
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-v33-${{ hashFiles('requirements.txt') }}
 
+      # ── 5. Install Python deps ───────────────────────────────────────────
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
+      # ── 6. Install Playwright + its bundled Chromium ─────────────────────
+      # Playwright always works on GitHub Actions because it downloads its
+      # own pinned Chromium binary — no dependency on system packages.
+      # This is our PRIMARY JS scraper (replaces Selenium for complex portals).
+      - name: Install Playwright browsers
+        run: |
+          pip install playwright==1.44.0
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
+
+      # ── 7. Detect mode ───────────────────────────────────────────────────
       - name: Detect scraper mode
         id: mode
         run: |
@@ -88,67 +108,72 @@ jobs:
           else
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
+          echo "Detected mode: $(cat $GITHUB_OUTPUT | grep mode | cut -d= -f2)"
 
-      # ── STEP A: Scrape → Push to Supabase → Send alert if failures ────────
-      - name: Step A — Scrape, push to Supabase, alert on failures
+      # ── 8. Run scraper ───────────────────────────────────────────────────
+      - name: Run scraper → Supabase → Alert email
         env:
           SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           SENDGRID_API_KEY:     ${{ secrets.SENDGRID_API_KEY }}
           DATABASE_URL:         ${{ secrets.DATABASE_URL }}
+          # Optional: add SCRAPER_API_KEY to GitHub Secrets for .gov.in access
+          # Get free 5000 req/month at https://scraperapi.com
+          SCRAPER_API_KEY:      ${{ secrets.SCRAPER_API_KEY }}
           FROM_EMAIL:           "alerts@govplottracker.com"
           GOVPLOT_FORCE_FULL:   ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
-          CHROME_BIN:           /usr/bin/chromium-browser
+          # Explicit Chrome paths for both Selenium and undetected-chromedriver
+          CHROME_BIN:           /usr/bin/google-chrome
           CHROMEDRIVER_PATH:    /usr/bin/chromedriver
         run: |
-          echo "▶ Mode: ${{ steps.mode.outputs.mode }}"
+          echo "▶ Running in mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
-      # ── STEP B: Commit latest.json to git ─────────────────────────────────
-      - name: Step B — Commit data to git
+      # ── 9. Commit data to git ────────────────────────────────────────────
+      - name: Commit latest scheme data
         run: |
           git config --local user.email "bot@govplottracker.in"
           git config --local user.name  "GovPlot Bot"
           git add data/schemes/latest.json || true
           git diff --staged --quiet || git commit -m \
-            "chore: scheme data [$(date -u +%Y-%m-%dT%H:%M:%SZ)] mode=${{ steps.mode.outputs.mode }}"
+            "chore: scheme data $(date -u +%Y-%m-%dT%H:%M:%SZ) mode=${{ steps.mode.outputs.mode }}"
           git push || true
 
-      # ── STEP C: Job summary ────────────────────────────────────────────────
-      - name: Step C — Summary
+      # ── 10. Summary ──────────────────────────────────────────────────────
+      - name: Job summary
         if: always()
         run: |
-          python - <<'EOF'
-          import json, sys
+          python3 - <<'PYEOF'
+          import json, os
           try:
               d = json.load(open("data/schemes/latest.json"))
-              total    = len(d)
-              open_c   = sum(1 for s in d if s.get("status") == "OPEN")
-              upcoming = sum(1 for s in d if s.get("status") == "UPCOMING")
-              closed   = sum(1 for s in d if s.get("status") == "CLOSED")
-              live     = sum(1 for s in d if s.get("data_source") == "LIVE")
-              static   = sum(1 for s in d if s.get("data_source") == "STATIC")
-              print(f"TOTAL={total} OPEN={open_c} UPCOMING={upcoming} CLOSED={closed} LIVE={live} STATIC={static}")
+              total  = len(d)
+              open_  = sum(1 for s in d if s.get("status") == "OPEN")
+              up     = sum(1 for s in d if s.get("status") == "UPCOMING")
+              closed = sum(1 for s in d if s.get("status") == "CLOSED")
+              live   = sum(1 for s in d if s.get("data_source") == "LIVE")
+              static = sum(1 for s in d if s.get("data_source") == "STATIC")
+              print(f"TOTAL={total} OPEN={open_} UPCOMING={up} CLOSED={closed} LIVE={live} STATIC={static}")
           except Exception as e:
-              print(f"TOTAL=unknown ERROR={e}")
-          EOF
+              print(f"SUMMARY ERROR: {e}")
+          PYEOF
 
-          SCHEME_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(len(d))" 2>/dev/null || echo "unknown")
-          OPEN_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('status')=='OPEN'))" 2>/dev/null || echo "unknown")
-          UPCOMING_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('status')=='UPCOMING'))" 2>/dev/null || echo "unknown")
-          LIVE_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('data_source')=='LIVE'))" 2>/dev/null || echo "unknown")
-          STATIC_COUNT=$(python -c "import json; d=json.load(open('data/schemes/latest.json')); print(sum(1 for s in d if s.get('data_source')=='STATIC'))" 2>/dev/null || echo "unknown")
+          STATS=$(python3 -c "
+          import json
+          try:
+              d=json.load(open('data/schemes/latest.json'))
+              t=len(d); l=sum(1 for s in d if s.get('data_source')=='LIVE'); st=t-l
+              print(f'{t} total | {l} LIVE | {st} STATIC')
+          except: print('unknown')
+          " 2>/dev/null)
 
-          echo "### 🏠 GovPlot Scraper v3.2 Run" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏠 GovPlot Scraper v3.3 — Run Summary" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| **Time** | $(date -u) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Mode** | ${{ steps.mode.outputs.mode }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Total Schemes** | ${SCHEME_COUNT} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Open** | ${OPEN_COUNT} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Upcoming** | ${UPCOMING_COUNT} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **🟢 LIVE scraped** | ${LIVE_COUNT} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **🟡 STATIC fallback** | ${STATIC_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Chrome** | google-chrome-stable (official binary) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **JS Scraper** | Playwright Chromium (bundled) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Stats** | ${STATS} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Status** | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Filters** | Residential Plot only · No LIG/EWS/eAuction · ≥₹25L · Last 1 year |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Alert** | rohit0904singh@gmail.com on fallback |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ScraperAPI** | ${{ secrets.SCRAPER_API_KEY != '' && 'configured' || 'not set — using direct' }} |" >> $GITHUB_STEP_SUMMARY
