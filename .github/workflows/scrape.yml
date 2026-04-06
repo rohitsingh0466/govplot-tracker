@@ -95,7 +95,14 @@ jobs:
         run: |
           pip install playwright==1.44.0
           python -m playwright install chromium
-          python -m playwright install-deps chromium
+          # On Ubuntu 24.04, Playwright 1.44's install-deps script requests
+          # libasound2 (now a virtual package), which causes CI failure.
+          # Skip this call on 24.04; Chrome install above already provides core deps.
+          if [ "$(lsb_release -rs)" = "24.04" ]; then
+            echo "Skipping 'playwright install-deps chromium' on Ubuntu 24.04"
+          else
+            python -m playwright install-deps chromium
+          fi
 
       # ── 7. Detect mode ───────────────────────────────────────────────────
       - name: Detect scraper mode
