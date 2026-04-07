@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import { AuthProvider } from "../lib/AuthContext";
 
@@ -18,6 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
         />
       )}
       <Component {...pageProps} />
+      <Analytics />
     </AuthProvider>
   );
 }
