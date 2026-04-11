@@ -169,7 +169,7 @@ export default function YeidaLaunchedBlog() {
               Don't Miss the Next YEIDA Scheme — or Any Government Plot Lottery
             </h3>
             <p className="text-[13.5px] text-[--teal-300]/90 mb-2 max-w-lg mx-auto">
-              GovPlot Tracker monitors YEIDA, GNIDA, DDA, LDA, BDA, MHADA and 45+ more authorities across 100+ cities. The moment a new scheme opens, you get an instant alert — Email, Telegram, or WhatsApp.
+              GovPlot Tracker monitors a focused 20-city watchlist including YEIDA, LDA, JDA, DDA, BDA, HMDA and CIDCO. The moment a watched scheme opens, you can get an alert by Email, Telegram, or WhatsApp.
             </p>
             <p className="text-[12px] text-[--teal-400]/80 mb-5">
               Free account · No credit card · Set up in 30 seconds
@@ -184,8 +184,8 @@ export default function YeidaLaunchedBlog() {
                   Go to My Dashboard →
                 </Link>
               )}
-              <Link href="/schemes?city=Noida" className="btn-ghost text-white border-white/30 hover:bg-white/10 text-[14px] py-3 px-6">
-                View All Noida Schemes
+              <Link href="/schemes?city=Greater%20Noida" className="btn-ghost text-white border-white/30 hover:bg-white/10 text-[14px] py-3 px-6">
+                View Greater Noida Schemes
               </Link>
             </div>
           </div>

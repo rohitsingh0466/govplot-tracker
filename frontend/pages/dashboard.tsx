@@ -36,10 +36,10 @@ type AlertItem = {
 };
 
 const CITIES = [
-  "Delhi", "Mumbai", "Navi Mumbai", "Pune", "Bangalore", "Hyderabad", "Chennai",
-  "Jaipur", "Lucknow", "Noida", "Gurgaon", "Ahmedabad", "Indore", "Chandigarh",
-  "Kolkata", "Bhubaneswar", "Patna", "Ranchi", "Raipur", "Dehradun",
-  "Visakhapatnam", "Kochi", "Nagpur", "Surat", "Vadodara", "Jodhpur",
+  "Greater Noida", "Lucknow", "Jaipur", "Agra", "Prayagraj",
+  "Chandigarh", "Navi Mumbai", "Hyderabad", "Pune", "Bengaluru",
+  "Raipur", "Varanasi", "Bhubaneswar", "Nagpur", "Ahmedabad",
+  "Delhi", "Bhopal", "Udaipur", "Dehradun", "Meerut",
 ];
 
 const CHANNELS = [
@@ -284,7 +284,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="bg-[--saffron-100]/50 border border-[--saffron-200]/60 rounded-2xl p-5 mb-5 text-center">
                     <p className="text-[13.5px] font-[Outfit] font-700 text-[--ink-900] mb-2">Upgrade to stay updated with active scheme alerts</p>
-                    <p className="text-[12.5px] text-[--ink-600] mb-4">Pro plan: Email + Telegram for up to 2 cities. Premium: unlimited cities + WhatsApp.</p>
+                    <p className="text-[12.5px] text-[--ink-600] mb-4">Pro plan: Email + Telegram for up to 2 watched cities. Premium: full watchlist + WhatsApp.</p>
                     <button onClick={() => setUpgradeOpen(true)} className="btn-saffron text-[13px] py-2.5 px-6">✦ Upgrade Now →</button>
                   </div>
                 )}
@@ -300,7 +300,7 @@ export default function DashboardPage() {
                     {alerts.map(a => (
                       <div key={a.id} className="flex items-center justify-between p-4 bg-[--ink-50] rounded-2xl border border-[--ink-100]">
                         <div>
-                          <p className="text-[13.5px] font-semibold text-[--ink-900]">{a.city || "All cities"} · {a.authority || "All authorities"}</p>
+                          <p className="text-[13.5px] font-semibold text-[--ink-900]">{a.city || "All watched cities"} · {a.authority || "All authorities"}</p>
                           <p className="text-[11.5px] text-[--ink-500] mt-0.5">{a.channel} · Active</p>
                         </div>
                         <button onClick={() => removeAlert(a.id)} className="text-[12px] text-red-500 hover:text-red-700 font-semibold transition px-3 py-1 rounded-lg hover:bg-red-50">Remove</button>

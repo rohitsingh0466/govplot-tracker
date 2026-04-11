@@ -159,10 +159,10 @@ export default function YeidaSchemeComparisonBlog() {
           <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] rounded-3xl p-8 text-center mt-10 mb-8">
             <div className="text-3xl mb-3">📡</div>
             <h3 className="text-[20px] font-[Outfit] font-700 text-white mb-2">
-              Never Miss a YEIDA or GNIDA Scheme Again
+              Never Miss a YEIDA Scheme Window Again
             </h3>
             <p className="text-[13.5px] text-[--teal-300]/90 mb-5 max-w-lg mx-auto">
-              GovPlot Tracker monitors YEIDA, GNIDA, DDA, and 45+ authorities weekly. Get an instant alert the moment a new scheme opens — so you never find out about a plot lottery after it has already closed.
+              GovPlot Tracker monitors a focused 20-city watchlist led by YEIDA, LDA, JDA, DDA, BDA, HMDA and CIDCO. Get an alert when a watched scheme opens, so you never find out about a plot lottery after it has already closed.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               {!isLoggedIn ? (

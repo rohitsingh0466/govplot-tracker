@@ -21,7 +21,7 @@ const PLANS = [
     features: [
       { ok: true,  text: "CLOSED & UPCOMING schemes — full details" },
       { ok: true,  text: "OPEN & ACTIVE schemes — visible after sign-up (free)" },
-      { ok: true,  text: "100+ cities, 50+ housing authorities" },
+      { ok: true,  text: "20 high-demand city watchlist" },
       { ok: true,  text: "Scheme list, filters & details" },
       { ok: false, text: "City alert subscriptions" },
       { ok: false, text: "Email / Telegram / WhatsApp alerts" },
@@ -86,7 +86,7 @@ export default function PricingPage() {
     <>
       <Head>
         <title>Pricing — GovPlot Tracker</title>
-        <meta name="description" content="GovPlot Tracker plans: Free, Pro ₹99/mo, Premium ₹299/mo. Track government plot lottery schemes across 100+ Indian cities with real-time alerts." />
+        <meta name="description" content="GovPlot Tracker plans: Free, Pro ₹99/mo, Premium ₹299/mo. Track government plot lottery schemes across India's top 20 watched cities with alerts." />
         <link rel="canonical" href="https://govplottracker.com/pricing" />
       </Head>
       <Navbar />
@@ -118,7 +118,7 @@ export default function PricingPage() {
             </div>
             <div className="bg-white rounded-xl p-3 border border-[--ink-100]">
               <div className="font-bold text-[--ink-700] mb-1">🆓 Free account (signed in)</div>
-              <p className="text-[--ink-500]">ALL scheme statuses visible with full details across 100+ cities. No alerts.</p>
+              <p className="text-[--ink-500]">ALL scheme statuses visible with full details across the 20-city watchlist. No alerts.</p>
             </div>
             <div className="bg-white rounded-xl p-3 border border-[--ink-100]">
               <div className="font-bold text-[--saffron-600] mb-1">✦ Pro / Premium</div>
@@ -170,11 +170,11 @@ export default function PricingPage() {
           <h2 className="text-[24px] font-[Outfit] font-800 text-[--ink-900] mb-8 text-center">Frequently asked</h2>
           <div className="space-y-4">
             {[
-              { q: "Do I need to pay to see scheme details?", a: "No. Create a free account (Google sign-in) and you can see ALL scheme details across 100+ cities — OPEN, ACTIVE, UPCOMING and CLOSED. No payment required. Alerts are the paid feature." },
+              { q: "Do I need to pay to see scheme details?", a: "No. Create a free account (Google sign-in) and you can see ALL scheme details across the 20-city watchlist — OPEN, ACTIVE, UPCOMING and CLOSED. No payment required. Alerts are the paid feature." },
               { q: "What do alerts give me?", a: "When a scheme changes status — opens, closes, or goes UPCOMING — you get notified via Email (Pro + Premium) or Telegram (Pro + Premium) or WhatsApp (Premium only). Pro allows up to 2 cities; Premium is unlimited." },
               { q: "Can I cancel anytime?", a: "Yes. Cancel anytime from your dashboard. No lock-in, no questions asked." },
               { q: "Which payment methods are accepted?", a: "We use Razorpay — UPI, debit/credit cards, net banking, and EMI are all supported." },
-              { q: "How often is data updated?", a: "Full data pull every Sunday (all 58 scrapers, 100+ cities). Mon–Sat: only OPEN/ACTIVE schemes are refreshed." },
+              { q: "How often is data updated?", a: "Full data pull every Sunday across the top-20 watchlist. Mon–Sat: OPEN and ACTIVE scheme statuses are refreshed." },
             ].map(({ q, a }) => (
               <div key={q} className="card p-5">
                 <h3 className="text-[14px] font-[Outfit] font-700 text-[--ink-900] mb-2">{q}</h3>

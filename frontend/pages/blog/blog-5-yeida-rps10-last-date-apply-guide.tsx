@@ -248,7 +248,7 @@ export default function YeidaLastDateGuideBlog() {
               Get Notified About Every Scheme Opening Across India
             </h3>
             <p className="text-[13.5px] text-[--teal-300]/90 mb-2 max-w-lg mx-auto">
-              You found this scheme — but how many have you missed? GovPlot Tracker monitors YEIDA, DDA, LDA, MHADA, GNIDA and 45+ housing authorities weekly. Sign up free and get instant alerts when a new scheme opens in your city.
+              You found this scheme — but how many have you missed? GovPlot Tracker monitors a focused 20-city watchlist led by YEIDA, LDA, JDA, DDA, BDA, HMDA and CIDCO. Sign up free and get alerts when a watched scheme opens.
             </p>
             <p className="text-[12px] text-[--teal-400]/80 mb-5">
               Pro plan (₹99/mo) — Email + Telegram alerts for up to 2 cities. Never miss a window again.

@@ -160,10 +160,10 @@ export default function YeidaVsLdaBlog() {
           <div className="bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-3xl p-8 text-center mt-10 mb-8">
             <div className="text-3xl mb-3">🏠</div>
             <h3 className="text-[20px] font-[Outfit] font-700 text-white mb-2">
-              Track YEIDA, LDA & 45+ More Authorities in One Place
+              Track YEIDA, LDA and the Top-20 Watchlist in One Place
             </h3>
             <p className="text-[13.5px] text-[--teal-300]/90 mb-5 max-w-lg mx-auto">
-              GovPlot Tracker monitors every major housing authority across 100+ Indian cities. New scheme launched? Application window closing? We alert you instantly via Email or Telegram. Never chase government websites manually again.
+              GovPlot Tracker monitors a focused 20-city watchlist for high-demand residential plot lottery markets. New scheme launched? Application window closing? Alerts help you move without checking authority websites every day.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               {!isLoggedIn ? (

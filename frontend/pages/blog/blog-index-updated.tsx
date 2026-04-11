@@ -85,7 +85,7 @@ export default function BlogPage() {
         <title>Blog — GovPlot Tracker | YEIDA, DDA, LDA & Government Plot Scheme Guides</title>
         <meta
           name="description"
-          content="In-depth guides, comparisons, and investment analysis for government residential plot lottery schemes across India. YEIDA 2026, DDA, LDA, BDA, MHADA and more."
+          content="In-depth guides, comparisons, and investment analysis for government residential plot lottery schemes across India's focused top-20 watchlist. YEIDA 2026, DDA, LDA, JDA, BDA and more."
         />
         <link rel="canonical" href="https://govplottracker.com/blog" />
       </Head>
@@ -178,12 +178,12 @@ export default function BlogPage() {
           <div className="mt-12 bg-gradient-to-br from-[--teal-100] to-white border border-[--teal-200] rounded-3xl p-8 text-center">
             <div className="text-3xl mb-3">🏠</div>
             <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">
-              {isLoggedIn ? "Track Live Schemes Across 100+ Cities" : "Never Miss a Government Plot Lottery Again"}
+              {isLoggedIn ? "Track Live Schemes Across the Top-20 Watchlist" : "Never Miss a Government Plot Lottery Again"}
             </h3>
             <p className="text-[13.5px] text-[--ink-600] mb-2">
               {isLoggedIn
                 ? "Your free account gives you full access to all OPEN, ACTIVE, UPCOMING, and CLOSED scheme details."
-                : "Sign up free to view all Open & Active scheme details across 100+ cities — YEIDA, DDA, LDA, BDA, MHADA and 45+ more authorities."}
+                : "Sign up free to view Open & Active scheme details across the 20-city watchlist — YEIDA, DDA, LDA, JDA, BDA, HMDA and more."}
             </p>
             <p className="text-[12.5px] text-[--ink-500] mb-5">
               Upgrade to Pro (₹99/mo) for instant Email + Telegram alerts the moment a new scheme opens in your city.

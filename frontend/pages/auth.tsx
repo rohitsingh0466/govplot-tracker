@@ -27,7 +27,7 @@ export default function AuthPage() {
     <>
       <Head>
         <title>Sign In — GovPlot Tracker</title>
-        <meta name="description" content="Sign in to GovPlot Tracker with Google to manage dashboard access, alerts, and subscriptions across 100+ Indian cities." />
+        <meta name="description" content="Sign in to GovPlot Tracker with Google to manage dashboard access, alerts, and subscriptions across India's top 20 watched plot lottery cities." />
       </Head>
 
       <div className="min-h-screen flex">
@@ -45,15 +45,15 @@ export default function AuthPage() {
               <div className="w-10 h-10 rounded-full bg-[--teal-700] flex items-center justify-center text-white font-bold">R</div>
               <div>
                 <p className="text-white text-[13.5px] font-semibold">Rohit Verma</p>
-                <p className="text-[--teal-400] text-[12px]">Plot allottee, Noida / Yamuna Expressway</p>
+                <p className="text-[--teal-400] text-[12px]">Plot applicant, Greater Noida / Yamuna Expressway</p>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             {[
-              { value: "100+", label: "Cities" },
-              { value: "50+", label: "Authorities" },
+              { value: "20", label: "Cities" },
+              { value: "Lottery", label: "Focus" },
               { value: "Google", label: "Sign in" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
@@ -72,7 +72,7 @@ export default function AuthPage() {
 
           <div className="mb-7">
             <h1 className="text-[28px] font-[Outfit] font-900 text-[--ink-900] mb-1.5">Sign in with Google</h1>
-            <p className="text-[14px] text-[--ink-500]">Use your Google account to manage alerts across 100+ cities, subscriptions, and dashboard access.</p>
+            <p className="text-[14px] text-[--ink-500]">Use your Google account to manage alerts across the 20-city watchlist, subscriptions, and dashboard access.</p>
           </div>
 
           <div className="rounded-2xl border border-[--ink-100] bg-[--ink-50] p-4 text-[13px] leading-relaxed text-[--ink-600]">

@@ -17,16 +17,12 @@ import { withMinimumLoader } from "../lib/uiLoading";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const MOCK_SCHEMES = [
-  { scheme_id: "DDA-abc1",   name: "DDA Awasiya Yojana Lottery 2025 — Dwarka Extension",        city: "Delhi",       authority: "DDA",   status: "UPCOMING", price_min: 40,  price_max: 600, total_plots: 8000,  apply_url: "https://dda.gov.in",                    open_date: "2025-09-01" },
-  { scheme_id: "CIDCO-abc1", name: "CIDCO Mass Housing Lottery December 2025 — 16876 Units",    city: "Navi Mumbai", authority: "CIDCO", status: "OPEN",     price_min: 30,  price_max: 180, total_plots: 16876, apply_url: "https://cidcohomes.com",                close_date: "2026-01-31", area_sqft_min: 322, area_sqft_max: 567 },
-  { scheme_id: "YEIDA-abc1", name: "YEIDA Noida Airport Zone Plot Lottery 2025",                city: "Noida",       authority: "YEIDA", status: "UPCOMING", price_min: 12,  price_max: 75,  total_plots: 3500,  apply_url: "https://yamunaexpresswayauthority.com", open_date: "2025-10-01" },
-  { scheme_id: "JDA-abc1",   name: "JDA Jagatpura Residential Plot Lottery Scheme 2025",        city: "Jaipur",      authority: "JDA",   status: "OPEN",     price_min: 22,  price_max: 110, total_plots: 1200,  apply_url: "https://jda.gov.in",                    close_date: "2025-04-30", area_sqft_min: 900, area_sqft_max: 5400 },
-  { scheme_id: "MHADA-abc1", name: "MHADA Pune Board Plot Lottery 2025 — 6294 Units",          city: "Pune",        authority: "MHADA", status: "OPEN",     price_min: 25,  price_max: 300, total_plots: 6294,  apply_url: "https://mhada.gov.in",                  close_date: "2025-04-30" },
-  { scheme_id: "IDA-abc1",   name: "IDA Super Corridor Residential Plot Lottery 2025",          city: "Indore",      authority: "IDA",   status: "OPEN",     price_min: 20,  price_max: 95,  total_plots: 1400,  apply_url: "https://ida.mp.gov.in",                 close_date: "2025-05-31", area_sqft_min: 900, area_sqft_max: 5400 },
-  { scheme_id: "BDA-abc1",   name: "BDA Arkavathy Layout 2E Residential Sites Lottery",        city: "Bangalore",   authority: "BDA",   status: "ACTIVE",   price_min: 45,  price_max: 300, total_plots: 6588,  apply_url: "https://bdabangalore.org",              close_date: "2025-03-31", area_sqft_min: 600, area_sqft_max: 4800 },
-  { scheme_id: "HSVP-abc1",  name: "HSVP BPL EWS Residential Plot Lottery Gurugram 2024-25",  city: "Gurgaon",     authority: "HSVP",  status: "OPEN",     price_min: 11,  price_max: 35,  total_plots: 7300,  apply_url: "https://hsvphry.gov.in",                close_date: "2025-03-31" },
-  { scheme_id: "HMDA-abc1",  name: "HMDA Residential Plots Adibatla IT Corridor Lottery 2025", city: "Hyderabad",   authority: "HMDA",  status: "UPCOMING", price_min: 28,  price_max: 120, total_plots: 2400,  apply_url: "https://hmda.gov.in",                   open_date: "2025-08-01" },
-  { scheme_id: "LDA-abc1",   name: "LDA Gomti Nagar Extension Residential Plot Lottery 2024",  city: "Lucknow",     authority: "LDA",   status: "ACTIVE",   price_min: 35,  price_max: 120, total_plots: 800,   apply_url: "https://lda.up.nic.in",                 close_date: "2025-06-30" },
+  { scheme_id: "YEIDA-RPS10-2026", name: "YEIDA Sector 18 Yamuna Expressway Residential Plot Lottery 2026", city: "Greater Noida", authority: "YEIDA", status: "UPCOMING", price_min: 30, price_max: 90, total_plots: 2000, apply_url: "https://yamunaexpresswayauthority.com", open_date: "2026-06-01", close_date: "2026-08-31" },
+  { scheme_id: "LDA-ANANT-NAGAR-PHASE3-2025", name: "LDA Anant Nagar Yojna Phase 3 Residential Plot Lottery", city: "Lucknow", authority: "LDA", status: "OPEN", price_min: 40, price_max: 120, total_plots: 600, apply_url: "https://www.ldalucknow.in", close_date: "2026-04-30" },
+  { scheme_id: "JDA-JAIPUR-2026", name: "JDA Residential Plot Scheme Lottery Draw 2026", city: "Jaipur", authority: "JDA", status: "UPCOMING", price_min: 25, price_max: 110, total_plots: 1200, apply_url: "https://jda.rajasthan.gov.in" },
+  { scheme_id: "ADA-AGRA-2026", name: "ADA Agra Residential Plot Lottery 2026", city: "Agra", authority: "ADA", status: "OPEN", price_min: 32, price_max: 95, total_plots: 450, apply_url: "https://www.adaagra.org.in", close_date: "2026-05-31" },
+  { scheme_id: "CIDCO-NAVI-MUMBAI-2026", name: "CIDCO Navi Mumbai Residential Plot Lottery Watch", city: "Navi Mumbai", authority: "CIDCO", status: "UPCOMING", price_min: 35, price_max: 180, total_plots: 900, apply_url: "https://www.cidco.maharashtra.gov.in" },
+  { scheme_id: "BDA-BENGALURU-2026", name: "BDA Bengaluru Residential Sites Lottery Watch", city: "Bengaluru", authority: "BDA", status: "ACTIVE", price_min: 45, price_max: 300, total_plots: 650, apply_url: "https://bdabangalore.org" },
 ];
 
 export default function Home() {
@@ -106,8 +102,8 @@ export default function Home() {
     <>
       <Head>
         <title>GovPlot Tracker — Government Plot Lottery Schemes Across India</title>
-        <meta name="description" content="Track government residential plot lottery schemes across India's top 100+ cities — Delhi, Mumbai, Bangalore, Hyderabad, Jaipur, Noida, Pune and more. Real-time alerts via Email, Telegram & WhatsApp." />
-        <meta name="keywords" content="government plot scheme India, DDA lottery 2025, LDA plot scheme, BDA residential plots, MHADA lottery, CIDCO lottery, government land scheme alerts, plot lottery India" />
+        <meta name="description" content="Track government residential plot lottery schemes across India's curated top 20 high-demand cities — Greater Noida, Lucknow, Jaipur, Agra, Delhi, Bengaluru and more." />
+        <meta name="keywords" content="government plot scheme India, YEIDA plot scheme, DDA lottery, LDA plot scheme, JDA plot lottery, BDA residential plots, CIDCO lottery, government land scheme alerts, plot lottery India" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="GovPlot Tracker — Government Plot Lottery Schemes Across India" />
         <meta property="og:type" content="website" />
@@ -127,10 +123,10 @@ export default function Home() {
           <h1 className="text-[38px] sm:text-[52px] lg:text-[60px] font-[Outfit] font-900 text-[--ink-900] mb-5" style={{ lineHeight: "1.08" }}>
             Never miss a{" "}
             <span className="bg-gradient-to-r from-[--teal-600] to-[--teal-400] bg-clip-text text-transparent">Government Plot Lottery</span>{" "}
-            across India
+            in India's highest-demand cities
           </h1>
           <p className="text-[17px] sm:text-[19px] text-[--ink-600] leading-relaxed mb-8 max-w-2xl">
-            Real-time monitoring of DDA, LDA, BDA, MHADA, CIDCO, GNIDA, JDA, HMDA and 45+ more housing authorities across 100+ cities.
+            A curated 20-city watchlist for government residential plot lotteries across YEIDA, LDA, JDA, DDA, BDA, CIDCO, HMDA and other high-demand authorities.
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             {!isLoggedIn ? (
@@ -148,8 +144,20 @@ export default function Home() {
             )}
           </div>
           <div className="flex flex-wrap gap-3">
-            {["✅ Free forever", "🏙️ 100+ cities", "⚡ Weekly full pull", "🎯 Lottery schemes only", "✅ Verified sources", "🔐 Google sign in"].map(t => (
+            {["Free forever", "20-city watchlist", "Weekly full pull", "Lottery schemes only", "Official-source links", "Google sign in"].map(t => (
               <span key={t} className="text-[12.5px] font-semibold text-[--ink-500] bg-[--ink-50] border border-[--ink-100] px-3 py-1.5 rounded-full">{t}</span>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-3 mt-8 max-w-xl">
+            {[
+              { value: "20", label: "watched cities" },
+              { value: resolvedStats.total_schemes || 0, label: "scheme rows" },
+              { value: resolvedStats.cities_tracked || 0, label: "cities with data" },
+            ].map(({ value, label }) => (
+              <div key={label} className="rounded-2xl border border-[--ink-100] bg-white p-4 shadow-sm">
+                <div className="font-[Outfit] text-[26px] font-900 text-[--teal-700]">{value}</div>
+                <div className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[--ink-400]">{label}</div>
+              </div>
             ))}
           </div>
         </div>
@@ -187,9 +195,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: "01", icon: "🤖", title: "We scrape weekly + daily", desc: "58 scrapers pull all 100+ cities fresh every Sunday. Mon–Sat: only OPEN/ACTIVE schemes are refreshed." },
-              { step: "02", icon: "✅", title: "We verify schemes", desc: "Every scheme is cross-checked against public portals. Only schemes from the last 5 years are tracked." },
-              { step: "03", icon: "🔔", title: "We alert you instantly", desc: "The moment a scheme opens — you get an Email, Telegram, or WhatsApp notification (Pro/Premium)." },
+              { step: "01", icon: "🤖", title: "We watch the top 20", desc: "The scraper now focuses on the highest-demand plot lottery markets, ranked by scheme frequency, infrastructure growth, and buyer demand." },
+              { step: "02", icon: "✅", title: "We keep the list useful", desc: "Scheme data is cleaned into one format with status, dates, prices, plots, and official-source links where available." },
+              { step: "03", icon: "🔔", title: "You act before windows close", desc: "Pro and Premium alerts help you move when a watched city opens or changes a lottery scheme window." },
             ].map(({ step, icon, title, desc }) => (
               <div key={step} className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[--teal-700]/40 border border-[--teal-600]/30 flex items-center justify-center font-[Outfit] font-800 text-[--teal-400] text-[13px]">{step}</div>
@@ -259,7 +267,7 @@ export default function Home() {
             Upgrade to stay updated with active scheme alerts
           </h2>
           <p className="text-[15px] text-[--ink-600] mb-7 max-w-lg mx-auto">
-            Pro plan gives you Email + Telegram alerts for 2 cities. Premium unlocks WhatsApp and unlimited cities. Never miss a lottery window again.
+            Pro gives you Email + Telegram alerts for 2 watched cities. Premium unlocks WhatsApp and alerts across the full 20-city watchlist.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/pricing" className="btn-saffron text-[15px] py-3 px-8">See Pricing Plans →</Link>

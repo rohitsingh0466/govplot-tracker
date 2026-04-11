@@ -199,7 +199,7 @@ export default function YeidaJewarAirportROIBlog() {
               Track Every Government Plot Scheme — Build Wealth Systematically
             </h3>
             <p className="text-[13.5px] text-green-200/90 mb-5 max-w-lg mx-auto">
-              GovPlot Tracker monitors 50+ authorities — YEIDA, HMDA, BDA, DDA, MHADA and more — across 100+ cities. Get alerted the moment a new scheme launches, so you never miss an early-bird application window.
+              GovPlot Tracker monitors a focused 20-city watchlist — YEIDA, LDA, JDA, DDA, BDA, HMDA and more. Get alerted when a watched scheme opens, so you never miss an early application window.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               {!isLoggedIn ? (

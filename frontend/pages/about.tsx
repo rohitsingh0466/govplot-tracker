@@ -6,24 +6,26 @@ import Footer from "../components/Footer";
 import AuthModal from "../components/AuthModal";
 
 const DATA_SOURCES = [
-  { city: "Delhi",         authority: "DDA",        url: "dda.gov.in",             emoji: "🏛️" },
-  { city: "Mumbai",        authority: "MHADA",      url: "mhada.gov.in",           emoji: "🌊" },
-  { city: "Navi Mumbai",   authority: "CIDCO",      url: "cidcohomes.com",         emoji: "🏙️" },
-  { city: "Lucknow",       authority: "LDA",        url: "lda.up.nic.in",          emoji: "🕌" },
-  { city: "Bangalore",     authority: "BDA",        url: "bdabangalore.org",       emoji: "💻" },
-  { city: "Noida",         authority: "GNIDA/YEIDA",url: "noidaauthorityonline.in",emoji: "🏙️" },
-  { city: "Gurgaon",       authority: "HSVP",       url: "hsvphry.gov.in",         emoji: "🏢" },
-  { city: "Hyderabad",     authority: "HMDA",       url: "hmda.gov.in",            emoji: "🔬" },
-  { city: "Pune",          authority: "PMRDA",      url: "pmrda.gov.in",           emoji: "🎓" },
-  { city: "Jaipur",        authority: "JDA/RHB",    url: "jda.gov.in",             emoji: "🏰" },
-  { city: "Ahmedabad",     authority: "AUDA",       url: "auda.org.in",            emoji: "🏭" },
-  { city: "Chandigarh",    authority: "GMADA",      url: "gmada.gov.in",           emoji: "🌿" },
-  { city: "Chennai",       authority: "CMDA/TNHB",  url: "cmdachennai.gov.in",     emoji: "🎭" },
-  { city: "Indore",        authority: "IDA",        url: "ida.mp.gov.in",          emoji: "🌟" },
-  { city: "Kolkata",       authority: "KMDA/WBHB",  url: "kmda.gov.in",            emoji: "🌉" },
-  { city: "Bhubaneswar",   authority: "BDA-OD",     url: "bda.odisha.gov.in",      emoji: "⛩️" },
-  { city: "Visakhapatnam", authority: "VMRDA",      url: "vmrda.gov.in",           emoji: "⛵" },
-  { city: "Kochi",         authority: "GCDA",       url: "gcda.kerala.gov.in",     emoji: "🚢" },
+  { city: "Greater Noida", authority: "YEIDA",  url: "yamunaexpresswayauthority.com", emoji: "🏆" },
+  { city: "Lucknow",       authority: "LDA",    url: "ldalucknow.in",                 emoji: "🕌" },
+  { city: "Jaipur",        authority: "JDA",    url: "jda.rajasthan.gov.in",          emoji: "🏰" },
+  { city: "Agra",          authority: "ADA",    url: "adaagra.org.in",                emoji: "🕍" },
+  { city: "Prayagraj",     authority: "PDA",    url: "pdaprayagraj.org",              emoji: "🏛️" },
+  { city: "Chandigarh",    authority: "GMADA",  url: "gmada.gov.in",                  emoji: "🌿" },
+  { city: "Navi Mumbai",   authority: "CIDCO",  url: "cidco.maharashtra.gov.in",      emoji: "🏙️" },
+  { city: "Hyderabad",     authority: "HMDA",   url: "hmda.gov.in",                   emoji: "🔬" },
+  { city: "Pune",          authority: "PMRDA",  url: "pmrda.gov.in",                  emoji: "🎓" },
+  { city: "Bengaluru",     authority: "BDA",    url: "bdabangalore.org",              emoji: "💻" },
+  { city: "Raipur",        authority: "NRDA",   url: "nava-raipur.com",               emoji: "🌾" },
+  { city: "Varanasi",      authority: "VDA",    url: "vdavns.com",                    emoji: "🪔" },
+  { city: "Bhubaneswar",   authority: "BDA-OD", url: "bda.odisha.gov.in",             emoji: "⛩️" },
+  { city: "Nagpur",        authority: "NIT",    url: "nitnagpur.org",                 emoji: "🟠" },
+  { city: "Ahmedabad",     authority: "AUDA",   url: "auda.org.in",                   emoji: "🏭" },
+  { city: "Delhi",         authority: "DDA",    url: "dda.gov.in",                    emoji: "🏛️" },
+  { city: "Bhopal",        authority: "VP-BPL", url: "vpasthan.com",                  emoji: "💧" },
+  { city: "Udaipur",       authority: "UIT",    url: "uitudaipur.org",                emoji: "🌊" },
+  { city: "Dehradun",      authority: "MDDA",   url: "mddaonline.in",                 emoji: "⛰️" },
+  { city: "Meerut",        authority: "MDA",    url: "mda.up.gov.in",                 emoji: "🚆" },
 ];
 
 const HOW_IT_WORKS = [
@@ -36,8 +38,8 @@ const HOW_IT_WORKS = [
 const WHY_USE = [
   { icon: "🚀", title: "Always fresh data",          desc: "Scheme statuses are refreshed regularly. Active and open schemes are prioritised so you always see what matters most right now." },
   { icon: "🔔", title: "Multi-channel alerts",        desc: "Email, Telegram, and WhatsApp (Premium) — choose what works for you. Never miss a lottery window again." },
-  { icon: "🏙️", title: "100+ cities, 50+ authorities", desc: "Every major housing authority in India, all in one dashboard. No more switching between tabs." },
-  { icon: "🆓", title: "Free account — full access", desc: "Sign up free to view all scheme details across 100+ cities. Pro and Premium plans unlock city alert subscriptions." },
+  { icon: "🏙️", title: "Curated top 20 cities", desc: "The watchlist now focuses on the markets where lottery demand, infrastructure growth, and scheme frequency are strongest." },
+  { icon: "🆓", title: "Free account — full access", desc: "Sign up free to view scheme details across the 20-city watchlist. Pro and Premium plans unlock city alert subscriptions." },
   { icon: "🔒", title: "Official sources only",      desc: "We link directly to government portals. Only recent, lottery-based residential plot schemes — no stale data." },
   { icon: "✅", title: "Confidence-scored listings", desc: "Each scheme is reviewed for reliability before appearing on your dashboard. Higher-confidence schemes are surfaced first." },
 ];
@@ -58,7 +60,7 @@ export default function AboutPage() {
     <>
       <Head>
         <title>About — GovPlot Tracker | India's Government Plot Scheme Monitor</title>
-        <meta name="description" content="GovPlot Tracker monitors government residential plot lottery schemes across 100+ major Indian cities. Learn how our automated system works." />
+        <meta name="description" content="GovPlot Tracker monitors government residential plot lottery schemes across India's curated top 20 high-demand cities. Learn how the watchlist works." />
         <link rel="canonical" href="https://govplottracker.com/about" />
       </Head>
       <Navbar />
@@ -66,19 +68,19 @@ export default function AboutPage() {
       <div className="page-container page-top-offset pb-20">
         <div className="max-w-3xl mb-16 animate-fade-in-up">
           <h1 className="text-[40px] sm:text-[52px] font-[Outfit] font-900 text-[--ink-900] mt-2 mb-5" style={{ lineHeight: 1.1 }}>
-            India's most complete{" "}
+            India's focused{" "}
             <span className="bg-gradient-to-r from-[--teal-600] to-[--teal-400] bg-clip-text text-transparent">plot scheme tracker</span>
           </h1>
           <p className="text-[17px] text-[--ink-600] leading-relaxed">
-            GovPlot Tracker automatically monitors official housing authority portals across 100+ major Indian cities — so you never miss an application window for a government residential plot lottery scheme.
+            GovPlot Tracker monitors official housing authority portals for a curated 20-city watchlist, built around demand, infrastructure momentum, and recurring government residential plot lottery activity.
           </p>
         </div>
 
         <div className="card p-8 sm:p-10 mb-8 bg-gradient-to-br from-[--teal-100]/40 to-white border-[--teal-200]/60">
           <h2 className="text-[24px] font-[Outfit] font-800 text-[--ink-900] mb-4">🏠 What is GovPlot Tracker?</h2>
           <div className="grid sm:grid-cols-2 gap-6 text-[14.5px] text-[--ink-700] leading-relaxed">
-            <p>Whether you're looking for a plot from <strong>LDA in Lucknow</strong>, a lottery site from <strong>BDA in Bangalore</strong>, or a mass housing unit from <strong>CIDCO in Navi Mumbai</strong> — GovPlot Tracker gives you instant visibility without checking 50+ government websites.</p>
-            <p>Sign up free to see all scheme details. Upgrade to Pro (₹99/mo) or Premium (₹299/mo) to get city alerts and never miss a lottery opening window.</p>
+            <p>Whether you're tracking <strong>YEIDA near Jewar Airport</strong>, <strong>LDA in Lucknow</strong>, <strong>JDA in Jaipur</strong>, or <strong>BDA in Bengaluru</strong>, GovPlot Tracker brings official-source scheme updates into one cleaner view.</p>
+            <p>The product now favours depth over sprawl: top-20 city coverage, lottery-only residential plot focus, official links, and alerts for buyers who need to move before short application windows close.</p>
           </div>
         </div>
 
@@ -114,8 +116,8 @@ export default function AboutPage() {
         </div>
 
         <div className="mb-14">
-          <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-3">50+ official government portals</h2>
-          <p className="text-[14px] text-[--ink-600] mb-6 max-w-2xl">All data is sourced directly from official authority websites across 23 Indian states and UTs.</p>
+          <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1 mb-3">20-city authority watchlist</h2>
+          <p className="text-[14px] text-[--ink-600] mb-6 max-w-2xl">The watchlist is intentionally smaller now: each city is ranked by demand, scheme relevance, and infrastructure tailwinds.</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {DATA_SOURCES.map(({ city, authority, url, emoji }) => (
               <div key={city} className="card p-4 flex items-center gap-3 hover:border-[--teal-300] transition">
@@ -128,7 +130,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-          <p className="text-[12.5px] text-[--ink-500] mt-4">+ 30 more authorities across Rajasthan, Gujarat, Bihar, Jharkhand, Chhattisgarh, Uttarakhand, J&K, Goa, Assam, HP, and Northeast India.</p>
+          <p className="text-[12.5px] text-[--ink-500] mt-4">Scheme rows appear as sources publish usable residential plot lottery data. Some watched cities may temporarily have no active scheme rows.</p>
         </div>
 
         <div className="bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-3xl p-8 sm:p-12 text-center text-white">

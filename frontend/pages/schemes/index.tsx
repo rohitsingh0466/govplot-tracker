@@ -53,7 +53,7 @@ export default function SchemesPage() {
       setStats(stRes.data);
     } catch {
       setSchemes([]);
-      setStats({ total_schemes: 0, open: 0, active: 0, upcoming: 0, closed: 0, cities_tracked: 100 });
+      setStats({ total_schemes: 0, open: 0, active: 0, upcoming: 0, closed: 0, cities_tracked: 20 });
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ export default function SchemesPage() {
     <>
       <Head>
         <title>All Government Plot Schemes — GovPlot Tracker</title>
-        <meta name="description" content="Browse all government residential plot lottery schemes across 100+ major Indian cities. Filter by city, status, authority. Weekly data pull, daily status refresh." />
+        <meta name="description" content="Browse government residential plot lottery schemes across India's top 20 watched cities. Filter by city, status, and authority." />
         <link rel="canonical" href="https://govplottracker.com/schemes" />
       </Head>
 
@@ -82,7 +82,7 @@ export default function SchemesPage() {
             Government Plot Lottery Schemes
           </h1>
           <p className="text-[--ink-500] text-[15px] mt-1">
-            Live data from 50+ housing authorities across 100+ cities · Weekly full pull · Daily status refresh
+            Curated top-20 city watchlist · Weekly full pull · Daily status refresh
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export default function SchemesPage() {
               <span className="text-2xl">🔓</span>
               <div>
                 <p className="text-[14px] font-[Outfit] font-700 text-white">Sign up to view Open &amp; Active scheme details</p>
-                <p className="text-[12px] text-[--teal-300]/90">Free account — full access to all scheme details across 100+ cities</p>
+                <p className="text-[12px] text-[--teal-300]/90">Free account — full access to all scheme details across the 20-city watchlist</p>
               </div>
             </div>
             <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[13px] py-2.5 px-6 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>

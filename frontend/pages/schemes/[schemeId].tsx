@@ -181,7 +181,7 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
               <div className="card p-6 bg-[--teal-100]/30 border-[--teal-200]/50">
                 <div className="text-2xl mb-2">🔓</div>
                 <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900] mb-2">Sign up to view details</h2>
-                <p className="text-[13px] text-[--ink-600] leading-relaxed mb-4">Free account gives you access to all scheme information across 100+ cities.</p>
+                <p className="text-[13px] text-[--ink-600] leading-relaxed mb-4">Free account gives you access to scheme information across the top-20 city watchlist.</p>
                 <button onClick={() => setAuthOpen(true)} className="btn-primary w-full justify-center text-[13px] py-2.5">Create Free Account →</button>
               </div>
             )}
