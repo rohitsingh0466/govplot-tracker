@@ -48,13 +48,20 @@ def _load_from_json() -> list[dict]:
 
 
 def _seed_db_from_json(db: Session):
+    """Seed DB from static_schemes.py if empty, falling back to latest.json."""
     if _is_postgres():
         count = db.query(Scheme).count()
         if count > 0:
             return
-        logger.info("Postgres schemes table is empty — seeding from latest.json once...")
+        logger.info("Postgres schemes table is empty — seeding once...")
 
-    schemes_data = _load_from_json()
+    try:
+        from scraper.cities.static_schemes import get_all_static_schemes
+        schemes_data = get_all_static_schemes()
+    except Exception as exc:
+        logger.warning(f"Could not load static_schemes.py: {exc}")
+        schemes_data = _load_from_json()
+
     if not schemes_data:
         return
 
@@ -63,13 +70,18 @@ def _seed_db_from_json(db: Session):
         existing = db.query(Scheme).filter_by(scheme_id=s.get("scheme_id")).first()
         if not existing:
             try:
-                db.add(Scheme(**{k: v for k, v in s.items() if hasattr(Scheme, k)}))
+                scheme_fields = {
+                    k: v
+                    for k, v in s.items()
+                    if hasattr(Scheme, k) and k not in ("last_updated", "is_active")
+                }
+                db.add(Scheme(is_active=True, **scheme_fields))
                 inserted += 1
             except Exception as exc:
                 logger.warning(f"Skipping scheme {s.get('scheme_id')}: {exc}")
     db.commit()
     if inserted:
-        logger.info(f"Seeded {inserted} schemes from latest.json")
+        logger.info(f"Seeded {inserted} schemes")
 
 
 def _get_optional_user(request: Request, db: Session) -> Optional[User]:

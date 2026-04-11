@@ -7,54 +7,6 @@ import { withMinimumLoader } from "../lib/uiLoading";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const CITIES = [
-  "All Cities",
-  // UP
-  "Lucknow","Kanpur","Agra","Varanasi","Prayagraj","Meerut","Ghaziabad","Noida",
-  "Aligarh","Mathura","Bareilly","Gorakhpur","Jhansi","Moradabad",
-  // Delhi
-  "Delhi",
-  // Maharashtra
-  "Mumbai","Navi Mumbai","Pune","Nagpur","Nashik","Aurangabad","Thane",
-  "Kolhapur","Solapur","Amravati","Kalyan","Vasai","Panvel","Latur","Nanded",
-  // Karnataka
-  "Bangalore","Mysuru","Hubballi","Mangalore","Belgaum","Shimoga","Tumkur","Davangere","Gulbarga",
-  // Telangana
-  "Hyderabad","Warangal","Karimnagar","Nizamabad","Khammam","Mahabubnagar",
-  // Tamil Nadu
-  "Chennai","Coimbatore","Madurai","Salem","Tiruchirappalli","Vellore","Erode","Tirunelveli","Thoothukudi","Thanjavur","Hosur",
-  // Rajasthan
-  "Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner",
-  // Gujarat
-  "Ahmedabad","Surat","Vadodara","Rajkot","Bhavnagar","Gandhinagar","Jamnagar","Mehsana","Anand","Bharuch",
-  // Haryana
-  "Gurgaon","Faridabad","Panchkula","Karnal","Rohtak","Hisar","Ambala","Panipat","Sonipat","Rewari","Kurukshetra",
-  // MP
-  "Indore","Bhopal","Jabalpur",
-  // Punjab / Chandigarh
-  "Chandigarh","Ludhiana","Amritsar","Jalandhar","Mohali","Patiala","Bathinda","Zirakpur",
-  // West Bengal
-  "Kolkata","New Town","Durgapur",
-  // Andhra Pradesh
-  "Visakhapatnam","Vijayawada","Guntur","Tirupati","Nellore","Kakinada","Kurnool","Rajahmundry",
-  // Kerala
-  "Kochi","Thiruvananthapuram","Kozhikode","Thrissur","Palakkad","Kannur","Kollam","Kottayam",
-  // Odisha
-  "Bhubaneswar","Cuttack","Sambalpur","Berhampur","Rourkela",
-  // Bihar
-  "Patna","Muzaffarpur","Gaya","Bhagalpur","Darbhanga",
-  // Jharkhand
-  "Ranchi","Dhanbad","Jamshedpur","Bokaro","Hazaribagh",
-  // CG
-  "Raipur","Bhilai","Bilaspur","Korba","Durg",
-  // Uttarakhand
-  "Dehradun","Haridwar","Haldwani","Roorkee","Rishikesh",
-  // Others
-  "Panaji","Guwahati","Agartala","Imphal","Shillong",
-  "Shimla","Dharamsala","Solan","Baddi",
-  "Jammu","Srinagar",
-];
-
 export default function AlertModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { user, token, isPro } = useAuth();
   const [city, setCity] = useState("All Cities");
@@ -63,11 +15,32 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [authOpen, setAuthOpen] = useState(false);
+  // Dynamic city list from API
+  const [cityNames, setCityNames] = useState<string[]>([]);
+  const [citiesLoading, setCitiesLoading] = useState(true);
+
+  // Fetch city names from backend (which reads city_config.py)
+  useEffect(() => {
+    axios.get(`${API}/api/v1/cities/names`)
+      .then(r => {
+        setCityNames(r.data as string[]);
+      })
+      .catch(() => {
+        // Fallback: hardcoded 20 cities in priority order
+        setCityNames([
+          "Greater Noida", "Lucknow", "Jaipur", "Agra", "Prayagraj",
+          "Chandigarh", "Navi Mumbai", "Hyderabad", "Pune", "Bengaluru",
+          "Raipur", "Varanasi", "Bhubaneswar", "Nagpur", "Ahmedabad",
+          "Delhi", "Bhopal", "Udaipur", "Dehradun", "Meerut",
+        ]);
+      })
+      .finally(() => setCitiesLoading(false));
+  }, []);
 
   const channels = useMemo(() => ([
-    { id: "email",    label: "Email",    icon: "📧", desc: "Included for all users", disabled: false, badge: null },
-    { id: "telegram", label: "Telegram", icon: "✈️", desc: isPro ? "Available on your plan" : "Pro feature", disabled: !isPro, badge: isPro ? null : "PRO" },
-    { id: "whatsapp", label: "WhatsApp", icon: "💬", desc: isPro ? "Available on your plan" : "Pro feature", disabled: !isPro, badge: isPro ? null : "PRO" },
+    { id: "email",    label: "Email",    icon: "📧", desc: "Free for all users",      disabled: false,   badge: null },
+    { id: "telegram", label: "Telegram", icon: "✈️", desc: isPro ? "On your plan" : "Pro feature", disabled: !isPro, badge: isPro ? null : "PRO" },
+    { id: "whatsapp", label: "WhatsApp", icon: "💬", desc: isPro ? "On your plan" : "Pro feature", disabled: !isPro, badge: isPro ? null : "PRO" },
   ]), [isPro]);
 
   useEffect(() => {
@@ -129,10 +102,19 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
                     <input type="email" value={user.email || ""} readOnly className="input-field bg-[--ink-50] text-[--ink-500] cursor-not-allowed" />
                   </div>
                   <div>
-                    <label className="block text-[11.5px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">City (100+ available)</label>
-                    <select value={city} onChange={e => setCity(e.target.value)} className="input-field">
-                      {CITIES.map(c => <option key={c}>{c}</option>)}
-                    </select>
+                    <label className="block text-[11.5px] font-bold text-[--ink-600] mb-1.5 uppercase tracking-wider">
+                      City <span className="text-[--ink-400] font-normal">(20 tracked cities)</span>
+                    </label>
+                    {citiesLoading ? (
+                      <div className="input-field text-[--ink-400]">Loading cities...</div>
+                    ) : (
+                      <select value={city} onChange={e => setCity(e.target.value)} className="input-field">
+                        <option value="All Cities">🗺️ All Cities (20 cities)</option>
+                        {cityNames.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[11.5px] font-bold text-[--ink-600] mb-2 uppercase tracking-wider">Notification Channel</label>
@@ -154,7 +136,7 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
                 <button onClick={submit} disabled={loading} className="btn-primary w-full justify-center text-[14px] py-3" style={{ fontFamily: "var(--font-display)" }}>
                   {loading ? "Saving alert..." : "Save Alert Subscription →"}
                 </button>
-                <p className="text-[11px] text-[--ink-400] text-center mt-3">Free users: email alerts. Telegram and WhatsApp unlock on Pro.</p>
+                <p className="text-[11px] text-[--ink-400] text-center mt-3">Free: email alerts only. Telegram & WhatsApp unlock on Pro.</p>
               </>
             ) : (
               <div className="text-center py-6">
@@ -162,7 +144,7 @@ export default function AlertModal({ open, onClose }: { open: boolean; onClose: 
                 <h3 className="text-[20px] font-[Outfit] font-800 text-[--ink-900] mb-2">Alert saved</h3>
                 <p className="text-[13.5px] text-[--ink-600] mb-6">
                   We will send <strong>{channels.find(c => c.id === channel)?.label}</strong> alerts
-                  {city !== "All Cities" ? ` for ${city}` : " for all cities"} to <strong>{user.email}</strong>.
+                  {city !== "All Cities" ? ` for ${city}` : " for all 20 cities"} to <strong>{user.email}</strong>.
                 </p>
                 <button onClick={handleClose} className="btn-primary text-[13px] py-2.5 px-8" style={{ fontFamily: "var(--font-display)" }}>Done ✓</button>
               </div>

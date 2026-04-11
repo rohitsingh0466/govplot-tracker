@@ -1,35 +1,21 @@
 """
-GovPlot Tracker — Base Scraper v3.3
+GovPlot Tracker — Base Scraper v4.0
 =====================================
-KEY CHANGES FROM v3.2:
+4-tier scraping strategy per city:
+  Tier 1 → Static HTML → requests + BeautifulSoup (+ ScraperAPI proxy for .gov.in)
+  Tier 2 → JS-rendered → Playwright bundled Chromium
+  Tier 3 → CAPTCHA/auth-gated → public notice page only
+  Tier 4 → Aggregator fallback → eauctionsindia.com, 99acres.com, awaszone.com
 
-  FIX 1 — Playwright is now PRIMARY JS scraper
-    Selenium kept as secondary fallback.
-    Playwright downloads its own Chromium via `playwright install` —
-    no dependency on system Chrome path. Always works on GitHub Actions.
-
-  FIX 2 — ScraperAPI proxy for .gov.in / .nic.in domains
-    Indian government portals block GitHub Actions runner IPs (Azure US).
-    When SCRAPER_API_KEY env var is set, requests to .gov.in and .nic.in
-    are automatically routed through ScraperAPI's Indian proxy pool.
-    Without the key: direct requests still attempted (will likely get
-    DNS/connection errors on blocked domains, fallback kicks in cleanly).
-
-  FIX 3 — httpx added as second HTTP client
-    Some sites that block requests.Session work with httpx.
-    get_soup() tries requests first, then httpx on failure.
-
-  FIX 4 — Retry logic improved
-    Exponential backoff with jitter. Separate timeout for Playwright.
-
-EXISTING CODE UNCHANGED:
-  - SchemeData dataclass — identical
-  - ScraperError dataclass — identical
-  - All filter logic (is_excluded_scheme, is_valid_plot_scheme, etc.) — identical
-  - make_scheme_id() — identical
-  - passes_all_filters() — identical
-  - BaseScraper abstract interface (scrape_live, fallback_schemes) — identical
-  - run() entry point — identical
+KEY ANTI-SCRAPING BYPASS TECHNIQUES:
+  1. ScraperAPI proxy for .gov.in / .nic.in (blocked from GitHub Actions Azure runners)
+  2. Random User-Agent rotation (15+ real browser UAs)
+  3. Playwright stealth mode — removes navigator.webdriver fingerprint
+  4. httpx as alternate TLS fingerprint (bypasses some WAFs)
+  5. SSL verify=False for sites with expired certs (MDDA, PDA)
+  6. Random delay between requests (1.5–4.5s jitter)
+  7. Hindi/Devanagari keyword detection for UP authority sites
+  8. Aggregator fallback — aggregators cache scheme data within hours of launch
 """
 
 from __future__ import annotations
@@ -38,6 +24,7 @@ import hashlib
 import logging
 import os
 import random
+import re
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -48,49 +35,40 @@ from urllib.parse import urlencode
 import requests
 from bs4 import BeautifulSoup
 
+from scraper.cities.city_config import (
+    PROXY_REQUIRED_DOMAINS,
+    SSL_VERIFY_FALSE_DOMAINS,
+    PLAYWRIGHT_WAIT_SELECTORS,
+    HINDI_SCHEME_KEYWORDS,
+    SCHEME_KEYWORDS_INCLUDE,
+    SCHEME_KEYWORDS_EXCLUDE,
+)
+
 logger = logging.getLogger(__name__)
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-
 MIN_PRICE_LAKH = 25.0
 
-EXCLUDED_TYPE_KEYWORDS = [
-    "e-auction", "eauction", "e auction",
-    "lig ",   " lig",   " lig,",
-    "lower income group",
-    "ews ",   " ews",   " ews,",
-    "economically weaker",
-    "affordable housing",
-    "commercial plot",
-    "industrial plot",
-    "shop",
-    "flat scheme",
-    "apartment scheme",
-    "housing scheme",
+# Random User-Agent pool — rotate per request
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.4; rv:125.0) Gecko/20100101 Firefox/125.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
 ]
 
-REQUIRED_PLOT_KEYWORDS = [
-    "residential plot",
-    "plot scheme",
-    "plot lottery",
-    "land scheme",
-    "plot allot",
-    "sites lottery",
-    "residential site",
-    "plot draw",
+ACCEPT_LANGUAGES = [
+    "en-IN,en;q=0.9,hi;q=0.8",
+    "hi-IN,hi;q=0.9,en;q=0.8",
+    "en-US,en;q=0.9,hi;q=0.7",
+    "en-GB,en;q=0.9,en-IN;q=0.8",
 ]
-
-# Domains that are blocked by NIC India firewall on GitHub Actions runners
-# Requests to these go via ScraperAPI when SCRAPER_API_KEY is set
-_BLOCKED_DOMAINS = (
-    ".gov.in",
-    ".nic.in",
-    "lda.up.",
-    "awasvikas.",
-    "hsvphry.",
-    "adaagra.",
-    "gdaghaziabad.",
-)
 
 
 def _today() -> str:
@@ -101,98 +79,128 @@ def _cutoff_date() -> str:
     return (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
 
 
+def _random_delay(min_s: float = 1.5, max_s: float = 4.5) -> None:
+    """Random delay to avoid rate limiting."""
+    time.sleep(min_s + random.random() * (max_s - min_s))
+
+
 def _needs_proxy(url: str) -> bool:
-    """Return True if this URL is likely blocked on GitHub Actions runners."""
-    return any(d in url for d in _BLOCKED_DOMAINS)
+    """Return True if URL domain is blocked from GitHub Actions Azure runners."""
+    return any(d in url for d in PROXY_REQUIRED_DOMAINS)
 
 
-def _scraper_api_url(url: str) -> str:
-    """
-    Wrap a URL with ScraperAPI proxy.
-    ScraperAPI handles bot detection, CAPTCHAs, and geo-restrictions.
-    country_code=in routes through Indian residential IPs.
-    """
+def _needs_ssl_bypass(url: str) -> bool:
+    """Return True if URL has expired/self-signed SSL cert."""
+    return any(d in url for d in SSL_VERIFY_FALSE_DOMAINS)
+
+
+def _scraper_api_url(url: str, render_js: bool = False) -> str:
+    """Wrap URL with ScraperAPI Indian proxy."""
     key = os.getenv("SCRAPER_API_KEY", "")
     if not key:
-        return url  # no key → direct request (will likely fail for .gov.in)
+        return url
     params = {
         "api_key": key,
         "url": url,
         "country_code": "in",
-        "render": "false",   # HTML only (faster). Set "true" for JS sites.
+        "render": "true" if render_js else "false",
     }
     return f"https://api.scraperapi.com/?{urlencode(params)}"
 
 
-# ── SchemeData — UNCHANGED from v3.2 ──────────────────────────────────────────
+def _random_headers() -> dict:
+    """Return randomized browser-like headers."""
+    return {
+        "User-Agent": random.choice(USER_AGENTS),
+        "Accept-Language": random.choice(ACCEPT_LANGUAGES),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Cache-Control": "max-age=0",
+    }
+
+
+# ── SchemeData ────────────────────────────────────────────────────────────────
 
 @dataclass
 class SchemeData:
-    scheme_id:        str
-    name:             str
-    city:             str
-    authority:        str
-    status:           str
-    source_url:       str
-    data_source:      str = "STATIC"
-    open_date:        Optional[str] = None
-    close_date:       Optional[str] = None
-    total_plots:      Optional[int] = None
-    price_min:        Optional[float] = None
-    price_max:        Optional[float] = None
-    area_sqft_min:    Optional[int] = None
-    area_sqft_max:    Optional[int] = None
+    scheme_id: str
+    name: str
+    city: str
+    authority: str
+    status: str
+    source_url: str
+    data_source: str = "STATIC"
+    open_date: Optional[str] = None
+    close_date: Optional[str] = None
+    total_plots: Optional[int] = None
+    price_min: Optional[float] = None
+    price_max: Optional[float] = None
+    area_sqft_min: Optional[int] = None
+    area_sqft_max: Optional[int] = None
     location_details: Optional[str] = None
-    apply_url:        Optional[str] = None
-    last_updated:     str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    scraper_status:   str = "ok"
+    apply_url: Optional[str] = None
+    last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    scraper_status: str = "ok"
+    # Admin-editable fields (set via Supabase dashboard)
+    is_manually_edited: bool = False
+    manual_notes: Optional[str] = None
 
     def to_dict(self) -> dict:
         return {
-            "scheme_id":        self.scheme_id,
-            "name":             self.name,
-            "city":             self.city,
-            "authority":        self.authority,
-            "status":           self.status,
-            "open_date":        self.open_date,
-            "close_date":       self.close_date,
-            "total_plots":      self.total_plots,
-            "price_min":        self.price_min,
-            "price_max":        self.price_max,
-            "area_sqft_min":    self.area_sqft_min,
-            "area_sqft_max":    self.area_sqft_max,
+            "scheme_id": self.scheme_id,
+            "name": self.name,
+            "city": self.city,
+            "authority": self.authority,
+            "status": self.status,
+            "open_date": self.open_date,
+            "close_date": self.close_date,
+            "total_plots": self.total_plots,
+            "price_min": self.price_min,
+            "price_max": self.price_max,
+            "area_sqft_min": self.area_sqft_min,
+            "area_sqft_max": self.area_sqft_max,
             "location_details": self.location_details,
-            "apply_url":        self.apply_url,
-            "source_url":       self.source_url,
-            "last_updated":     self.last_updated,
-            "data_source":      self.data_source,
-            "scraper_status":   self.scraper_status,
+            "apply_url": self.apply_url,
+            "source_url": self.source_url,
+            "last_updated": self.last_updated,
+            "data_source": self.data_source,
+            "scraper_status": self.scraper_status,
+            "is_active": True,
         }
 
 
-# ── ScraperError — UNCHANGED from v3.2 ────────────────────────────────────────
-
 @dataclass
 class ScraperError:
-    authority:    str
-    city:         str
-    url:          str
-    error_type:   str
+    authority: str
+    city: str
+    url: str
+    error_type: str
     error_detail: str
-    timestamp:    str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     used_fallback: bool = True
 
 
-# ── Filter helpers — UNCHANGED from v3.2 ──────────────────────────────────────
+# ── Filter helpers ────────────────────────────────────────────────────────────
 
 def is_excluded_scheme(name: str) -> bool:
     n = name.lower()
-    return any(kw in n for kw in EXCLUDED_TYPE_KEYWORDS)
+    return any(kw in n for kw in SCHEME_KEYWORDS_EXCLUDE)
 
 
 def is_valid_plot_scheme(name: str) -> bool:
     n = name.lower()
-    return any(kw in n for kw in REQUIRED_PLOT_KEYWORDS)
+    # Check English keywords
+    if any(kw in n for kw in SCHEME_KEYWORDS_INCLUDE):
+        return True
+    # Check Hindi keywords
+    if any(kw in name for kw in HINDI_SCHEME_KEYWORDS):
+        return True
+    return False
 
 
 def is_within_date_window(close_date: Optional[str]) -> bool:
@@ -221,159 +229,147 @@ def make_scheme_id(authority: str, name: str) -> str:
     return f"{authority}-{hashlib.md5(f'{authority}-{name}'.encode()).hexdigest()[:12]}"
 
 
-# ── BaseScraper ────────────────────────────────────────────────────────────────
+def make_scheme(
+    authority: str, city: str, name: str, status: str,
+    source_url: str, data_source: str = "LIVE", **kwargs
+) -> SchemeData:
+    """Convenience factory for SchemeData."""
+    return SchemeData(
+        scheme_id=make_scheme_id(authority, name),
+        name=name, city=city, authority=authority, status=status,
+        source_url=source_url,
+        apply_url=kwargs.pop("apply_url", source_url),
+        data_source=data_source,
+        scraper_status="ok" if data_source == "LIVE" else "fallback",
+        **kwargs,
+    )
+
+
+# ── BaseScraper ───────────────────────────────────────────────────────────────
 
 class BaseScraper(ABC):
     """
-    Abstract base class for all GovPlot scrapers.
-
-    Scraping priority chain per URL:
-      1. requests + ScraperAPI proxy (if SCRAPER_API_KEY set and domain is blocked)
-      2. requests direct (fast, works for non-blocked domains)
-      3. httpx (different TLS fingerprint — bypasses some bot detection)
-      4. Playwright (JS-rendered pages — BDA, DDA, YEIDA portals)
-      5. Selenium with Google Chrome (legacy fallback, USE_SELENIUM=True)
-      6. fallback_schemes() (hardcoded known data)
+    Abstract base class for all 20 GovPlot city scrapers.
 
     Subclasses must implement:
-      scrape_live() → list[SchemeData]
-      fallback_schemes() → list[SchemeData]
+      scrape_tier1()       → Try static HTML (requests + BS4)
+      scrape_tier2()       → Try JS-rendered (Playwright)
+      scrape_aggregators() → Try aggregator sites (always added)
+      fallback_schemes()   → Hardcoded static data
+
+    run() calls them in order: tier1 → tier2 → aggregators → fallback
+    Aggregators are ALWAYS tried alongside tiers 1–3, not just as last resort.
     """
 
-    HEADERS = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0.0.0 Safari/537.36"
-        ),
-        "Accept-Language":  "en-IN,en;q=0.9,hi;q=0.8",
-        "Accept":           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding":  "gzip, deflate, br",
-    }
-
-    # Set True in subclass if portal needs JS rendering
-    USE_SELENIUM  = False
-    USE_PLAYWRIGHT = False  # preferred over Selenium for JS
-
     def __init__(self, city: str, authority: str, base_url: str):
-        self.city      = city
+        self.city = city
         self.authority = authority
-        self.base_url  = base_url
+        self.base_url = base_url
         self.errors: list[ScraperError] = []
-        self._session = requests.Session()
-        self._session.headers.update(self.HEADERS)
 
-    # ── HTTP: requests + ScraperAPI proxy ─────────────────────────────────────
+    # ── Tier 1: Static HTML via requests ─────────────────────────────────────
 
     def get_soup(
         self,
         url: str,
         retries: int = 2,
         timeout: int = 20,
+        use_proxy: Optional[bool] = None,
     ) -> Optional[BeautifulSoup]:
         """
-        GET a URL and return BeautifulSoup.
-        Automatically routes .gov.in / .nic.in through ScraperAPI proxy when
-        SCRAPER_API_KEY is set in environment.
-        Falls back to httpx on requests failure.
+        GET → BeautifulSoup. Auto-applies:
+        - ScraperAPI proxy for .gov.in/.nic.in domains
+        - SSL verify=False for known expired-cert domains
+        - Random headers and delays
+        Falls back to httpx on failure.
         """
-        # Try requests (with proxy if needed)
-        soup = self._get_via_requests(url, retries=retries, timeout=timeout)
-        if soup:
-            return soup
+        # Auto-detect proxy need
+        if use_proxy is None:
+            use_proxy = _needs_proxy(url) and bool(os.getenv("SCRAPER_API_KEY", ""))
 
-        # Try httpx as a second HTTP client (different TLS fingerprint)
-        soup = self._get_via_httpx(url, timeout=timeout)
-        if soup:
-            return soup
+        verify_ssl = not _needs_ssl_bypass(url)
+        fetch_url = _scraper_api_url(url) if use_proxy else url
 
-        return None
-
-    def _get_via_requests(
-        self,
-        url: str,
-        retries: int = 2,
-        timeout: int = 20,
-    ) -> Optional[BeautifulSoup]:
-        """requests.Session with optional ScraperAPI proxy routing."""
-        fetch_url = url
-        use_proxy = _needs_proxy(url) and os.getenv("SCRAPER_API_KEY", "")
         if use_proxy:
-            fetch_url = _scraper_api_url(url)
-            logger.debug(f"[{self.authority}] Using ScraperAPI proxy for {url}")
+            logger.debug(f"[{self.authority}] ScraperAPI proxy → {url}")
 
         for attempt in range(retries):
             try:
-                resp = self._session.get(fetch_url, timeout=timeout)
+                _random_delay(0.8, 2.5)
+                headers = _random_headers()
+                resp = requests.get(
+                    fetch_url,
+                    headers=headers,
+                    timeout=timeout,
+                    verify=verify_ssl,
+                )
                 resp.raise_for_status()
-                return BeautifulSoup(resp.text, "html.parser")
+                # Try UTF-8 first, then detect encoding
+                try:
+                    text = resp.content.decode("utf-8")
+                except UnicodeDecodeError:
+                    text = resp.content.decode(resp.apparent_encoding or "utf-8", errors="replace")
+                return BeautifulSoup(text, "html.parser")
 
             except requests.exceptions.Timeout:
-                self._record_error(url, "TIMEOUT", f"Attempt {attempt+1}: timed out after {timeout}s")
-
+                self._record_error(url, "TIMEOUT", f"Attempt {attempt + 1}: timeout after {timeout}s")
             except requests.exceptions.HTTPError as e:
                 code = e.response.status_code if e.response else "?"
-                self._record_error(url, "HTTP_ERROR", f"HTTP {code}: {e}")
-                break  # Don't retry 4xx/5xx
-
+                self._record_error(url, "HTTP_ERROR", f"HTTP {code}")
+                break
             except requests.exceptions.ConnectionError as e:
                 msg = str(e)
-                # Classify DNS failures separately — they won't recover with retry
-                err_type = "DNS_BLOCKED" if "NameResolutionError" in msg or "Name or service not known" in msg else "CONNECTION_ERROR"
-                self._record_error(url, err_type, f"Attempt {attempt+1}: {msg[:200]}")
+                err_type = "DNS_BLOCKED" if "NameResolutionError" in msg or "Name or service" in msg else "CONNECTION_ERROR"
+                self._record_error(url, err_type, msg[:200])
                 if err_type == "DNS_BLOCKED":
-                    break  # DNS failure won't fix with retry
-
+                    break
             except Exception as e:
-                self._record_error(url, "UNKNOWN", f"Attempt {attempt+1}: {e}")
+                self._record_error(url, "UNKNOWN", str(e)[:200])
                 break
 
-            # Exponential backoff with jitter
-            time.sleep((2 ** attempt) + random.uniform(0, 1))
+            time.sleep((2 ** attempt) + random.uniform(0, 1.5))
 
-        return None
+        # Fallback: try httpx (different TLS fingerprint)
+        return self._get_via_httpx(url)
 
     def _get_via_httpx(self, url: str, timeout: int = 20) -> Optional[BeautifulSoup]:
-        """
-        httpx as alternative HTTP client.
-        Has a different TLS fingerprint than requests — bypasses some WAFs.
-        """
+        """httpx — different TLS fingerprint, bypasses some WAFs."""
         try:
             import httpx
+            verify = not _needs_ssl_bypass(url)
             with httpx.Client(
-                headers=self.HEADERS,
+                headers=_random_headers(),
                 follow_redirects=True,
                 timeout=timeout,
-                verify=False,  # some .gov.in sites have expired certs
+                verify=verify,
             ) as client:
                 resp = client.get(url)
                 resp.raise_for_status()
                 return BeautifulSoup(resp.text, "html.parser")
         except Exception as e:
-            logger.debug(f"[{self.authority}] httpx failed for {url}: {e}")
+            logger.debug(f"[{self.authority}] httpx failed {url}: {e}")
             return None
 
-    # ── Playwright: PRIMARY JS scraper (NEW in v3.3) ───────────────────────────
+    # ── Tier 2: Playwright (JS-rendered) ─────────────────────────────────────
 
     def get_playwright_soup(
         self,
         url: str,
-        wait_selector: str = "body",
-        wait_secs: int = 10,
+        wait_selector: Optional[str] = None,
+        wait_secs: int = 12,
         scroll: bool = False,
+        stealth: bool = True,
     ) -> Optional[BeautifulSoup]:
         """
-        Render a page with Playwright's bundled Chromium.
-        This is now the PRIMARY JS scraper — replaces Selenium.
-        Playwright installs its OWN Chromium via `playwright install chromium`
-        so it NEVER has the "no chrome binary" problem.
-
-        Args:
-            url:           Page to load
-            wait_selector: CSS selector to wait for before extracting HTML
-            wait_secs:    Max seconds to wait for selector
-            scroll:       If True, scroll to bottom to trigger lazy loading
+        Playwright with stealth mode.
+        - Removes navigator.webdriver fingerprint
+        - Randomizes viewport
+        - Blocks images/fonts for speed
+        - Scrolls if needed for lazy-loaded content
         """
+        if wait_selector is None:
+            wait_selector = PLAYWRIGHT_WAIT_SELECTORS.get(self.authority, "body")
+
         try:
             from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
@@ -384,28 +380,47 @@ class BaseScraper(ABC):
                         "--no-sandbox",
                         "--disable-dev-shm-usage",
                         "--disable-blink-features=AutomationControlled",
+                        "--disable-features=IsolateOrigins,site-per-process",
                         "--disable-extensions",
+                        "--disable-infobars",
+                        f"--window-size={random.randint(1200, 1440)},{random.randint(800, 900)}",
                     ],
                 )
+                ua = random.choice(USER_AGENTS)
                 context = browser.new_context(
-                    user_agent=self.HEADERS["User-Agent"],
-                    locale="en-IN",
-                    viewport={"width": 1280, "height": 900},
+                    user_agent=ua,
+                    locale=random.choice(["en-IN", "hi-IN"]),
+                    viewport={"width": random.randint(1200, 1440), "height": random.randint(800, 900)},
+                    extra_http_headers={"Accept-Language": random.choice(ACCEPT_LANGUAGES)},
                 )
+
+                # Stealth: remove webdriver fingerprint
+                if stealth:
+                    context.add_init_script("""
+                        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+                        Object.defineProperty(navigator, 'languages', {get: () => ['en-IN', 'hi-IN', 'en']});
+                        window.chrome = {runtime: {}};
+                    """)
+
                 page = context.new_page()
 
-                # Block images and fonts to speed up load
-                page.route(
-                    "**/*.{png,jpg,jpeg,gif,webp,svg,woff,woff2,ttf}",
-                    lambda r: r.abort()
-                )
+                # Block images/fonts/media for speed
+                def handle_route(route):
+                    if route.request.resource_type in ("image", "font", "media", "stylesheet"):
+                        route.abort()
+                    else:
+                        route.continue_()
 
+                page.route("**/*", handle_route)
+
+                _random_delay(0.5, 1.5)
                 page.goto(url, wait_until="domcontentloaded", timeout=wait_secs * 1000)
 
                 try:
                     page.wait_for_selector(wait_selector, timeout=wait_secs * 1000)
                 except PWTimeout:
-                    logger.debug(f"[{self.authority}] Playwright: selector '{wait_selector}' not found — using page as-is")
+                    logger.debug(f"[{self.authority}] Playwright: selector '{wait_selector}' timeout — using page as-is")
 
                 if scroll:
                     page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
@@ -420,134 +435,170 @@ class BaseScraper(ABC):
             logger.warning(f"[{self.authority}] Playwright failed: {e}")
             return None
 
-    # ── Selenium: SECONDARY JS scraper (legacy, kept for compatibility) ─────────
+    # ── Tier 3 helper: PDF text extraction ───────────────────────────────────
 
-    def get_selenium_soup(
-        self,
-        url: str,
-        wait_css: str = "body",
-        wait_secs: int = 10,
-    ) -> Optional[BeautifulSoup]:
-        """
-        Selenium with Google Chrome (installed via official Google repo in CI).
-        USE_SELENIUM = True in subclass to enable.
-        Now used only as fallback if Playwright is unavailable.
-        Binary path: /usr/bin/google-chrome (fixed from v3.2 snap issue).
-        """
+    def get_pdf_text(self, url: str) -> Optional[str]:
+        """Download and extract text from a PDF scheme notice."""
         try:
-            from selenium import webdriver
-            from selenium.webdriver.chrome.options import Options
-            from selenium.webdriver.chrome.service import Service
-            from selenium.webdriver.common.by import By
-            from selenium.webdriver.support.ui import WebDriverWait
-            from selenium.webdriver.support import expected_conditions as EC
-
-            opts = Options()
-            opts.add_argument("--headless=new")        # new headless mode
-            opts.add_argument("--no-sandbox")
-            opts.add_argument("--disable-dev-shm-usage")
-            opts.add_argument("--disable-gpu")
-            opts.add_argument("--window-size=1280,900")
-            opts.add_argument(f"--user-agent={self.HEADERS['User-Agent']}")
-            opts.add_argument("--disable-blink-features=AutomationControlled")
-            opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-            opts.add_experimental_option("useAutomationExtension", False)
-
-            # Use explicit binary path — set by workflow, fallback to standard location
-            chrome_bin = os.getenv("CHROME_BIN", "/usr/bin/google-chrome")
-            if os.path.exists(chrome_bin):
-                opts.binary_location = chrome_bin
-
-            driver = webdriver.Chrome(options=opts)
-            driver.set_page_load_timeout(wait_secs + 10)
-
+            import io
+            resp = requests.get(url, headers=_random_headers(), timeout=30, verify=False)
+            resp.raise_for_status()
             try:
-                driver.get(url)
-                WebDriverWait(driver, wait_secs).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, wait_css))
-                )
-                return BeautifulSoup(driver.page_source, "html.parser")
-            finally:
-                driver.quit()
-
+                import pypdf
+                reader = pypdf.PdfReader(io.BytesIO(resp.content))
+                return "\n".join(p.extract_text() or "" for p in reader.pages)
+            except ImportError:
+                return None
         except Exception as e:
-            self._record_error(url, "SELENIUM_ERROR", str(e)[:300])
-            logger.warning(f"[{self.authority}] Selenium failed: {e}")
+            logger.debug(f"[{self.authority}] PDF extract failed {url}: {e}")
             return None
 
-    # ── Status normalisation — UNCHANGED ──────────────────────────────────────
+    # ── Shared helpers ────────────────────────────────────────────────────────
 
     @staticmethod
     def normalise_status(raw: str) -> str:
         r = raw.lower().strip()
-        if any(k in r for k in ("open", "accept", "available", "live", "active")):
+        if any(k in r for k in ("open", "accept", "available", "live", "active", "ongoing", "current")):
             return "OPEN"
-        if any(k in r for k in ("close", "ended", "expired", "over", "sold out")):
+        if any(k in r for k in ("close", "ended", "expired", "over", "sold", "complet", "last date passed")):
             return "CLOSED"
-        if any(k in r for k in ("upcoming", "soon", "announced", "forthcoming", "notified")):
+        if any(k in r for k in ("upcoming", "soon", "announced", "forthcoming", "notified", "proposed", "आगामी")):
             return "UPCOMING"
         return "ACTIVE"
+
+    @staticmethod
+    def parse_date(text: str) -> Optional[str]:
+        """Parse DD/MM/YYYY or DD-MM-YYYY to YYYY-MM-DD."""
+        m = re.search(r"(\d{2})[/\-](\d{2})[/\-](\d{4})", text)
+        if m:
+            return f"{m.group(3)}-{m.group(2).zfill(2)}-{m.group(1).zfill(2)}"
+        # Try Month-name format: 15 April 2026
+        months = {"jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05",
+                  "jun": "06", "jul": "07", "aug": "08", "sep": "09", "oct": "10",
+                  "nov": "11", "dec": "12"}
+        m2 = re.search(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\s+(\d{4})", text, re.IGNORECASE)
+        if m2:
+            return f"{m2.group(3)}-{months[m2.group(2).lower()]}-{m2.group(1).zfill(2)}"
+        return None
+
+    @staticmethod
+    def parse_price_lakh(text: str) -> Optional[float]:
+        """Parse price as lakhs from text."""
+        text = text.replace(",", "")
+        m = re.search(r"(?:₹|Rs\.?|INR)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lac|l)\b", text, re.IGNORECASE)
+        if m:
+            return float(m.group(1))
+        m2 = re.search(r"(?:₹|Rs\.?|INR)?\s*(\d+(?:\.\d+)?)\s*(?:crore|cr)\b", text, re.IGNORECASE)
+        if m2:
+            return round(float(m2.group(1)) * 100, 1)
+        return None
+
+    @staticmethod
+    def parse_plots(text: str) -> Optional[int]:
+        """Parse plot count from text."""
+        m = re.search(r"(\d[\d,]+)\s*(?:plots?|sites?|units?|भूखंड)", text, re.IGNORECASE)
+        if m:
+            return int(m.group(1).replace(",", ""))
+        return None
 
     def make_id(self, name: str) -> str:
         return make_scheme_id(self.authority, name)
 
     def _record_error(self, url: str, error_type: str, detail: str):
-        err = ScraperError(
-            authority=self.authority,
-            city=self.city,
-            url=url,
-            error_type=error_type,
-            error_detail=detail,
-        )
-        self.errors.append(err)
+        self.errors.append(ScraperError(
+            authority=self.authority, city=self.city,
+            url=url, error_type=error_type, error_detail=detail,
+        ))
         logger.warning(f"[{self.authority}] {error_type}: {detail[:120]}")
 
-    # ── Abstract interface — UNCHANGED from v3.2 ──────────────────────────────
+    # ── Abstract interface ────────────────────────────────────────────────────
 
     @abstractmethod
-    def scrape_live(self) -> list[SchemeData]:
+    def scrape_tier1(self) -> list[SchemeData]:
+        """Attempt 1: Static HTML via requests."""
+        ...
+
+    def scrape_tier2(self) -> list[SchemeData]:
+        """Attempt 2: JS-rendered via Playwright. Override if needed."""
+        return []
+
+    @abstractmethod
+    def scrape_aggregators(self) -> list[SchemeData]:
+        """Attempt 4: Aggregator sites (always run alongside tiers 1-3)."""
         ...
 
     @abstractmethod
     def fallback_schemes(self) -> list[SchemeData]:
+        """Static hardcoded data. Last resort."""
         ...
 
-    # ── run() — UNCHANGED from v3.2 ───────────────────────────────────────────
+    # ── run() — Orchestrates all tiers ───────────────────────────────────────
 
     def run(self) -> tuple[list[dict], list[ScraperError]]:
-        logger.info(f"[{self.authority}] Scraping {self.city} (url={self.base_url}) ...")
+        logger.info(f"[{self.authority}] Scraping {self.city} ...")
         self.errors = []
         schemes: list[SchemeData] = []
         used_fallback = False
 
+        # Tier 1: Static HTML
         try:
-            schemes = self.scrape_live()
+            t1 = self.scrape_tier1()
+            if t1:
+                logger.info(f"[{self.authority}] Tier 1 (HTML): {len(t1)} schemes")
+                schemes.extend(t1)
         except Exception as e:
-            self._record_error(self.base_url, "SCRAPE_EXCEPTION", str(e))
-            schemes = []
+            self._record_error(self.base_url, "TIER1_EXCEPTION", str(e))
 
+        # Tier 2: JS-rendered (if tier 1 got nothing)
         if not schemes:
-            logger.warning(f"[{self.authority}] Live scrape returned 0 results → using fallback data")
-            self._record_error(
-                self.base_url,
-                "NO_RESULTS",
-                "Live scrape returned 0 schemes — switched to static fallback data"
-            )
+            try:
+                t2 = self.scrape_tier2()
+                if t2:
+                    logger.info(f"[{self.authority}] Tier 2 (Playwright): {len(t2)} schemes")
+                    schemes.extend(t2)
+            except Exception as e:
+                self._record_error(self.base_url, "TIER2_EXCEPTION", str(e))
+
+        # Aggregators: ALWAYS run — adds/updates schemes from public aggregators
+        try:
+            agg = self.scrape_aggregators()
+            if agg:
+                # Merge: don't duplicate scheme_ids already found
+                existing_ids = {s.scheme_id for s in schemes}
+                new_agg = [s for s in agg if s.scheme_id not in existing_ids]
+                logger.info(f"[{self.authority}] Aggregators: {len(new_agg)} new schemes")
+                schemes.extend(new_agg)
+        except Exception as e:
+            self._record_error(self.base_url, "AGGREGATOR_EXCEPTION", str(e))
+
+        # Fallback: if nothing found at all
+        if not schemes:
+            logger.warning(f"[{self.authority}] All tiers failed → static fallback")
+            self._record_error(self.base_url, "NO_RESULTS", "All tiers returned 0 schemes")
             used_fallback = True
             try:
-                schemes = self.fallback_schemes()
-                for s in schemes:
-                    s.data_source    = "STATIC"
+                fb = self.fallback_schemes()
+                for s in fb:
+                    s.data_source = "STATIC"
                     s.scraper_status = "fallback"
+                schemes.extend(fb)
             except Exception as e:
                 self._record_error(self.base_url, "FALLBACK_FAILED", str(e))
-                schemes = []
 
-        valid = [s for s in schemes if passes_all_filters(s)]
+        # Filter and deduplicate
+        seen: set[str] = set()
+        valid: list[SchemeData] = []
+        for s in schemes:
+            if s.scheme_id in seen:
+                continue
+            seen.add(s.scheme_id)
+            if passes_all_filters(s):
+                valid.append(s)
+
         filtered_out = len(schemes) - len(valid)
+        icon = "🟡 STATIC" if used_fallback else "🟢 LIVE  "
         logger.info(
-            f"[{self.authority}] "
-            f"{'STATIC' if used_fallback else 'LIVE'}: "
+            f"{icon} [{self.authority}] "
             f"{len(valid)} valid / {len(schemes)} total "
             f"({filtered_out} filtered out)"
         )

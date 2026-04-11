@@ -1,170 +1,63 @@
-"""Cities route — 100+ major Indian cities across all states"""
-from fastapi import APIRouter
+"""
+GovPlot Tracker — Cities API Route v4.0
+=========================================
+Dynamically serves city data from city_config.py.
+NO hardcoded city list — single source of truth is city_config.py.
+
+Endpoints:
+  GET /api/v1/cities/          → All 20 cities (ordered by rank)
+  GET /api/v1/cities/by-state  → Grouped by state
+  GET /api/v1/cities/names     → Just city names (for dropdowns/alert modal)
+  GET /api/v1/cities/{name}    → Single city detail
+"""
+
+from fastapi import APIRouter, HTTPException
+from scraper.cities.city_config import ALL_CITIES_API, CITY_BY_NAME, CITY_NAMES_ORDERED
+
 router = APIRouter()
-CITIES = [
-    {"name":"Lucknow","authority":"LDA","state":"Uttar Pradesh","tier":1,"tags":["State Capital","Active Lottery"]},
-    {"name":"Kanpur","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["Industrial Hub"]},
-    {"name":"Agra","authority":"ADA","state":"Uttar Pradesh","tier":2,"tags":["Heritage","Tourism"]},
-    {"name":"Varanasi","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["Spiritual Hub"]},
-    {"name":"Prayagraj","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["Confluence City"]},
-    {"name":"Meerut","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["NCR Adjacent"]},
-    {"name":"Ghaziabad","authority":"GDA","state":"Uttar Pradesh","tier":2,"tags":["NCR","Fast Growing"]},
-    {"name":"Noida","authority":"GNIDA/YEIDA","state":"Uttar Pradesh","tier":1,"tags":["NCR","IT Hub","Airport Zone"]},
-    {"name":"Aligarh","authority":"ADA-ALG","state":"Uttar Pradesh","tier":3,"tags":["Lock City"]},
-    {"name":"Mathura","authority":"UPAVP","state":"Uttar Pradesh","tier":3,"tags":["Pilgrimage","Vrindavan"]},
-    {"name":"Bareilly","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["Trade Hub"]},
-    {"name":"Gorakhpur","authority":"GDA-GKP","state":"Uttar Pradesh","tier":2,"tags":["AIIMS Road","Growing"]},
-    {"name":"Jhansi","authority":"JDA-JHS","state":"Uttar Pradesh","tier":2,"tags":["Central India"]},
-    {"name":"Moradabad","authority":"UPAVP","state":"Uttar Pradesh","tier":2,"tags":["Brass City"]},
-    {"name":"Saharanpur","authority":"UPAVP","state":"Uttar Pradesh","tier":3,"tags":["Wood Carving"]},
-    {"name":"Muzaffarnagar","authority":"UPAVP","state":"Uttar Pradesh","tier":3,"tags":["Sugarcane Belt"]},
-    {"name":"Delhi","authority":"DDA","state":"Delhi","tier":1,"tags":["National Capital","DDA Lottery"]},
-    {"name":"Mumbai","authority":"MHADA","state":"Maharashtra","tier":1,"tags":["Financial Capital"]},
-    {"name":"Navi Mumbai","authority":"CIDCO","state":"Maharashtra","tier":1,"tags":["Planned City","Mass Lottery"]},
-    {"name":"Pune","authority":"MHADA/PMRDA","state":"Maharashtra","tier":1,"tags":["IT Hub"]},
-    {"name":"Nagpur","authority":"NIT","state":"Maharashtra","tier":2,"tags":["Orange City","MIHAN"]},
-    {"name":"Nashik","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["Wine Capital"]},
-    {"name":"Aurangabad","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["Marathwada"]},
-    {"name":"Thane","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["MMR","High Demand"]},
-    {"name":"Kolhapur","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["Western Maharashtra"]},
-    {"name":"Solapur","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["Textile Hub"]},
-    {"name":"Amravati","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["Vidarbha"]},
-    {"name":"Akola","authority":"MHADA","state":"Maharashtra","tier":3,"tags":["Vidarbha"]},
-    {"name":"Jalgaon","authority":"MHADA","state":"Maharashtra","tier":3,"tags":["Banana City"]},
-    {"name":"Latur","authority":"CIDCO","state":"Maharashtra","tier":3,"tags":["Marathwada"]},
-    {"name":"Nanded","authority":"CIDCO","state":"Maharashtra","tier":3,"tags":["Sikh Pilgrimage"]},
-    {"name":"Kalyan","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["MMR Expansion"]},
-    {"name":"Vasai","authority":"MHADA","state":"Maharashtra","tier":2,"tags":["MMR North"]},
-    {"name":"Panvel","authority":"CIDCO","state":"Maharashtra","tier":2,"tags":["Navi Mumbai South"]},
-    {"name":"Bangalore","authority":"BDA","state":"Karnataka","tier":1,"tags":["IT Capital"]},
-    {"name":"Mysuru","authority":"KHB","state":"Karnataka","tier":2,"tags":["Palace City"]},
-    {"name":"Hubballi","authority":"KHB","state":"Karnataka","tier":2,"tags":["Smart City"]},
-    {"name":"Mangalore","authority":"KHB","state":"Karnataka","tier":2,"tags":["Port City"]},
-    {"name":"Belgaum","authority":"KHB","state":"Karnataka","tier":2,"tags":["North Karnataka"]},
-    {"name":"Shimoga","authority":"KHB","state":"Karnataka","tier":2,"tags":["Shivamogga","Malnad"]},
-    {"name":"Tumkur","authority":"KHB","state":"Karnataka","tier":2,"tags":["Bangalore Periphery"]},
-    {"name":"Davangere","authority":"KHB","state":"Karnataka","tier":2,"tags":["Central Karnataka"]},
-    {"name":"Gulbarga","authority":"KHB","state":"Karnataka","tier":2,"tags":["Hyderabad Karnataka"]},
-    {"name":"Hyderabad","authority":"HMDA","state":"Telangana","tier":1,"tags":["IT Corridor","Pearl City"]},
-    {"name":"Warangal","authority":"TSIIC","state":"Telangana","tier":2,"tags":["Heritage"]},
-    {"name":"Karimnagar","authority":"TSIIC","state":"Telangana","tier":2,"tags":["Smart City"]},
-    {"name":"Nizamabad","authority":"TSIIC","state":"Telangana","tier":2,"tags":["North Telangana"]},
-    {"name":"Khammam","authority":"TSIIC","state":"Telangana","tier":2,"tags":["Mining Region"]},
-    {"name":"Mahabubnagar","authority":"TSIIC","state":"Telangana","tier":3,"tags":["Palamuru"]},
-    {"name":"Chennai","authority":"CMDA/TNHB","state":"Tamil Nadu","tier":1,"tags":["Auto Capital","IT South"]},
-    {"name":"Coimbatore","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Manchester of India"]},
-    {"name":"Madurai","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Temple City"]},
-    {"name":"Salem","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Steel City"]},
-    {"name":"Tiruchirappalli","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Trichy","Education Hub"]},
-    {"name":"Vellore","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Medical Hub","CMC"]},
-    {"name":"Erode","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Textile"]},
-    {"name":"Tirunelveli","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Palayamkottai"]},
-    {"name":"Thoothukudi","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Port City","Tuticorin"]},
-    {"name":"Thanjavur","authority":"TNHB","state":"Tamil Nadu","tier":2,"tags":["Heritage","Cauvery Delta"]},
-    {"name":"Hosur","authority":"SIPCOT","state":"Tamil Nadu","tier":2,"tags":["Electronics Corridor","EV Hub"]},
-    {"name":"Jaipur","authority":"JDA/RHB","state":"Rajasthan","tier":1,"tags":["Pink City","Tourism"]},
-    {"name":"Jodhpur","authority":"RHB","state":"Rajasthan","tier":2,"tags":["Blue City"]},
-    {"name":"Udaipur","authority":"RHB","state":"Rajasthan","tier":2,"tags":["Lake City"]},
-    {"name":"Kota","authority":"RHB","state":"Rajasthan","tier":2,"tags":["Education Hub"]},
-    {"name":"Ajmer","authority":"RHB","state":"Rajasthan","tier":2,"tags":["Spiritual Hub"]},
-    {"name":"Bikaner","authority":"RHB","state":"Rajasthan","tier":3,"tags":["Heritage City"]},
-    {"name":"Ahmedabad","authority":"AUDA","state":"Gujarat","tier":1,"tags":["GIFT City","Industrial"]},
-    {"name":"Surat","authority":"SUDA","state":"Gujarat","tier":2,"tags":["Diamond City"]},
-    {"name":"Vadodara","authority":"VUDA","state":"Gujarat","tier":2,"tags":["Cultural Capital"]},
-    {"name":"Rajkot","authority":"RUDA","state":"Gujarat","tier":2,"tags":["Industrial"]},
-    {"name":"Bhavnagar","authority":"BUDA","state":"Gujarat","tier":3,"tags":["Port City"]},
-    {"name":"Gandhinagar","authority":"GUDAH","state":"Gujarat","tier":2,"tags":["Capital City","GIFT Periphery"]},
-    {"name":"Jamnagar","authority":"JUDA","state":"Gujarat","tier":2,"tags":["Brass City","Reliance Hub"]},
-    {"name":"Mehsana","authority":"MUDA","state":"Gujarat","tier":3,"tags":["North Gujarat"]},
-    {"name":"Anand","authority":"AUDA","state":"Gujarat","tier":3,"tags":["Vallabh Vidyanagar"]},
-    {"name":"Bharuch","authority":"BUDA-GJ","state":"Gujarat","tier":3,"tags":["Golden Corridor"]},
-    {"name":"Gurgaon","authority":"HSVP","state":"Haryana","tier":1,"tags":["Corporate Hub","NCR"]},
-    {"name":"Faridabad","authority":"HSVP","state":"Haryana","tier":2,"tags":["Industrial","NCR"]},
-    {"name":"Panchkula","authority":"HSVP","state":"Haryana","tier":2,"tags":["Planned City"]},
-    {"name":"Karnal","authority":"HSVP","state":"Haryana","tier":2,"tags":["Agricultural Hub"]},
-    {"name":"Rohtak","authority":"HSVP","state":"Haryana","tier":2,"tags":["Industrial"]},
-    {"name":"Hisar","authority":"HSVP","state":"Haryana","tier":2,"tags":["Urban Estate"]},
-    {"name":"Ambala","authority":"HHB","state":"Haryana","tier":2,"tags":["Cantonment"]},
-    {"name":"Panipat","authority":"HSVP","state":"Haryana","tier":2,"tags":["Industrial Zone"]},
-    {"name":"Sonipat","authority":"HSVP","state":"Haryana","tier":2,"tags":["NCR Periphery"]},
-    {"name":"Rewari","authority":"HSVP","state":"Haryana","tier":3,"tags":["Emerging NCR"]},
-    {"name":"Kurukshetra","authority":"HSVP","state":"Haryana","tier":3,"tags":["Pilgrimage"]},
-    {"name":"Indore","authority":"IDA","state":"Madhya Pradesh","tier":1,"tags":["Smart City","Cleanest City"]},
-    {"name":"Bhopal","authority":"BDA-MP","state":"Madhya Pradesh","tier":2,"tags":["Lake City","Capital"]},
-    {"name":"Jabalpur","authority":"MPRHDA","state":"Madhya Pradesh","tier":2,"tags":["Marble City"]},
-    {"name":"Chandigarh","authority":"GMADA","state":"Punjab/Haryana","tier":2,"tags":["Planned City"]},
-    {"name":"Ludhiana","authority":"PUDA","state":"Punjab","tier":2,"tags":["Industrial Hub"]},
-    {"name":"Amritsar","authority":"PUDA","state":"Punjab","tier":2,"tags":["Golden Temple City"]},
-    {"name":"Jalandhar","authority":"PUDA","state":"Punjab","tier":2,"tags":["Sports Industry"]},
-    {"name":"Mohali","authority":"GMADA","state":"Punjab","tier":2,"tags":["IT City"]},
-    {"name":"Patiala","authority":"PUDA","state":"Punjab","tier":2,"tags":["Royal City"]},
-    {"name":"Bathinda","authority":"PUDA","state":"Punjab","tier":3,"tags":["Malwa Region"]},
-    {"name":"Zirakpur","authority":"GMADA","state":"Punjab","tier":2,"tags":["Chandigarh Periphery"]},
-    {"name":"Kolkata","authority":"KMDA/WBHB","state":"West Bengal","tier":1,"tags":["East India Hub"]},
-    {"name":"New Town","authority":"HIDCO","state":"West Bengal","tier":2,"tags":["IT Hub","Planned"]},
-    {"name":"Durgapur","authority":"WBHB","state":"West Bengal","tier":2,"tags":["Steel City"]},
-    {"name":"Visakhapatnam","authority":"VMRDA","state":"Andhra Pradesh","tier":2,"tags":["Port City"]},
-    {"name":"Vijayawada","authority":"CRDA","state":"Andhra Pradesh","tier":2,"tags":["Amaravati Region"]},
-    {"name":"Guntur","authority":"CRDA","state":"Andhra Pradesh","tier":2,"tags":["Amaravati Adjacent"]},
-    {"name":"Tirupati","authority":"TUDA","state":"Andhra Pradesh","tier":2,"tags":["Pilgrimage"]},
-    {"name":"Nellore","authority":"NUDA","state":"Andhra Pradesh","tier":2,"tags":["South AP"]},
-    {"name":"Kakinada","authority":"KUDA","state":"Andhra Pradesh","tier":2,"tags":["Port City"]},
-    {"name":"Kurnool","authority":"KDA","state":"Andhra Pradesh","tier":2,"tags":["Rayalaseema"]},
-    {"name":"Rajahmundry","authority":"RJDA","state":"Andhra Pradesh","tier":2,"tags":["Godavari Delta"]},
-    {"name":"Kochi","authority":"GCDA","state":"Kerala","tier":2,"tags":["Smart Port","IT Zone"]},
-    {"name":"Thiruvananthapuram","authority":"TRIDA","state":"Kerala","tier":2,"tags":["Technopark Zone"]},
-    {"name":"Kozhikode","authority":"KSHB","state":"Kerala","tier":2,"tags":["Cultural Hub"]},
-    {"name":"Thrissur","authority":"KSHB","state":"Kerala","tier":2,"tags":["Cultural Capital"]},
-    {"name":"Palakkad","authority":"KSHB","state":"Kerala","tier":2,"tags":["Gateway City"]},
-    {"name":"Kannur","authority":"KSHB","state":"Kerala","tier":2,"tags":["North Kerala"]},
-    {"name":"Kollam","authority":"KSHB","state":"Kerala","tier":2,"tags":["Port City"]},
-    {"name":"Kottayam","authority":"KSHB","state":"Kerala","tier":2,"tags":["Land of Letters"]},
-    {"name":"Bhubaneswar","authority":"BDA-OD","state":"Odisha","tier":2,"tags":["Smart City"]},
-    {"name":"Cuttack","authority":"OHB","state":"Odisha","tier":2,"tags":["Silver City"]},
-    {"name":"Sambalpur","authority":"SUDA","state":"Odisha","tier":2,"tags":["Hirakud Zone"]},
-    {"name":"Berhampur","authority":"OHB","state":"Odisha","tier":2,"tags":["Silk City"]},
-    {"name":"Rourkela","authority":"RCDA","state":"Odisha","tier":2,"tags":["Steel City"]},
-    {"name":"Patna","authority":"BSPHCL","state":"Bihar","tier":2,"tags":["State Capital"]},
-    {"name":"Muzaffarpur","authority":"BSHB","state":"Bihar","tier":3,"tags":["North Bihar"]},
-    {"name":"Gaya","authority":"BSHB","state":"Bihar","tier":2,"tags":["Pilgrimage"]},
-    {"name":"Bhagalpur","authority":"BSHB","state":"Bihar","tier":2,"tags":["Silk City"]},
-    {"name":"Darbhanga","authority":"BSHB","state":"Bihar","tier":3,"tags":["Mithila Region"]},
-    {"name":"Ranchi","authority":"JUIDCO","state":"Jharkhand","tier":2,"tags":["Smart City","Capital"]},
-    {"name":"Dhanbad","authority":"JUIDCO","state":"Jharkhand","tier":2,"tags":["Coal Capital"]},
-    {"name":"Jamshedpur","authority":"JUIDCO","state":"Jharkhand","tier":2,"tags":["Steel City","Tata City"]},
-    {"name":"Bokaro","authority":"JUIDCO","state":"Jharkhand","tier":2,"tags":["Steel City"]},
-    {"name":"Hazaribagh","authority":"JUIDCO","state":"Jharkhand","tier":3,"tags":["Eco Tourism"]},
-    {"name":"Raipur","authority":"CGHB","state":"Chhattisgarh","tier":2,"tags":["Naya Raipur Smart City"]},
-    {"name":"Bhilai","authority":"CSIDCO","state":"Chhattisgarh","tier":2,"tags":["Steel City"]},
-    {"name":"Bilaspur","authority":"CGHB","state":"Chhattisgarh","tier":2,"tags":["Judicial Capital"]},
-    {"name":"Korba","authority":"CGHB","state":"Chhattisgarh","tier":2,"tags":["Power Hub"]},
-    {"name":"Durg","authority":"CSIDCO","state":"Chhattisgarh","tier":2,"tags":["Bhilai Twin City"]},
-    {"name":"Dehradun","authority":"MDDA","state":"Uttarakhand","tier":2,"tags":["IT City","Capital"]},
-    {"name":"Haridwar","authority":"HDA","state":"Uttarakhand","tier":2,"tags":["Pilgrimage"]},
-    {"name":"Haldwani","authority":"KDA","state":"Uttarakhand","tier":2,"tags":["Kumaon Gate"]},
-    {"name":"Roorkee","authority":"MDDA","state":"Uttarakhand","tier":2,"tags":["IIT Zone"]},
-    {"name":"Rishikesh","authority":"MDDA","state":"Uttarakhand","tier":2,"tags":["Wellness City","Yoga Capital"]},
-    {"name":"Panaji","authority":"GDA","state":"Goa","tier":3,"tags":["Coastal","Tourism Premium"]},
-    {"name":"Guwahati","authority":"GMDA-AS","state":"Assam","tier":2,"tags":["Northeast Gateway"]},
-    {"name":"Agartala","authority":"TREDA","state":"Tripura","tier":3,"tags":["Northeast Capital"]},
-    {"name":"Imphal","authority":"IDA-MN","state":"Manipur","tier":3,"tags":["Northeast Capital"]},
-    {"name":"Shillong","authority":"MUDA-MG","state":"Meghalaya","tier":3,"tags":["Scotland of East"]},
-    {"name":"Shimla","authority":"HIMUDA","state":"Himachal Pradesh","tier":3,"tags":["Hill Station"]},
-    {"name":"Dharamsala","authority":"HIMUDA","state":"Himachal Pradesh","tier":3,"tags":["Smart City"]},
-    {"name":"Solan","authority":"HIMUDA","state":"Himachal Pradesh","tier":3,"tags":["Mushroom City"]},
-    {"name":"Baddi","authority":"HIMUDA","state":"Himachal Pradesh","tier":3,"tags":["Pharma Hub"]},
-    {"name":"Jammu","authority":"JDA-JK","state":"J&K","tier":2,"tags":["Winter Capital"]},
-    {"name":"Srinagar","authority":"LCMA","state":"J&K","tier":2,"tags":["Summer Capital","Dal Lake"]},
-]
+
+
 @router.get("/")
-def list_cities(): return CITIES
+def list_cities():
+    """Return all 20 cities ordered by demand rank."""
+    return ALL_CITIES_API
+
+
+@router.get("/names")
+def city_names():
+    """Return ordered list of city names. Used by AlertModal, FilterBar dropdowns."""
+    return CITY_NAMES_ORDERED
+
+
 @router.get("/by-state")
 def cities_by_state():
-    r={}
-    for c in CITIES:
-        s=c["state"]
-        if s not in r: r[s]=[]
-        r[s].append(c)
-    return r
-@router.get("/tier/{tier}")
-def cities_by_tier(tier:int): return [c for c in CITIES if c.get("tier")==tier]
+    """Return cities grouped by state. Used by FilterBar optgroups."""
+    result: dict[str, list] = {}
+    for city_dict in ALL_CITIES_API:
+        state = city_dict["state"]
+        if state not in result:
+            result[state] = []
+        result[state].append(city_dict)
+    return result
+
+
+@router.get("/by-demand")
+def cities_by_demand():
+    """Return cities grouped by demand level."""
+    result: dict[str, list] = {}
+    for city_dict in ALL_CITIES_API:
+        demand = city_dict["demand_level"]
+        if demand not in result:
+            result[demand] = []
+        result[demand].append(city_dict)
+    return result
+
+
+@router.get("/{name}")
+def get_city(name: str):
+    """Return single city config by name."""
+    cfg = CITY_BY_NAME.get(name)
+    if not cfg:
+        raise HTTPException(status_code=404, detail=f"City '{name}' not found in tracked list")
+    from scraper.cities.city_config import city_to_api_dict
+    return city_to_api_dict(cfg)

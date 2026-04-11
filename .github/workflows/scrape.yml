@@ -1,32 +1,35 @@
-name: GovPlot Scraper — Auto Run v3.3
+name: GovPlot Scraper — Auto Run v4.0
 
 # ─────────────────────────────────────────────────────────────────────────────
-# WHAT CHANGED IN v3.3 (fixes from April 5 run):
+# WHAT CHANGED IN v4.0:
 #
-#  FIX 1: Chrome binary path
-#    OLD: apt-get install chromium-browser  → installs a snap STUB, not real chrome
-#    NEW: Install google-chrome-stable via official Google repo → /usr/bin/google-chrome
+#  FIX 1: [skip ci] added to bot commit message
+#    Bot data commits no longer trigger Vercel production deployments.
+#    ONLY real code pushes trigger deploy — this was the blog route outage cause.
 #
-#  FIX 2: Playwright added as primary scraper for JS-heavy portals
-#    OLD: Selenium looking for /usr/bin/google-chrome (wrong path from snap)
-#    NEW: Playwright installs its own bundled Chromium — always works on Actions
+#  FIX 2: 20-city v4.0 scraper architecture
+#    - Each city now has a dedicated scraper file
+#    - 4-tier strategy: Static HTML → Playwright → Aggregators → Fallback
+#    - city_config.py is the single source of truth
 #
-#  FIX 3: DNS/firewall workaround for .gov.in / .nic.in domains
-#    GitHub Actions runners (Azure US) are blocked by NIC India firewall.
-#    We now use httpx with Indian DNS resolver + retry logic.
-#    Sites that are genuinely unreachable fall through cleanly to STATIC.
+#  FIX 3: ScraperAPI proxy for .gov.in domains
+#    Indian gov portals block GitHub Actions Azure runners (US region).
+#    Set SCRAPER_API_KEY in GitHub Secrets → free 5000 req/month.
+#    Without key: ScraperAPI bypassed, STATIC fallback used.
 #
-#  FIX 4: SCRAPER_API_KEY secret added (optional)
-#    When set, .gov.in requests are routed through ScraperAPI (Indian proxy).
-#    Get free 5000 req/month at scraperapi.com — add as GitHub Secret.
-#    Without it: scraper still runs, uses STATIC fallback for blocked domains.
+#  FIX 4: Playwright stealth mode
+#    Removes navigator.webdriver fingerprint, randomizes viewport/UA.
+#
+#  FIX 5: Aggregators ALWAYS run
+#    eauctionsindia.com, 99acres.com, awaszone.com checked for every city
+#    alongside primary scraping. Marked data_source="LIVE" (aggregator).
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
   schedule:
-    # Sunday 1:00 UTC (6:30 AM IST) — full pull
+    # Sunday 1:00 UTC (6:30 AM IST) — full pull (all 20 cities)
     - cron: "0 1 * * 0"
-    # Mon–Sat 1:00 UTC (6:30 AM IST) — refresh only
+    # Mon–Sat 1:00 UTC (6:30 AM IST) — refresh only (OPEN/UPCOMING status check)
     - cron: "0 1 * * 1-6"
   workflow_dispatch:
     inputs:
@@ -53,14 +56,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      # ── 3. Install Google Chrome (official binary — NOT snap) ─────────────
-      # This is the KEY FIX for "no chrome binary at /usr/bin/google-chrome"
-      # snap chromium-browser installs a stub at /usr/bin that calls snap
-      # which requires snap confinement — it breaks in CI.
-      # The official Google repo installs the real binary at /usr/bin/google-chrome
+      # ── 3. Install Google Chrome (official binary) ────────────────────────
       - name: Install Google Chrome (stable, official)
         run: |
-          # Add Google's official signing key and repo
           wget -q -O /tmp/google-signing-key.pub \
             https://dl.google.com/linux/linux_signing_key.pub
           sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
@@ -70,16 +68,14 @@ jobs:
             | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update -qq
           sudo apt-get install -y -qq google-chrome-stable
-          # Verify — this MUST print a version, not "not found"
           google-chrome --version
-          which google-chrome
 
       # ── 4. Cache pip ─────────────────────────────────────────────────────
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-v33-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-v40-${{ hashFiles('requirements.txt') }}
 
       # ── 5. Install Python deps ───────────────────────────────────────────
       - name: Install Python dependencies
@@ -87,46 +83,23 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      # ── 6. Install Playwright + its bundled Chromium ─────────────────────
-      # Playwright always works on GitHub Actions because it downloads its
-      # own pinned Chromium binary — no dependency on system packages.
-      # This is our PRIMARY JS scraper (replaces Selenium for complex portals).
-      #
-      # WHY WE DON'T USE "playwright install-deps chromium":
-      #   That command calls apt-get install libasound2 — but Ubuntu 24.04
-      #   renamed it to libasound2t64. Playwright's script doesn't know this,
-      #   so it exits with code 100 and kills the entire job.
-      #   Fix: skip install-deps entirely, install the renamed packages manually.
+      # ── 6. Install Playwright + bundled Chromium ─────────────────────────
       - name: Install Playwright browsers
         run: |
           pip install playwright==1.44.0
           python -m playwright install chromium
-          # ── DO NOT run: python -m playwright install-deps chromium ──
-          # It fails on Ubuntu 24.04 (libasound2 → renamed to libasound2t64).
-          # Install Chromium runtime deps manually instead:
+          # Ubuntu 24.04 renamed some libs — install manually
           sudo apt-get install -y -qq \
-            libasound2t64 \
-            libatk1.0-0t64 \
-            libatk-bridge2.0-0t64 \
-            libcups2t64 \
-            libdrm2 \
-            libgbm1 \
-            libgtk-3-0t64 \
-            libnspr4 \
-            libnss3 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxfixes3 \
-            libxkbcommon0 \
-            libxrandr2 \
-            xvfb || true
-          # Smoke-test: launch and close Playwright Chromium — must print ✅
+            libasound2t64 libatk1.0-0t64 libatk-bridge2.0-0t64 \
+            libcups2t64 libdrm2 libgbm1 libgtk-3-0t64 libnspr4 \
+            libnss3 libxcomposite1 libxdamage1 libxfixes3 \
+            libxkbcommon0 libxrandr2 xvfb || true
+          # Smoke test
           python -c "
           from playwright.sync_api import sync_playwright
           pw = sync_playwright().start()
-          b  = pw.chromium.launch(headless=True)
-          b.close()
-          pw.stop()
+          b = pw.chromium.launch(headless=True)
+          b.close(); pw.stop()
           print('✅ Playwright Chromium OK')
           "
 
@@ -141,7 +114,6 @@ jobs:
           else
             echo "mode=refresh" >> $GITHUB_OUTPUT
           fi
-          echo "Detected mode: $(cat $GITHUB_OUTPUT | grep mode | cut -d= -f2)"
 
       # ── 8. Run scraper ───────────────────────────────────────────────────
       - name: Run scraper → Supabase → Alert email
@@ -150,34 +122,37 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           SENDGRID_API_KEY:     ${{ secrets.SENDGRID_API_KEY }}
           DATABASE_URL:         ${{ secrets.DATABASE_URL }}
-          # Optional: add SCRAPER_API_KEY to GitHub Secrets for .gov.in access
-          # Get free 5000 req/month at https://scraperapi.com
           SCRAPER_API_KEY:      ${{ secrets.SCRAPER_API_KEY }}
           FROM_EMAIL:           "alerts@govplottracker.com"
           GOVPLOT_FORCE_FULL:   ${{ steps.mode.outputs.mode == 'full' && '1' || '0' }}
-          # Explicit Chrome paths for both Selenium and undetected-chromedriver
           CHROME_BIN:           /usr/bin/google-chrome
           CHROMEDRIVER_PATH:    /usr/bin/chromedriver
         run: |
           echo "▶ Running in mode: ${{ steps.mode.outputs.mode }}"
           python -m scraper.main ${{ steps.mode.outputs.mode }}
 
-      # ── 9. Commit data to git ────────────────────────────────────────────
+      # ── 9. Commit data to git ─────────────────────────────────────────────
+      # KEY FIX v4.0: [skip ci] prevents this bot commit from triggering
+      # Vercel production deployment. This was causing blog route outages.
       - name: Commit latest scheme data
         run: |
           git config --local user.email "bot@govplottracker.in"
           git config --local user.name  "GovPlot Bot"
           git add data/schemes/latest.json || true
           git diff --staged --quiet || git commit -m \
-            "chore: scheme data $(date -u +%Y-%m-%dT%H:%M:%SZ) mode=${{ steps.mode.outputs.mode }}"
+            "chore(data): scheme data $(date -u +%Y-%m-%dT%H:%M:%SZ) mode=${{ steps.mode.outputs.mode }} [skip ci]"
           git push || true
+        # NOTE: [skip ci] in commit message tells Vercel/GitHub Actions
+        # NOT to trigger a new deployment from this data-only commit.
+        # This is the fix for the blog route outage caused by bot commits
+        # overriding the production deployment.
 
       # ── 10. Summary ──────────────────────────────────────────────────────
       - name: Job summary
         if: always()
         run: |
           python3 - <<'PYEOF'
-          import json, os
+          import json
           try:
               d = json.load(open("data/schemes/latest.json"))
               total  = len(d)
@@ -186,27 +161,19 @@ jobs:
               closed = sum(1 for s in d if s.get("status") == "CLOSED")
               live   = sum(1 for s in d if s.get("data_source") == "LIVE")
               static = sum(1 for s in d if s.get("data_source") == "STATIC")
-              print(f"TOTAL={total} OPEN={open_} UPCOMING={up} CLOSED={closed} LIVE={live} STATIC={static}")
+              cities = len(set(s.get("city","") for s in d))
+              print(f"TOTAL={total} OPEN={open_} UPCOMING={up} CLOSED={closed} LIVE={live} STATIC={static} CITIES={cities}")
           except Exception as e:
               print(f"SUMMARY ERROR: {e}")
           PYEOF
 
-          STATS=$(python3 -c "
-          import json
-          try:
-              d=json.load(open('data/schemes/latest.json'))
-              t=len(d); l=sum(1 for s in d if s.get('data_source')=='LIVE'); st=t-l
-              print(f'{t} total | {l} LIVE | {st} STATIC')
-          except: print('unknown')
-          " 2>/dev/null)
-
-          echo "### 🏠 GovPlot Scraper v3.3 — Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏠 GovPlot Scraper v4.0 — Run Summary" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| **Time** | $(date -u) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Mode** | ${{ steps.mode.outputs.mode }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Chrome** | google-chrome-stable (official binary) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **JS Scraper** | Playwright Chromium (bundled) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Stats** | ${STATS} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Cities** | 20 (city_config.py) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tiers** | 1=HTML, 2=Playwright, 3=Aggregators, 4=Fallback |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bot Commit** | [skip ci] → no Vercel deploy triggered |" >> $GITHUB_STEP_SUMMARY
           echo "| **Status** | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **ScraperAPI** | ${{ secrets.SCRAPER_API_KEY != '' && 'configured' || 'not set — using direct' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ScraperAPI** | ${{ secrets.SCRAPER_API_KEY != '' && 'configured ✅' || 'not set — using direct' }} |" >> $GITHUB_STEP_SUMMARY

@@ -1,112 +1,66 @@
 """
-GovPlot Tracker — Scraper Registry v3.2
+GovPlot Tracker — Scraper Registry v4.0
 =========================================
-Single source of truth for all scraper classes.
-main.py imports ALL_SCRAPERS from here — never from all_cities.py (deleted).
+Single source controlling ALL 20 city scrapers.
+main.py imports ALL_SCRAPERS from here exclusively.
 
-To add a new state:
-  1. Create scraper/cities/<state>.py following _template.py
-  2. Import your scraper class(es) here
-  3. Add them to ALL_SCRAPERS list below
+City order = priority order (YEIDA #1 = highest demand).
+Each city has its own dedicated scraper file.
 
-DELIVERED IN OPTION B (working live scrapers):
-  ✅ up.py          — LDA, UPAVP, ADA, GDA, GNIDA, YEIDA, ADA-ALG, JDA-JHS
-  ✅ delhi.py       — DDA
-  ✅ maharashtra.py — MHADA, CIDCO, PMRDA, NIT
-  ✅ karnataka.py   — BDA, KHB
-
-TEMPLATE AVAILABLE (copy _template.py to add):
-  ⬜ telangana.py   — HMDA, TSIIC
-  ⬜ tamilnadu.py   — CMDA, TNHB, SIPCOT
-  ⬜ rajasthan.py   — JDA, RHB
-  ⬜ gujarat.py     — AUDA, SUDA, VUDA, RUDA, GUDAH
-  ⬜ haryana.py     — HSVP
-  ⬜ mp.py          — IDA, BDA-MP
-  ⬜ punjab.py      — GMADA, PUDA
-  ⬜ westbengal.py  — KMDA, HIDCO
-  ⬜ andhrapradesh.py — VMRDA, CRDA, TUDA
-  ⬜ kerala.py      — GCDA, TRIDA, KSHB
-  ⬜ odisha.py      — BDA-OD
-  ⬜ bihar.py       — BSPHCL
-  ⬜ jharkhand.py   — JUIDCO
-  ⬜ chhattisgarh.py — CGHB, CSIDCO
-  ⬜ uttarakhand.py — MDDA, KDA
-  ⬜ himachal.py    — HIMUDA
-  ⬜ jk.py          — JDA-JK
-  ⬜ northeast.py   — GMDA-AS
+To add a new city:
+  1. Create scraper/cities/<cityname>.py
+  2. Add entry to city_config.py
+  3. Add static schemes to static_schemes.py
+  4. Import and add to ALL_SCRAPERS below
 """
 
-# ── Delivered (Option B) ──────────────────────────────────────────────────
+# ── 20 City Scrapers — In priority order ──────────────────────────────────────
 
-from scraper.cities.up import (
-    LDAScraper,
-    UPAVPScraper,
-    ADAScraper,
-    GDAScraper,
-    NoidaScraper,
-    AliJhansiScraper,
-)
+from scraper.cities.yeida       import YEIDAScraper       # 1. Greater Noida (EXTREME)
+from scraper.cities.lucknow     import LDAScraper          # 2. Lucknow (VERY_HIGH)
+from scraper.cities.jaipur      import JDAScraper          # 3. Jaipur (EXTREME)
+from scraper.cities.agra        import ADAScraper          # 4. Agra (VERY_HIGH)
+from scraper.cities.prayagraj   import PDAScraper          # 5. Prayagraj (HIGH)
+from scraper.cities.chandigarh  import GMADAScraper        # 6. Chandigarh (VERY_HIGH)
+from scraper.cities.navi_mumbai import CIDCOScraper        # 7. Navi Mumbai (VERY_HIGH)
+from scraper.cities.hyderabad   import HMDAScraper         # 8. Hyderabad (HIGH)
+from scraper.cities.pune        import PMRDAScraper        # 9. Pune (HIGH)
+from scraper.cities.bengaluru   import BDAScraper          # 10. Bengaluru (VERY_HIGH)
+from scraper.cities.raipur      import NRDAScraper         # 11. Raipur (HIGH)
+from scraper.cities.varanasi    import VDAScraper          # 12. Varanasi (RISING)
+from scraper.cities.bhubaneswar import BDAODScraper        # 13. Bhubaneswar (RISING)
+from scraper.cities.nagpur      import NITScraper          # 14. Nagpur (HIGH)
+from scraper.cities.ahmedabad   import AUDAScraper         # 15. Ahmedabad (RISING)
+from scraper.cities.delhi       import DDAScraper          # 16. Delhi (EXTREME)
+from scraper.cities.bhopal      import VPBPLScraper        # 17. Bhopal (HIGH)
+from scraper.cities.udaipur     import UITScraper          # 18. Udaipur (VERY_HIGH)
+from scraper.cities.dehradun    import MDDAScraper         # 19. Dehradun (RISING)
+from scraper.cities.meerut      import MDAScraper          # 20. Meerut (HIGH)
 
-from scraper.cities.delhi import (
-    DDAScraper,
-)
 
-from scraper.cities.maharashtra import (
-    MHADAScraper,
-    CIDCOScraper,
-    PMRDAScraper,
-    NITScraper,
-)
-
-from scraper.cities.karnataka import (
-    BDAScraper,
-    KHBScraper,
-)
-
-# ── Pending (uncomment as each state file is created) ─────────────────────
-
-# from scraper.cities.telangana import HMDAScraper, TSIICScraper
-# from scraper.cities.tamilnadu import CMDAScraper, TNHBScraper, SIPCOTScraper
-# from scraper.cities.rajasthan import JDAScraper, RHBScraper
-# from scraper.cities.gujarat import AUDAScraper, SUDAScraper, VUDAScraper, RUDAScraper, GUDAHScraper
-# from scraper.cities.haryana import HSVPScraper
-# from scraper.cities.mp import IDAScraper, BhopalBDAScraper
-# from scraper.cities.punjab import GMADAScraper, PUDAScraper
-# from scraper.cities.westbengal import KMDAScraper, HIDCOScraper
-# from scraper.cities.andhrapradesh import VMRDAScraper, CRDAScraper, TUDAScraper
-# from scraper.cities.kerala import GCDAScraper, TRIDAScraper, KSHBScraper
-# from scraper.cities.odisha import BDAODScraper
-# from scraper.cities.bihar import BSPHCLScraper
-# from scraper.cities.jharkhand import JUIDCOScraper
-# from scraper.cities.chhattisgarh import CGHBScraper
-# from scraper.cities.uttarakhand import MDDAScraper
-# from scraper.cities.himachal import HIMUDAScraper
-# from scraper.cities.jk import JDAJKScraper
-# from scraper.cities.northeast import GMDAAssam
-
-# ── Master registry ────────────────────────────────────────────────────────
-
+# ── Master registry — ORDER MATTERS (higher priority = scraped first) ─────────
 ALL_SCRAPERS = [
-    # Uttar Pradesh
-    LDAScraper,
-    UPAVPScraper,
-    ADAScraper,
-    GDAScraper,
-    NoidaScraper,
-    AliJhansiScraper,
-
-    # Delhi
-    DDAScraper,
-
-    # Maharashtra
-    MHADAScraper,
-    CIDCOScraper,
-    PMRDAScraper,
-    NITScraper,
-
-    # Karnataka
-    BDAScraper,
-    KHBScraper,
-
-    # --- Add more states here as their files are created ---
+    YEIDAScraper,       # 1.  Greater Noida / Yamuna Expressway
+    LDAScraper,         # 2.  Lucknow
+    JDAScraper,         # 3.  Jaipur
+    ADAScraper,         # 4.  Agra
+    PDAScraper,         # 5.  Prayagraj
+    GMADAScraper,       # 6.  Chandigarh
+    CIDCOScraper,       # 7.  Navi Mumbai
+    HMDAScraper,        # 8.  Hyderabad
+    PMRDAScraper,       # 9.  Pune
+    BDAScraper,         # 10. Bengaluru
+    NRDAScraper,        # 11. Raipur
+    VDAScraper,         # 12. Varanasi
+    BDAODScraper,       # 13. Bhubaneswar
+    NITScraper,         # 14. Nagpur
+    AUDAScraper,        # 15. Ahmedabad
+    DDAScraper,         # 16. Delhi
+    VPBPLScraper,       # 17. Bhopal
+    UITScraper,         # 18. Udaipur
+    MDDAScraper,        # 19. Dehradun
+    MDAScraper,         # 20. Meerut
 ]
+
+# Quick lookup by city name
+SCRAPER_BY_CITY = {sc().city: sc for sc in ALL_SCRAPERS}
