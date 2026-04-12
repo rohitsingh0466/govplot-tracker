@@ -14,6 +14,7 @@ from backend.routes import schemes, alerts, auth, cities, billing, telegram
 from backend.routes.seo import router as seo_router
 from backend.routes.admin_auth import router as admin_auth_router
 from backend.routes.admin_data import router as admin_data_router
+from backend.routes.scm import scm_router
 from backend.models.database import init_db
 
 logger = logging.getLogger(__name__)
@@ -66,6 +67,7 @@ app.include_router(seo_router,      prefix="/api/v1/seo",      tags=["SEO"])
 # ── NEW: Admin routes ──────────────────────────────────────────────────────
 app.include_router(admin_auth_router, prefix="/api/v1/admin/auth", tags=["Admin Auth"])
 app.include_router(admin_data_router, prefix="/api/v1/admin/data", tags=["Admin Data"])
+app.include_router(scm_router,        prefix="/api/v1/admin",      tags=["SCM"])
 
 
 @app.get("/", tags=["Health"])
