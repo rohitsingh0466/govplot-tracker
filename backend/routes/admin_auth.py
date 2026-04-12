@@ -19,10 +19,11 @@ import uuid
 import logging
 from datetime import datetime, timedelta, timezone
 
+import bcrypt as _bcrypt
+
 from fastapi import APIRouter, Request, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -39,8 +40,21 @@ TOKEN_EXPIRE_HOURS  = 8
 MAX_ATTEMPTS        = 5
 LOCKOUT_MINUTES     = 15
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-bearer      = HTTPBearer(auto_error=False)
+bearer = HTTPBearer(auto_error=False)
+
+
+# ── Password helpers using bcrypt 4.x directly (no passlib) ──────────────────
+def _verify_password(plain: str, hashed: str) -> bool:
+    """Works with both $2a$ (pgcrypto) and $2b$ (bcrypt) prefixes."""
+    try:
+        h = hashed.encode() if isinstance(hashed, str) else hashed
+        # Normalise $2a$ → $2b$ so bcrypt 4.x accepts pgcrypto hashes
+        if h.startswith(b"$2a$"):
+            h = b"$2b$" + h[4:]
+        return _bcrypt.checkpw(plain.encode(), h)
+    except Exception as exc:
+        logger.error(f"Password verify error: {exc}")
+        return False
 
 
 # ── Pydantic ─────────────────────────────────────────────────────────────────
@@ -150,7 +164,7 @@ def admin_login(
         {"e": payload.email},
     ).fetchone()
 
-    if not row or not pwd_context.verify(payload.password, row[2]):
+    if not row or not _verify_password(payload.password, row[2]):
         _record_attempt(db, ip, payload.email, success=False)
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
