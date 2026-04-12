@@ -84,7 +84,6 @@ export default function AdminSchemes() {
     ["total_plots","price_min","price_max","area_sqft_min","area_sqft_max"].forEach(k => {
       body[k] = body[k] === "" || body[k] === null ? null : Number(body[k]);
     });
-
     try {
       const url = modal === "edit"
         ? `${API}/api/v1/admin/data/schemes/${selected.scheme_id}`
@@ -110,15 +109,25 @@ export default function AdminSchemes() {
     load();
   }
 
-  const sbadge = (s: string) => {
-    const m: Record<string,string> = { OPEN:"bg-green", ACTIVE:"bg-blue", UPCOMING:"bg-yellow", CLOSED:"bg-gray" };
-    return <span className={`badge ${m[s]||"bg-gray"}`}>{s}</span>;
+  const STATUS_BADGE_MAP: Record<string,string> = {
+    OPEN:"bg-green", ACTIVE:"bg-blue", UPCOMING:"bg-yellow", CLOSED:"bg-gray"
   };
 
   return (
     <>
       <Head><title>Schemes — GovPlot Admin</title></Head>
       <AdminLayout title="Schemes">
+
+        <style>{`
+          .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+          .total-ct { margin-left:auto; font-size:12px; color:var(--text-muted); font-weight:600; }
+          .s-name { font-size:13px; font-weight:600; color:var(--s-name-color); line-height:1.35; margin-bottom:2px; max-width:280px; }
+          .s-id   { font-size:10.5px; color:var(--s-id-color); font-family:monospace; }
+          .s-city { white-space:nowrap; color:var(--text-td); }
+          .s-price { white-space:nowrap; color:var(--text-td); }
+          .fg { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+          .fg-full { grid-column:1/-1; }
+        `}</style>
 
         {/* Controls */}
         <div className="ctrl-row">
@@ -158,13 +167,15 @@ export default function AdminSchemes() {
                         <div className="s-id">{r.scheme_id}</div>
                         {r.is_manually_edited && <span className="badge bg-teal" style={{fontSize:9,padding:"1px 6px"}}>Edited</span>}
                       </td>
-                      <td style={{whiteSpace:"nowrap"}}>{r.city}</td>
+                      <td className="s-city">{r.city}</td>
                       <td><span className="badge bg-gray">{r.authority}</span></td>
-                      <td>{sbadge(r.status)}</td>
-                      <td style={{whiteSpace:"nowrap"}}>
+                      <td>
+                        <span className={`badge ${STATUS_BADGE_MAP[r.status]||"bg-gray"}`}>{r.status}</span>
+                      </td>
+                      <td className="s-price">
                         {r.price_min ? `₹${r.price_min}${r.price_max ? `–${r.price_max}` : "+"}L` : "—"}
                       </td>
-                      <td>{r.total_plots?.toLocaleString() || "—"}</td>
+                      <td style={{color:"var(--text-td)"}}>{r.total_plots?.toLocaleString() || "—"}</td>
                       <td>
                         <span className={`badge ${r.data_source==="LIVE"?"bg-green":"bg-gray"}`}
                           style={{fontSize:9}}>{r.data_source}</span>
@@ -181,7 +192,7 @@ export default function AdminSchemes() {
                     </tr>
                   ))}
                   {!rows.length && (
-                    <tr><td colSpan={9} style={{textAlign:"center",color:"rgba(255,255,255,0.25)",padding:"40px"}}>
+                    <tr><td colSpan={9} style={{textAlign:"center",color:"var(--text-dim)",padding:"40px"}}>
                       No schemes found
                     </td></tr>
                   )}
@@ -206,12 +217,12 @@ export default function AdminSchemes() {
           </div>
         )}
 
-        {/* Modal */}
+        {/* Edit/New Modal */}
         {modal && (
           <div className="modal-bg">
             <div className="modal" style={{maxWidth:720}}>
               <h2 className="modal-h">{modal==="new"?"➕ Add New Scheme":"✏ Edit Scheme"}</h2>
-              {modal==="edit" && <p style={{fontSize:11.5,color:"rgba(255,255,255,0.3)",marginBottom:14,fontFamily:"monospace"}}>{selected?.scheme_id}</p>}
+              {modal==="edit" && <p style={{fontSize:11.5,color:"var(--s-id-color)",marginBottom:14,fontFamily:"monospace"}}>{selected?.scheme_id}</p>}
 
               <div className="fg">
                 {modal==="new" && (
@@ -219,7 +230,6 @@ export default function AdminSchemes() {
                     <label className="f-label">Scheme ID *</label>
                     <input className="a-input" value={form.scheme_id} onChange={e=>f("scheme_id",e.target.value)}
                       placeholder="e.g. YEIDA-RPS11-2027" />
-                    <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>Must be unique. Format: AUTHORITY-DESCRIPTOR-YEAR</span>
                   </div>
                 )}
                 <div className="f-group fg-full">
@@ -314,14 +324,6 @@ export default function AdminSchemes() {
           </div>
         )}
 
-        <style jsx>{`
-          .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-          .total-ct { margin-left:auto; font-size:12px; color:rgba(255,255,255,0.3); font-weight:600; }
-          .s-name { font-size:13px; font-weight:600; color:rgba(255,255,255,0.82); line-height:1.35; margin-bottom:2px; max-width:280px; }
-          .s-id { font-size:10.5px; color:rgba(255,255,255,0.28); font-family:monospace; }
-          .fg { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
-          .fg-full { grid-column:1/-1; }
-        `}</style>
       </AdminLayout>
     </>
   );
