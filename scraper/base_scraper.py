@@ -31,6 +31,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 from urllib.parse import urlencode
+from scraper.scm_config_loader import ScraperConfig
 
 import requests
 from bs4 import BeautifulSoup
