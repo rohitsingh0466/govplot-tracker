@@ -14,7 +14,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("govplot_admin_theme") as Theme | null;
-    const initial = saved === "light" ? "light" : "dark";
+    const initial: Theme = saved === "light" ? "light" : "dark";
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);
