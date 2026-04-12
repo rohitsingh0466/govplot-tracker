@@ -70,7 +70,7 @@ export default function AdminLayout({ children, title = "Admin" }: Props) {
             <Link key={n.href} href={n.href}
               className={`nav-item ${cur === n.href ? "active" : ""}`}
               title={collapsed ? n.label : undefined}>
-              <span className="nav-ico">{n.ico || n.icon}</span>
+              <span className="nav-ico">{n.icon}</span>
               {!collapsed && <span className="nav-label">{n.label}</span>}
               {cur === n.href && <span className="nav-dot" />}
             </Link>
