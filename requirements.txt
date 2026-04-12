@@ -39,5 +39,5 @@ psycopg2-binary==2.9.9
 supabase==2.4.6
 
 #------LoginPasswordencryption-------------
+bcrypt
 python-jose[cryptography]
-passlib[bcrypt]
