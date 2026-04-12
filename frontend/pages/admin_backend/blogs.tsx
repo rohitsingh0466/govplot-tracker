@@ -108,7 +108,6 @@ export default function AdminBlogs() {
     return new Date(d).toLocaleDateString("en-IN",{ day:"numeric", month:"short", year:"numeric" });
   }
 
-  // Simple toolbar buttons for visual mode
   const insertTag = (open: string, close: string) => {
     const ta = document.getElementById("content-editor") as HTMLTextAreaElement;
     if (!ta) return;
@@ -123,6 +122,54 @@ export default function AdminBlogs() {
     <>
       <Head><title>Blogs — GovPlot Admin</title></Head>
       <AdminLayout title="Blog Management">
+
+        <style>{`
+          .ctrl-row { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
+          .sec-head { font-family:'Outfit',system-ui,sans-serif; font-size:18px; font-weight:800; color:var(--text-heading); }
+          .sec-sub  { font-size:12px; color:var(--text-muted); margin-top:3px; }
+          .b-title { font-size:13px; font-weight:600; color:var(--b-title-color); max-width:340px; line-height:1.4; }
+          .b-slug  { font-size:10.5px; color:var(--b-slug-color); font-family:monospace; margin-top:1px; }
+          .b-city  { font-size:12px; color:var(--text-muted); }
+          .b-read  { font-size:12px; color:var(--text-muted); white-space:nowrap; }
+          .b-date  { font-size:12px; color:var(--text-dim); white-space:nowrap; }
+          .fg { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+          .fg-full { grid-column:1/-1; }
+          .flags-row { grid-column:1/-1; }
+          .chk-row { display:flex; gap:20px; align-items:center; margin-top:4px; }
+          .chk { display:flex; align-items:center; gap:9px; font-size:13px; color:var(--text-primary); cursor:pointer; }
+          .editor-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+          .editor-tabs { display:flex; gap:4px; }
+          .etab {
+            background:var(--editor-tab-bg); border:1px solid var(--editor-tab-border);
+            color:var(--editor-tab-color); padding:5px 13px;
+            border-radius:7px; font-size:12px; font-weight:600; transition:all 0.15s;
+          }
+          .etab.active { background:rgba(13,122,104,0.20); border-color:rgba(13,122,104,0.35); color:#0d7a68; }
+          .toolbar { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+          .tb-btn {
+            background:var(--tb-btn-bg); border:1px solid var(--tb-btn-border);
+            color:var(--tb-btn-color); padding:4px 10px;
+            border-radius:6px; font-size:11.5px; font-weight:600; transition:all 0.15s;
+          }
+          .tb-btn:hover { background:var(--btn-s-hover); color:var(--text-heading); }
+          .preview {
+            margin-top:10px;
+            background:var(--preview-bg); border:1px solid var(--preview-border);
+            border-radius:10px; padding:16px 20px;
+            color:var(--preview-color); font-size:14px; line-height:1.7;
+            max-height:300px; overflow-y:auto;
+          }
+          .preview h2 { color:var(--preview-h-color); font-size:18px; margin:16px 0 8px; }
+          .preview h3 { color:var(--preview-h-color); font-size:15px; margin:14px 0 6px; }
+          .preview p  { margin-bottom:10px; }
+          .preview ul,ol { margin:8px 0 10px 20px; }
+          .preview li { margin-bottom:4px; }
+          .preview strong { color:var(--text-heading); }
+          .preview a { color:#0d7a68; }
+          .preview table { width:100%; border-collapse:collapse; font-size:13px; }
+          .preview th,.preview td { border:1px solid var(--preview-tbl-border); padding:6px 10px; }
+          .preview th { background:var(--preview-th-bg); font-weight:700; }
+        `}</style>
 
         {/* Header */}
         <div className="ctrl-row">
@@ -152,7 +199,7 @@ export default function AdminBlogs() {
                       <div className="b-slug">/{r.slug}</div>
                     </td>
                     <td><span className="badge bg-blue" style={{fontSize:10}}>{r.tag}</span></td>
-                    <td style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>{r.city||"—"}</td>
+                    <td className="b-city">{r.city||"—"}</td>
                     <td>
                       <label className="toggle">
                         <input type="checkbox" checked={r.is_published} onChange={()=>togglePublish(r)} />
@@ -162,10 +209,10 @@ export default function AdminBlogs() {
                     <td>
                       {r.is_featured
                         ? <span className="badge bg-yellow">⭐ Featured</span>
-                        : <span style={{color:"rgba(255,255,255,0.2)",fontSize:12}}>—</span>}
+                        : <span style={{color:"var(--text-dim)",fontSize:12}}>—</span>}
                     </td>
-                    <td style={{whiteSpace:"nowrap",fontSize:12,color:"rgba(255,255,255,0.45)"}}>{r.read_time_mins} min</td>
-                    <td style={{fontSize:12,color:"rgba(255,255,255,0.4)",whiteSpace:"nowrap"}}>{fmt(r.published_at)}</td>
+                    <td className="b-read">{r.read_time_mins} min</td>
+                    <td className="b-date">{fmt(r.published_at)}</td>
                     <td>
                       <div style={{display:"flex",gap:6}}>
                         <button className="btn-s sm" onClick={() => openEdit(r)}>✏ Edit</button>
@@ -175,7 +222,7 @@ export default function AdminBlogs() {
                   </tr>
                 ))}
                 {!rows.length && (
-                  <tr><td colSpan={8} style={{textAlign:"center",color:"rgba(255,255,255,0.25)",padding:40}}>
+                  <tr><td colSpan={8} style={{textAlign:"center",color:"var(--text-dim)",padding:40}}>
                     No blog posts yet. Click "Write New Post" to create one.
                   </td></tr>
                 )}
@@ -199,18 +246,16 @@ export default function AdminBlogs() {
           </div>
         )}
 
-        {/* Edit / New Modal */}
+        {/* Edit/New Modal */}
         {modal && (
           <div className="modal-bg">
             <div className="modal" style={{maxWidth:820}}>
               <h2 className="modal-h">{modal==="new"?"✍ Write New Post":"✏ Edit Post"}</h2>
               {selected?.slug && (
-                <p style={{fontSize:11,color:"rgba(255,255,255,0.28)",marginBottom:14,fontFamily:"monospace"}}>
+                <p style={{fontSize:11,color:"var(--b-slug-color)",marginBottom:14,fontFamily:"monospace"}}>
                   slug: /{selected.slug}
                 </p>
               )}
-
-              {/* Two-column meta */}
               <div className="fg">
                 <div className="f-group fg-full">
                   <label className="f-label">Title *</label>
@@ -284,50 +329,37 @@ export default function AdminBlogs() {
                       onClick={()=>setEditorMode("html")}>{"<>"} HTML</button>
                   </div>
                 </div>
-
                 {editorMode==="visual" && (
                   <div className="toolbar">
                     {[
-                      ["H2",    "<h2>",    "</h2>"],
-                      ["H3",    "<h3>",    "</h3>"],
-                      ["Bold",  "<strong>","</strong>"],
-                      ["Italic","<em>",    "</em>"],
-                      ["Para",  "<p>",     "</p>"],
-                      ["UL",    "<ul>\n  <li>","</li>\n</ul>"],
-                      ["LI",    "<li>",    "</li>"],
-                      ["OL",    "<ol>\n  <li>","</li>\n</ol>"],
-                      ["Link",  '<a href="">',  "</a>"],
-                      ["Table", '<table>\n  <thead><tr><th>Col 1</th><th>Col 2</th></tr></thead>\n  <tbody><tr><td>','</td><td>Value</td></tr></tbody>\n</table>'],
+                      ["H2","<h2>","</h2>"],["H3","<h3>","</h3>"],
+                      ["Bold","<strong>","</strong>"],["Italic","<em>","</em>"],
+                      ["Para","<p>","</p>"],["UL","<ul>\n  <li>","</li>\n</ul>"],
+                      ["LI","<li>","</li>"],["OL","<ol>\n  <li>","</li>\n</ol>"],
+                      ["Link",'<a href="">',"</a>"],
                     ].map(([label,o,c])=>(
                       <button key={label} className="tb-btn" onClick={()=>insertTag(o,c)}>{label}</button>
                     ))}
                   </div>
                 )}
-
                 <textarea
                   id="content-editor"
                   className="a-textarea"
                   style={{minHeight:280,fontFamily:editorMode==="html"?"monospace":undefined,fontSize:13.5}}
                   value={form.content_html}
                   onChange={e=>f("content_html",e.target.value)}
-                  placeholder={editorMode==="visual"
-                    ? "Use the toolbar above to format, or just type HTML tags directly…"
-                    : "Paste or type HTML content here…"
-                  }
+                  placeholder="Write HTML content here…"
                 />
-
                 {form.content_html && editorMode==="visual" && (
                   <details style={{marginTop:10}}>
-                    <summary style={{fontSize:11.5,color:"rgba(255,255,255,0.3)",cursor:"pointer"}}>Preview rendered HTML</summary>
-                    <div className="preview"
-                      dangerouslySetInnerHTML={{ __html: form.content_html }} />
+                    <summary style={{fontSize:11.5,color:"var(--text-muted)",cursor:"pointer"}}>Preview rendered HTML</summary>
+                    <div className="preview" dangerouslySetInnerHTML={{ __html: form.content_html }} />
                   </details>
                 )}
               </div>
 
               {saveErr && <div className="err-msg">⚠ {saveErr}</div>}
               {saveOk  && <div className="ok-msg">✓ {saveOk}</div>}
-
               <div className="modal-actions">
                 <button className="btn-s" onClick={()=>setModal(null)}>Cancel</button>
                 <button className="btn-p" onClick={save} disabled={saving}>
@@ -343,8 +375,8 @@ export default function AdminBlogs() {
           <div className="modal-bg">
             <div className="modal" style={{maxWidth:400}}>
               <h2 className="modal-h">🗑 Delete Post?</h2>
-              <p style={{color:"rgba(255,255,255,0.55)",fontSize:14,marginBottom:18}}>
-                This will permanently delete the blog post and remove it from the live site. This cannot be undone.
+              <p style={{color:"var(--text-muted)",fontSize:14,marginBottom:18}}>
+                This will permanently delete the blog post. This cannot be undone.
               </p>
               <div className="modal-actions">
                 <button className="btn-s" onClick={()=>setDelId(null)}>Cancel</button>
@@ -354,51 +386,6 @@ export default function AdminBlogs() {
           </div>
         )}
 
-        <style jsx>{`
-          .ctrl-row { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
-          .sec-head { font-family:'Outfit',system-ui,sans-serif; font-size:18px; font-weight:800; color:#fff; }
-          .sec-sub  { font-size:12px; color:rgba(255,255,255,0.35); margin-top:3px; }
-          .b-title { font-size:13px; font-weight:600; color:rgba(255,255,255,0.82); max-width:340px; line-height:1.4; }
-          .b-slug  { font-size:10.5px; color:rgba(255,255,255,0.28); font-family:monospace; margin-top:1px; }
-          .fg { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
-          .fg-full { grid-column:1/-1; }
-          .flags-row { grid-column:1/-1; }
-          .chk-row { display:flex; gap:20px; align-items:center; margin-top:4px; }
-          .chk { display:flex; align-items:center; gap:9px; font-size:13px; color:rgba(255,255,255,0.6); cursor:pointer; }
-          .editor-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-          .editor-tabs { display:flex; gap:4px; }
-          .etab {
-            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
-            color:rgba(255,255,255,0.45); padding:5px 13px;
-            border-radius:7px; font-size:12px; font-weight:600; transition:all 0.15s;
-          }
-          .etab.active { background:rgba(13,122,104,0.20); border-color:rgba(13,122,104,0.35); color:#34d9bc; }
-          .toolbar { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
-          .tb-btn {
-            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-            color:rgba(255,255,255,0.6); padding:4px 10px;
-            border-radius:6px; font-size:11.5px; font-weight:600;
-            transition:all 0.15s;
-          }
-          .tb-btn:hover { background:rgba(255,255,255,0.12); color:#fff; }
-          .preview {
-            margin-top:10px;
-            background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
-            border-radius:10px; padding:16px 20px;
-            color:rgba(255,255,255,0.75); font-size:14px; line-height:1.7;
-            max-height:300px; overflow-y:auto;
-          }
-          .preview h2 { color:#fff; font-size:18px; margin:16px 0 8px; }
-          .preview h3 { color:#fff; font-size:15px; margin:14px 0 6px; }
-          .preview p  { margin-bottom:10px; }
-          .preview ul,ol { margin:8px 0 10px 20px; }
-          .preview li { margin-bottom:4px; }
-          .preview strong { color:#fff; }
-          .preview a { color:#34d9bc; }
-          .preview table { width:100%; border-collapse:collapse; font-size:13px; }
-          .preview th,td { border:1px solid rgba(255,255,255,0.1); padding:6px 10px; }
-          .preview th { background:rgba(255,255,255,0.06); font-weight:700; }
-        `}</style>
       </AdminLayout>
     </>
   );
