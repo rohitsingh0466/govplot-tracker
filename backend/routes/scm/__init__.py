@@ -23,4 +23,3 @@ scm_router.include_router(authorities_router, prefix="/authorities")
 scm_router.include_router(urls_router,        prefix="/urls")
 scm_router.include_router(run_logs_router,    prefix="/run-logs")
 scm_router.include_router(static_data_router, prefix="/static-data")
-
