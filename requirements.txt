@@ -8,6 +8,7 @@ lxml==5.2.1
 # httpx: alternative HTTP client — different TLS fingerprint than requests
 # bypasses some WAFs and bot-detection on government portals
 httpx==0.27.0
+httpx>=0.27.0
 
 # Playwright: PRIMARY JS scraper — downloads its own bundled Chromium
 # Run: python -m playwright install chromium  (done in workflow step 6)
@@ -41,3 +42,4 @@ supabase==2.4.6
 #------LoginPasswordencryption-------------
 bcrypt
 python-jose[cryptography]
+
