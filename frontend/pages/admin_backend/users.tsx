@@ -48,10 +48,40 @@ export default function AdminUsers() {
     return n.slice(0,2).toUpperCase();
   }
 
+  const TIER_COLORS_MAP: Record<string,string> = {
+    free: "#64748b", pro: "#2563eb", premium: "#d97706",
+  };
+
   return (
     <>
       <Head><title>Users — GovPlot Admin</title></Head>
       <AdminLayout title="Users">
+
+        <style>{`
+          .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+          .total-ct { margin-left:auto; font-size:12px; color:var(--text-muted); font-weight:600; }
+          .tier-tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; margin-bottom:14px; }
+          .t-tile {
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:12px; padding:14px 16px;
+            display:flex; flex-direction:column; gap:3px;
+            transition: background 0.25s, border-color 0.25s;
+          }
+          .t-val { font-family:'Outfit',system-ui,sans-serif; font-size:24px; font-weight:900; color:var(--tile-val-color); }
+          .t-lbl { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--tile-lbl-color); }
+          .u-row { display:flex; align-items:center; gap:10px; }
+          .u-av {
+            width:30px; height:30px; flex-shrink:0;
+            background:linear-gradient(135deg,#0d7a68,#12c2a4);
+            border-radius:8px; display:flex; align-items:center; justify-content:center;
+            font-weight:800; font-size:11px; color:#fff;
+          }
+          .u-name  { font-size:13px; font-weight:600; color:var(--s-name-color); }
+          .u-email { font-size:11.5px; color:var(--text-muted); }
+          .u-phone { font-size:12px; color:var(--text-muted); }
+          .u-date  { font-size:12px; color:var(--text-dim); white-space:nowrap; }
+          .u-telegram { font-size:12px; color:var(--text-muted); }
+        `}</style>
 
         {/* Controls */}
         <div className="ctrl-row">
@@ -70,9 +100,9 @@ export default function AdminUsers() {
         {/* Summary tiles */}
         <div className="tier-tiles">
           {[
-            {label:"Total",    val:total, color:"#0f9e87"},
-            {label:"Free",     val:rows.filter(r=>r.subscription_tier==="free"   ||!r.subscription_tier).length, color:"#64748b"},
-            {label:"Pro ⭐",   val:rows.filter(r=>r.subscription_tier==="pro"    ).length, color:"#0ea5e9"},
+            {label:"Total",    val:total,       color:"#0f9e87"},
+            {label:"Free",     val:rows.filter(r=>r.subscription_tier==="free"||!r.subscription_tier).length, color:"#64748b"},
+            {label:"Pro ⭐",   val:rows.filter(r=>r.subscription_tier==="pro").length, color:"#0ea5e9"},
             {label:"Premium 💎",val:rows.filter(r=>r.subscription_tier==="premium").length, color:"#f59e0b"},
           ].map(t => (
             <div key={t.label} className="t-tile" style={{borderTop:`3px solid ${t.color}`}}>
@@ -83,7 +113,7 @@ export default function AdminUsers() {
         </div>
 
         {/* Table */}
-        <div className="a-card" style={{padding:0,overflow:"hidden",marginTop:14}}>
+        <div className="a-card" style={{padding:0,overflow:"hidden"}}>
           {loading ? <div className="spin-row"><span className="spin-ico">⟳</span> Loading…</div> : (
             <div style={{overflowX:"auto"}}>
               <table className="a-table">
@@ -116,18 +146,18 @@ export default function AdminUsers() {
                           ? <span className="badge bg-green" style={{fontSize:10}}>Active</span>
                           : <span className="badge bg-red"   style={{fontSize:10}}>Inactive</span>}
                       </td>
-                      <td style={{fontSize:12,color:r.telegram_username?"rgba(255,255,255,0.7)":"rgba(255,255,255,0.22)"}}>
+                      <td className="u-telegram">
                         {r.telegram_username ? `@${r.telegram_username}` : "—"}
                       </td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>
+                      <td className="u-phone">
                         {r.phone ? r.phone.replace(/(\d{5})(\d{5})/,"$1-$2") : "—"}
                       </td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.4)",whiteSpace:"nowrap"}}>{fmt(r.created_at)}</td>
-                      <td style={{fontSize:12,color:"rgba(255,255,255,0.35)",whiteSpace:"nowrap"}}>{fmt(r.last_login_at)}</td>
+                      <td className="u-date">{fmt(r.created_at)}</td>
+                      <td className="u-date">{fmt(r.last_login_at)}</td>
                     </tr>
                   ))}
                   {!rows.length && (
-                    <tr><td colSpan={7} style={{textAlign:"center",color:"rgba(255,255,255,0.25)",padding:40}}>
+                    <tr><td colSpan={7} style={{textAlign:"center",color:"var(--text-dim)",padding:40}}>
                       No users match your search
                     </td></tr>
                   )}
@@ -152,27 +182,6 @@ export default function AdminUsers() {
           </div>
         )}
 
-        <style jsx>{`
-          .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-          .total-ct { margin-left:auto; font-size:12px; color:rgba(255,255,255,0.3); font-weight:600; }
-          .tier-tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; margin-bottom:14px; }
-          .t-tile {
-            background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
-            border-radius:12px; padding:14px 16px;
-            display:flex; flex-direction:column; gap:3px;
-          }
-          .t-val { font-family:'Outfit',system-ui,sans-serif; font-size:24px; font-weight:900; color:#fff; }
-          .t-lbl { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.3); }
-          .u-row { display:flex; align-items:center; gap:10px; }
-          .u-av {
-            width:30px; height:30px; flex-shrink:0;
-            background:linear-gradient(135deg,#0d7a68,#12c2a4);
-            border-radius:8px; display:flex; align-items:center; justify-content:center;
-            font-weight:800; font-size:11px; color:#fff;
-          }
-          .u-name  { font-size:13px; font-weight:600; color:rgba(255,255,255,0.8); }
-          .u-email { font-size:11.5px; color:rgba(255,255,255,0.35); }
-        `}</style>
       </AdminLayout>
     </>
   );
