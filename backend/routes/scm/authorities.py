@@ -298,4 +298,3 @@ def delete_authority(
 
     logger.info("[SCM] Authority %s soft-deleted by %s", code.upper(), admin["email"])
     return {"authority_code": code.upper(), "deleted": True, "is_active": False}
-
