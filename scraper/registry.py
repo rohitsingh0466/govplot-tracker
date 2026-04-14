@@ -63,4 +63,6 @@ ALL_SCRAPERS = [
 ]
 
 # Quick lookup by city name
-SCRAPER_BY_CITY = {sc().city: sc for sc in ALL_SCRAPERS}
+# SCRAPER_BY_CITY removed — instantiating scrapers at import time crashes when
+# BaseScraper.__init__ signature changes. Use ALL_SCRAPERS list directly in main.py.
+SCRAPER_BY_CITY = {}  # kept for backward compatibility — populated at runtime if needed
