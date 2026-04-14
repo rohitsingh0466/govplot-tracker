@@ -262,11 +262,79 @@ class BaseScraper(ABC):
     Aggregators are ALWAYS tried alongside tiers 1–3, not just as last resort.
     """
 
-    def __init__(self, city: str, authority: str, base_url: str):
-        self.city = city
+    def __init__(self, city: str, authority: str, base_url: str, config=None):
+        self.city      = city
         self.authority = authority
-        self.base_url = base_url
-        self.errors: list[ScraperError] = []
+        self.base_url  = base_url
+        self.errors:   list[ScraperError] = []
+        self.config    = config
+
+        # ── SCM Phase 3: DB-driven URL config ────────────────────────────────
+        # When config is provided (loaded from Supabase SCM), use DB URLs.
+        # When config is None (Supabase unreachable), fall back to hardcoded
+        # SCHEME_URLS / PORTALS defined in each city subclass — zero behaviour change.
+        if config:
+            self._db_primary_urls    = config.all_primary_and_scheme_urls()
+            self._db_fallback_urls   = config.all_fallback_urls()
+            self._db_aggregator_urls = config.aggregator_urls
+            if config.requires_playwright:
+                self.USE_PLAYWRIGHT = True
+            if config.primary_urls:
+                self.base_url = config.primary_urls[0]
+        else:
+            self._db_primary_urls    = []
+            self._db_fallback_urls   = []
+            self._db_aggregator_urls = []
+
+        # Tracking fields for run logger
+        self._last_url_attempted  = None
+        self._last_url_type       = None
+        self._last_tier_attempted = None
+        self._used_playwright     = False
+        self._used_proxy          = False
+
+    # u2500u2500 SCM Phase 3: DB-driven URL helpers u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500
+
+    # ── SCM Phase 3: DB-driven URL helpers ──────────────────────────────────────
+
+    def get_urls_to_try(self) -> list:
+        """
+        Returns the ordered list of URLs to attempt for this authority.
+        DB URLs (from admin portal) take priority over hardcoded SCHEME_URLS.
+        City scrapers replace:
+            for url in self.SCHEME_URLS:
+        with:
+            for url in self.get_urls_to_try():
+        """
+        if self._db_primary_urls:
+            seen = set()
+            urls = []
+            for u in self._db_primary_urls:
+                if u not in seen:
+                    seen.add(u)
+                    urls.append(u)
+            for u in getattr(self, "SCHEME_URLS", []):
+                if u not in seen:
+                    seen.add(u)
+                    urls.append(u)
+            for u in self._db_fallback_urls:
+                if u not in seen:
+                    seen.add(u)
+                    urls.append(u)
+            return urls
+        return list(getattr(self, "SCHEME_URLS", [self.base_url]))
+
+    def get_sub_pages(self, parent_url: str) -> list:
+        """Returns enabled sub-page URLs for a given parent URL (DB-driven)."""
+        if self.config:
+            return self.config.get_sub_pages(parent_url)
+        return []
+
+    def get_aggregator_urls(self) -> list:
+        """Returns aggregator URLs. DB takes priority over hardcoded PORTALS."""
+        if self._db_aggregator_urls:
+            return self._db_aggregator_urls
+        return list(getattr(self, "PORTALS", []))
 
     # ── Tier 1: Static HTML via requests ─────────────────────────────────────
 
