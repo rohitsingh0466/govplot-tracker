@@ -30,8 +30,8 @@ class BDAScraper(CityScraperMixin, BaseScraper):
         "https://housystan.com/article/unlocking-opportunities-how-to-apply-for-a-bda-site-in-bangalore",
     ]
 
-    def __init__(self):
-        super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
 
     def scrape_tier1(self) -> list[SchemeData]:
         for url in self.TIER1_URLS:

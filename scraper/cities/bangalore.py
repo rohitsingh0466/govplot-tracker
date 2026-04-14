@@ -20,18 +20,19 @@ class BDAScraper(BaseScraper):
         "https://bdabangalore.org/schemes/",
     ]
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__(
             city="Bangalore",
             authority="BDA",
             base_url=self.BASE_URL,
             use_selenium=True,
+            config=config,
         )
 
     # ------------------------------------------------------------------ #
     def scrape(self) -> list[SchemeData]:
         schemes = []
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             # Try static first; fallback to Selenium
             soup = self._get_soup(url)
             if soup:

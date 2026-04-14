@@ -29,8 +29,8 @@ class GMADAScraper(CityScraperMixin, BaseScraper):
         "https://www.eauctionsindia.com/blog-details/gmada",
     ]
 
-    def __init__(self):
-        super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
 
     def scrape_tier1(self) -> list[SchemeData]:
         """Try with ScraperAPI proxy (gmada.gov.in is .gov.in — may be blocked)."""

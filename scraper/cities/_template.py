@@ -84,11 +84,12 @@ class TemplateScraper(BaseScraper):
 
     AUTHORITY = "AUTH"   # ← replace with your authority code, e.g. "HMDA"
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__(
             "CityName",      # ← primary city this authority covers
             self.AUTHORITY,
             self.BASE_URL,
+            config=config,
         )
 
     def scrape_live(self) -> list[SchemeData]:
@@ -96,7 +97,7 @@ class TemplateScraper(BaseScraper):
         Try each URL until we get scheme results.
         For JS-rendered sites, use get_selenium_soup() instead of get_soup().
         """
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self.get_soup(url)
 
             # Uncomment for Selenium:

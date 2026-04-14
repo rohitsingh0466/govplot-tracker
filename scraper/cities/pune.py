@@ -15,7 +15,7 @@ class PMRDAScraper(CityScraperMixin, BaseScraper):
     CITY = "Pune"; AUTH = "PMRDA"; BASE_URL = "https://www.pmrda.gov.in"
     TIER1_URLS = ["https://www.pmrda.gov.in", "https://housing.pmrda.gov.in", "https://lottery.mhada.gov.in"]
     AGGREGATOR_URLS = ["https://www.eauctionsindia.com/blog-details/pmrda-lottery", "https://www.99acres.com/articles/mhada-pune-lottery.html", "https://www.bajajfinserv.in/pmrda-lottery"]
-    def __init__(self): super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None): super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
     def scrape_tier1(self):
         for url in self.TIER1_URLS:
             soup = self.get_soup(url)

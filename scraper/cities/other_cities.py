@@ -13,8 +13,8 @@ class MHADAScraper(BaseScraper):
 
     BASE_URL = "https://mhada.gov.in"
 
-    def __init__(self):
-        super().__init__(city="Mumbai", authority="MHADA", base_url=self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(city="Mumbai", authority="MHADA", base_url=self.BASE_URL, config=config)
 
     def scrape(self) -> list[SchemeData]:
         soup = self._get_soup(f"{self.BASE_URL}/schemes")
@@ -84,8 +84,8 @@ class PMRDAScraper(BaseScraper):
 
     BASE_URL = "https://pmrda.gov.in"
 
-    def __init__(self):
-        super().__init__(city="Pune", authority="PMRDA", base_url=self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(city="Pune", authority="PMRDA", base_url=self.BASE_URL, config=config)
 
     def scrape(self) -> list[SchemeData]:
         soup = self._get_soup(f"{self.BASE_URL}/residential-schemes")
@@ -143,8 +143,8 @@ class GMADAScraper(BaseScraper):
 
     BASE_URL = "https://gmada.gov.in"
 
-    def __init__(self):
-        super().__init__(city="Chandigarh", authority="GMADA", base_url=self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(city="Chandigarh", authority="GMADA", base_url=self.BASE_URL, config=config)
 
     def scrape(self) -> list[SchemeData]:
         soup = self._get_soup(f"{self.BASE_URL}/schemes")
@@ -202,8 +202,8 @@ class ADAScraper(BaseScraper):
 
     BASE_URL = "https://adaagra.gov.in"
 
-    def __init__(self):
-        super().__init__(city="Agra", authority="ADA", base_url=self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(city="Agra", authority="ADA", base_url=self.BASE_URL, config=config)
 
     def scrape(self) -> list[SchemeData]:
         soup = self._get_soup(self.BASE_URL)

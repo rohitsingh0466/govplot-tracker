@@ -43,8 +43,8 @@ class YEIDAScraper(BaseScraper):
         "https://www.eauctionsindia.com/blog-details/yeida-plot-scheme",
     ]
 
-    def __init__(self):
-        super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
 
     def scrape_tier1(self) -> list[SchemeData]:
         schemes = []

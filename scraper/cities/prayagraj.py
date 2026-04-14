@@ -15,7 +15,7 @@ class PDAScraper(CityScraperMixin, BaseScraper):
     CITY = "Prayagraj"; AUTH = "PDA"; BASE_URL = "http://www.pdaprayagraj.org"
     TIER1_URLS = ["http://www.pdaprayagraj.org", "http://www.pdaprayagraj.org/scheme", "https://janhit.upda.in"]
     AGGREGATOR_URLS = ["https://www.eauctionsindia.com/blog-details/pda-invites-bids-via-e-auction-for-plots-across-prayagraj-apply-online-now", "https://awaszone.com/pda-prayagraj/"]
-    def __init__(self): super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None): super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
     def scrape_tier1(self):
         for url in self.TIER1_URLS:
             soup = self.get_soup(url)  # SSL bypass auto-applied for pdaprayagraj.org

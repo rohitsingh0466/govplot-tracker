@@ -89,11 +89,11 @@ class MHADAScraper(BaseScraper):
         "kalyan": "Kalyan",      "vasai": "Vasai",
     }
 
-    def __init__(self):
-        super().__init__("Mumbai", "MHADA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Mumbai", "MHADA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self.get_soup(url)
             if soup and self._has_content(soup):
                 schemes = self._parse(soup, url)
@@ -246,11 +246,11 @@ class CIDCOScraper(BaseScraper):
         "https://cidcohomes.com",
     ]
 
-    def __init__(self):
-        super().__init__("Navi Mumbai", "CIDCO", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Navi Mumbai", "CIDCO", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self.get_soup(url)
             if soup:
                 schemes = self._parse(soup, url)
@@ -343,11 +343,11 @@ class PMRDAScraper(BaseScraper):
         "https://pmrda.gov.in",
     ]
 
-    def __init__(self):
-        super().__init__("Pune", "PMRDA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Pune", "PMRDA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self.get_soup(url)
             if soup:
                 schemes = self._parse(soup, url)
@@ -417,8 +417,8 @@ class NITScraper(BaseScraper):
     BASE_URL    = "https://nagpurimprovement.gov.in"
     SCHEME_URL  = "https://nagpurimprovement.gov.in/schemes"
 
-    def __init__(self):
-        super().__init__("Nagpur", "NIT", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Nagpur", "NIT", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         soup = self.get_soup(self.SCHEME_URL) or self.get_soup(self.BASE_URL)

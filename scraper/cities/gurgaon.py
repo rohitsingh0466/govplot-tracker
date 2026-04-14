@@ -20,17 +20,18 @@ class HSVPScraper(BaseScraper):
         "https://hsvphry.gov.in/hsvp/residential-schemes",
     ]
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__(
             city="Gurgaon",
             authority="HSVP",
             base_url=self.BASE_URL,
             use_selenium=False,
+            config=config,
         )
 
     def scrape(self) -> list[SchemeData]:
         schemes = []
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self._get_soup(url)
             if soup:
                 schemes.extend(self._parse_page(soup, url))

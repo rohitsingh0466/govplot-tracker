@@ -40,8 +40,8 @@ class DDAScraper(CityScraperMixin, BaseScraper):
         "https://www.99acres.com/articles/how-to-apply-for-dda-housing-scheme-2020-online.html",
     ]
 
-    def __init__(self):
-        super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
 
     def scrape_tier1(self) -> list[SchemeData]:
         """

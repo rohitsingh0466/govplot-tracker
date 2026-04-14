@@ -15,7 +15,7 @@ class HMDAScraper(CityScraperMixin, BaseScraper):
     CITY = "Hyderabad"; AUTH = "HMDA"; BASE_URL = "https://www.hmda.gov.in"
     TIER1_URLS = ["https://www.hmda.gov.in/hmda-dev-layout-plots/", "https://www.hmda.gov.in/plots/", "https://www.hmda.gov.in"]
     AGGREGATOR_URLS = ["https://www.eauctionsindia.com/blog-details/hmda", "https://www.99acres.com/articles/hyderabad-hmda-plot-scheme.html"]
-    def __init__(self): super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None): super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
     def scrape_tier1(self):
         for url in self.TIER1_URLS:
             soup = self.get_soup(url)

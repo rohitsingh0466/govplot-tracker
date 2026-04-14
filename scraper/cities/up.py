@@ -61,8 +61,8 @@ class LDAScraper(BaseScraper):
     SCHEME_URL = "https://www.ldalucknow.in/scheme"
     NEWS_URL   = "https://www.ldalucknow.in/news-events"
 
-    def __init__(self):
-        super().__init__("Lucknow", "LDA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Lucknow", "LDA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         schemes = []
@@ -142,8 +142,8 @@ class UPAVPScraper(BaseScraper):
     BASE_URL   = "https://upavp.project247.in"
     SCHEME_URL = "https://upavp.project247.in/schemes"
 
-    def __init__(self):
-        super().__init__("Kanpur", "UPAVP", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Kanpur", "UPAVP", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         # Try the schemes page, then homepage as fallback
@@ -236,8 +236,8 @@ class ADAScraper(BaseScraper):
     """
     BASE_URL = "https://www.adaagra.org.in"
 
-    def __init__(self):
-        super().__init__("Agra", "ADA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Agra", "ADA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         soup = self.get_soup(self.BASE_URL)
@@ -290,8 +290,8 @@ class GDAScraper(BaseScraper):
     BASE_URL   = "https://gdaghaziabad.in"
     SCHEME_URL = "https://gdaghaziabad.in/schemes"
 
-    def __init__(self):
-        super().__init__("Ghaziabad", "GDA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Ghaziabad", "GDA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         soup = self.get_soup(self.SCHEME_URL) or self.get_soup(self.BASE_URL)
@@ -353,8 +353,8 @@ class NoidaScraper(BaseScraper):
         ("NUDA",  "Noida", "https://noidaauthorityonline.in/scheme"),
     ]
 
-    def __init__(self):
-        super().__init__("Noida", "GNIDA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Noida", "GNIDA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         schemes = []
@@ -444,8 +444,8 @@ class AliJhansiScraper(BaseScraper):
     BASE_URL   = "https://upavp.project247.in"
     SCHEME_URL = "https://upavp.project247.in/schemes"
 
-    def __init__(self):
-        super().__init__("Aligarh", "ADA-ALG", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Aligarh", "ADA-ALG", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         soup = self.get_soup(self.SCHEME_URL)

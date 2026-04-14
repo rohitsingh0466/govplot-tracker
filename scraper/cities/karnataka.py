@@ -61,8 +61,8 @@ class BDAScraper(BaseScraper):
         "https://bdakarnataka.in/",
     ]
 
-    def __init__(self):
-        super().__init__("Bangalore", "BDA", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Bangalore", "BDA", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
         schemes = []
@@ -231,11 +231,11 @@ class KHBScraper(BaseScraper):
         "gulbarg": "Gulbarga","kalaburg": "Gulbarga",
     }
 
-    def __init__(self):
-        super().__init__("Mysuru", "KHB", self.BASE_URL)
+    def __init__(self, config=None):
+        super().__init__("Mysuru", "KHB", self.BASE_URL, config=config)
 
     def scrape_live(self) -> list[SchemeData]:
-        for url in self.SCHEME_URLS:
+        for url in self.get_urls_to_try():
             soup = self.get_soup(url)  # ScraperAPI proxy auto-applied for .nic.in
             if soup:
                 schemes = self._parse(soup, url)

@@ -33,12 +33,13 @@ class NoidaScraper(BaseScraper):
         },
     ]
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__(
             city="Noida",
             authority="GNIDA/NUDA",
             base_url="https://noidaauthorityonline.in",
             use_selenium=False,
+            config=config,
         )
 
     # ------------------------------------------------------------------ #

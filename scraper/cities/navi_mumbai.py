@@ -20,7 +20,7 @@ class CIDCOScraper(CityScraperMixin, BaseScraper):
         "https://www.99acres.com/articles/cidco-lottery-2019-online-application-eligibility-results-draw-date-winner-list.html",
         "https://www.eauctionsindia.com/blog-details/cidco-lottery",
     ]
-    def __init__(self): super().__init__(self.CITY, self.AUTH, self.BASE_URL)
+    def __init__(self, config=None): super().__init__(self.CITY, self.AUTH, self.BASE_URL, config=config)
     def scrape_tier1(self):
         # Tier 3 strategy: only scrape public notice page
         soup = self.get_soup(self.BASE_URL)

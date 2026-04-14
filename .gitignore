@@ -6,3 +6,13 @@ venv/
 venv312/
 frontend/tsconfig.tsbuildinfo
 govplot.db
+
+# Local untracked files
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+.idea/dataSources/
+data/schemes/schemes_20260402_143729.json
+data/schemes/schemes_20260405_065028.json
+govplot-fix/
+supabase_migration_v2.0.sql
+.idea/govplot-tracker.iml
