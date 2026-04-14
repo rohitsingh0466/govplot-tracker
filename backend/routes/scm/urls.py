@@ -26,7 +26,7 @@ from sqlalchemy.orm import Session
 import json
 
 from backend.models.database import get_db
-from backend.routes.admin import get_current_admin
+from backend.routes.admin_auth import get_current_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
