@@ -152,8 +152,8 @@ def run_all(mode: str = "auto") -> list[dict]:
             else:
                 scraper = scraper_cls()
 
-            # Track which URL was actually used (set by scraper if it updates self._used_url)
-            schemes = scraper.scrape()
+            # Call run() — returns (list[dict], list[ScraperError])
+            schemes, scraper_errors = scraper.run()
 
             duration_ms = int(time.time() * 1000) - start_ms
 
@@ -170,12 +170,16 @@ def run_all(mode: str = "auto") -> list[dict]:
 
             all_schemes.extend(new_schemes)
 
+            # Collect scraper errors for summary email
+            for e in scraper_errors:
+                errors.append(f"{e.authority}: {e.error_type} — {e.error_detail[:80]}")
+
             # Populate run result
-            result.status        = "ok" if live_count > 0 else "fallback"
-            result.schemes_found = len(new_schemes)
-            result.schemes_live  = live_count
+            result.status         = "ok" if live_count > 0 else "fallback"
+            result.schemes_found  = len(new_schemes)
+            result.schemes_live   = live_count
             result.schemes_static = static_count
-            result.duration_ms   = duration_ms
+            result.duration_ms    = duration_ms
             result.tier_attempted = getattr(scraper, "_last_tier_attempted", None)
             result.url_attempted  = getattr(scraper, "_last_url_attempted", None)
             result.url_type       = getattr(scraper, "_last_url_type", None)
