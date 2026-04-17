@@ -33,7 +33,7 @@ class AuthorityRunResult:
     url_config_id:      Optional[str]  = None
     url_attempted:      Optional[str]  = None
     url_type:           Optional[str]  = None
-    status:             str            = "ok"   # ok | fallback | failed | timeout
+    status:             str            = "success"
     schemes_found:      int            = 0
     schemes_live:       int            = 0
     schemes_static:     int            = 0
