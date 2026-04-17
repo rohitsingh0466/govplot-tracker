@@ -15,7 +15,7 @@
     "location_details": "Sector 18, Yamuna Expressway — near Jewar Airport",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com/scheme",
-    "last_updated": "2026-04-17T05:18:53.952711+00:00",
+    "last_updated": "2026-04-17T09:27:20.518290+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -36,7 +36,7 @@
     "location_details": "Sector 24A, Yamuna Expressway",
     "apply_url": "https://yamunaexpresswayauthority.com",
     "source_url": "https://yamunaexpresswayauthority.com/scheme",
-    "last_updated": "2026-04-17T05:18:53.952725+00:00",
+    "last_updated": "2026-04-17T09:27:20.518300+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -57,7 +57,7 @@
     "location_details": "Anant Nagar Township, Mohan Road / Kakori Road, Lucknow",
     "apply_url": "https://www.ldalucknow.in",
     "source_url": "https://www.ldalucknow.in",
-    "last_updated": "2026-04-17T05:19:28.639621+00:00",
+    "last_updated": "2026-04-17T09:27:56.883080+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -78,7 +78,7 @@
     "location_details": "Anant Nagar Township, Mohan Road, Lucknow",
     "apply_url": "https://www.ldalucknow.in",
     "source_url": "https://www.ldalucknow.in",
-    "last_updated": "2026-04-17T05:19:28.639636+00:00",
+    "last_updated": "2026-04-17T09:27:56.883094+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -99,7 +99,7 @@
     "location_details": "Vrindavan Yojana, Lucknow",
     "apply_url": "https://www.ldalucknow.in",
     "source_url": "https://www.ldalucknow.in",
-    "last_updated": "2026-04-17T05:19:28.639646+00:00",
+    "last_updated": "2026-04-17T09:27:56.883102+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -120,7 +120,7 @@
     "location_details": "Jaipur, Rajasthan",
     "apply_url": "#",
     "source_url": "https://jda.rajasthan.gov.in/content/raj/udh/jda---jaipur/en/notice-board/lottery-result.html",
-    "last_updated": "2026-04-17T05:19:37.119621+00:00",
+    "last_updated": "2026-04-17T09:28:03.121389+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -141,7 +141,7 @@
     "location_details": "Jaipur",
     "apply_url": "https://jda.rajasthan.gov.in",
     "source_url": "https://sarkariyojana.com/jda-residential-plot-scheme-lottery-draw/",
-    "last_updated": "2026-04-17T05:19:40.264889+00:00",
+    "last_updated": "2026-04-17T09:28:08.212944+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -162,7 +162,7 @@
     "location_details": "Jaipur",
     "apply_url": "https://jda.rajasthan.gov.in",
     "source_url": "https://sarkariyojana.com/jda-residential-plot-scheme-lottery-draw/",
-    "last_updated": "2026-04-17T05:19:40.269538+00:00",
+    "last_updated": "2026-04-17T09:28:08.217967+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -183,7 +183,7 @@
     "location_details": "Gwalior Highway — Kakua & Bhandai areas, Atalpuram Township, Agra",
     "apply_url": "https://www.adaagra.org.in",
     "source_url": "https://www.eauctionsindia.com/blog-details/ada-agra-atal-puram-lottery",
-    "last_updated": "2026-04-17T05:19:58.381810+00:00",
+    "last_updated": "2026-04-17T09:28:24.978998+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -204,7 +204,7 @@
     "location_details": "Sector 8, Atalpuram Township, Gwalior Highway, Agra",
     "apply_url": "https://www.adaagra.org.in",
     "source_url": "https://www.eauctionsindia.com/blog-details/ada-agra-atal-puram-lottery",
-    "last_updated": "2026-04-17T05:19:58.381823+00:00",
+    "last_updated": "2026-04-17T09:28:24.979011+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -225,7 +225,7 @@
     "location_details": "Sector 1, Atalpuram Township, Agra",
     "apply_url": "https://www.adaagra.org.in",
     "source_url": "https://www.adaagra.org.in",
-    "last_updated": "2026-04-17T05:19:58.381831+00:00",
+    "last_updated": "2026-04-17T09:28:24.979019+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -246,7 +246,7 @@
     "location_details": "Various sectors, Prayagraj urban area",
     "apply_url": "http://www.pdaprayagraj.org",
     "source_url": "https://www.eauctionsindia.com/blog-details/pda-invites-bids-via-e-auction-for-plots-across-prayagraj-apply-online-now",
-    "last_updated": "2026-04-17T05:20:14.434137+00:00",
+    "last_updated": "2026-04-17T09:28:39.378063+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -267,7 +267,7 @@
     "location_details": "Prayagraj Development Authority zone — multiple sectors",
     "apply_url": "http://www.pdaprayagraj.org",
     "source_url": "http://www.pdaprayagraj.org",
-    "last_updated": "2026-04-17T05:20:14.434145+00:00",
+    "last_updated": "2026-04-17T09:28:39.378083+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -288,7 +288,7 @@
     "location_details": "Eco City-2 Extension, New Chandigarh, Hoshiarpur Village, Mohali",
     "apply_url": "https://gmada.gov.in",
     "source_url": "https://garahpravesh.com/gmada-eco-city-2-plot-scheme-mohali-2025/",
-    "last_updated": "2026-04-17T05:20:43.161267+00:00",
+    "last_updated": "2026-04-17T09:29:08.289111+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -309,7 +309,7 @@
     "location_details": "Near NMIA Airport site, Navi Mumbai",
     "apply_url": "https://cidcohomes.com",
     "source_url": "https://www.eauctionsindia.com/blog-details/cidco-plot-auction-2025-30-leasehold-plots-on-auction-near-nmia",
-    "last_updated": "2026-04-17T05:21:03.265970+00:00",
+    "last_updated": "2026-04-17T09:29:28.477637+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -330,7 +330,7 @@
     "location_details": "Arkavathy Layout, North Bangalore",
     "apply_url": "https://bdakarnataka.in/site-allotment/",
     "source_url": "https://bdakarnataka.in",
-    "last_updated": "2026-04-17T05:25:50.423310+00:00",
+    "last_updated": "2026-04-17T09:34:18.123701+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -351,7 +351,7 @@
     "location_details": "Kempegowda Layout, Bangalore",
     "apply_url": "https://bdakarnataka.in/site-allotment/",
     "source_url": "https://bdakarnataka.in",
-    "last_updated": "2026-04-17T05:25:50.423320+00:00",
+    "last_updated": "2026-04-17T09:34:18.123711+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -372,7 +372,7 @@
     "location_details": "JP Nagar 9th Phase, South Bangalore",
     "apply_url": "https://bdakarnataka.in/site-allotment/",
     "source_url": "https://bdakarnataka.in",
-    "last_updated": "2026-04-17T05:25:50.423328+00:00",
+    "last_updated": "2026-04-17T09:34:18.123718+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -393,7 +393,7 @@
     "location_details": "Sector-30, Nava Raipur Atal Nagar Smart City, Raipur",
     "apply_url": "https://www.nava-raipur.com",
     "source_url": "https://www.tendersontime.com/authority/naya-raipur-development-authority-3718/",
-    "last_updated": "2026-04-17T05:26:03.091300+00:00",
+    "last_updated": "2026-04-17T09:34:29.607778+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -414,7 +414,7 @@
     "location_details": "Nava Raipur Atal Nagar Smart City — various sectors",
     "apply_url": "https://www.nava-raipur.com",
     "source_url": "https://www.nava-raipur.com",
-    "last_updated": "2026-04-17T05:26:03.091312+00:00",
+    "last_updated": "2026-04-17T09:34:29.607785+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -435,7 +435,7 @@
     "location_details": "Varanasi Development Authority zone — multiple sectors",
     "apply_url": "https://vdavns.com",
     "source_url": "https://vdavns.com",
-    "last_updated": "2026-04-17T05:26:18.132501+00:00",
+    "last_updated": "2026-04-17T09:34:46.525910+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -456,7 +456,7 @@
     "location_details": "Transport Nagar, Varanasi — Kashi Vishwanath Corridor zone",
     "apply_url": "https://vdavns.com",
     "source_url": "https://vdavns.com",
-    "last_updated": "2026-04-17T05:26:18.132517+00:00",
+    "last_updated": "2026-04-17T09:34:46.525919+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -477,7 +477,7 @@
     "location_details": "Bhubaneswar Development Authority zone",
     "apply_url": "javascript:void(0);",
     "source_url": "https://www.bda.gov.in",
-    "last_updated": "2026-04-17T05:26:22.154548+00:00",
+    "last_updated": "2026-04-17T09:34:50.602608+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -498,7 +498,7 @@
     "location_details": "Bhubaneswar Development Authority zone",
     "apply_url": "javascript:void(0);",
     "source_url": "https://www.bda.gov.in",
-    "last_updated": "2026-04-17T05:26:22.154765+00:00",
+    "last_updated": "2026-04-17T09:34:50.602864+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -519,7 +519,7 @@
     "location_details": "Hingna Road, Nagpur West",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in/schemes",
-    "last_updated": "2026-04-17T05:26:40.378094+00:00",
+    "last_updated": "2026-04-17T09:35:11.193663+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -540,7 +540,7 @@
     "location_details": "MIHAN Nagpur International Airport Zone",
     "apply_url": "https://nagpurimprovement.gov.in",
     "source_url": "https://nagpurimprovement.gov.in",
-    "last_updated": "2026-04-17T05:26:40.378108+00:00",
+    "last_updated": "2026-04-17T09:35:11.193679+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -561,7 +561,7 @@
     "location_details": "Ahmedabad Urban Development Authority zone",
     "apply_url": "https://auda.org.in/uploads/Assets/news/61%20AWAS%20final_draw_20260106_120303.pdf",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-17T05:26:43.106784+00:00",
+    "last_updated": "2026-04-17T09:35:15.119976+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -582,7 +582,7 @@
     "location_details": "Ahmedabad Urban Development Authority zone",
     "apply_url": "http://auda.org.in/uploads/Assets/notifications/draftzundalayodhyanagariavas01272025035241480.pdf",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-17T05:26:43.107160+00:00",
+    "last_updated": "2026-04-17T09:35:15.120345+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -603,7 +603,7 @@
     "location_details": "Ahmedabad Urban Development Authority zone",
     "apply_url": "http://www.auda.org.in/uploads/Assets/news/s1new08032023122111565.pdf",
     "source_url": "https://auda.org.in",
-    "last_updated": "2026-04-17T05:26:43.107472+00:00",
+    "last_updated": "2026-04-17T09:35:15.120648+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -624,7 +624,7 @@
     "location_details": "Misrod Phase-2, Bhopal",
     "apply_url": "https://vikaspradhikaran.mponline.gov.in",
     "source_url": "https://www.eauctionsindia.com/blog-details/bda-bhopal-residential-plot-sale",
-    "last_updated": "2026-04-17T05:27:29.726066+00:00",
+    "last_updated": "2026-04-17T09:36:07.416407+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -645,7 +645,7 @@
     "location_details": "Aerocity Phase-1, Bhopal",
     "apply_url": "https://vikaspradhikaran.mponline.gov.in",
     "source_url": "https://www.eauctionsindia.com/blog-details/bda-bhopal-residential-plot-sale",
-    "last_updated": "2026-04-17T05:27:29.726080+00:00",
+    "last_updated": "2026-04-17T09:36:07.416415+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -666,7 +666,7 @@
     "location_details": "Navibagh Affordable Scheme, Bhopal",
     "apply_url": "https://vikaspradhikaran.mponline.gov.in",
     "source_url": "https://vikaspradhikaran.mponline.gov.in",
-    "last_updated": "2026-04-17T05:27:29.726091+00:00",
+    "last_updated": "2026-04-17T09:36:07.416422+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -687,7 +687,7 @@
     "location_details": "Multiple RERA-registered locations, Udaipur — City of Lakes",
     "apply_url": "https://uitudaipur.org",
     "source_url": "https://www.eauctionsindia.com/blog-details/udaipur-uda-lottery",
-    "last_updated": "2026-04-17T05:28:33.283980+00:00",
+    "last_updated": "2026-04-17T09:37:04.221040+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -708,7 +708,7 @@
     "location_details": "Udaipur — South Extension Balicha and other approved locations",
     "apply_url": "https://uitudaipur.org",
     "source_url": "https://uitudaipur.org",
-    "last_updated": "2026-04-17T05:28:33.283996+00:00",
+    "last_updated": "2026-04-17T09:37:04.221049+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -729,7 +729,7 @@
     "location_details": "Mussoorie Dehradun Development Authority zone",
     "apply_url": "#",
     "source_url": "http://mddaonline.in",
-    "last_updated": "2026-04-17T05:28:37.430993+00:00",
+    "last_updated": "2026-04-17T09:37:07.720815+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -750,7 +750,7 @@
     "location_details": "Mussoorie Dehradun Development Authority zone",
     "apply_url": "http://mddaonline.in/?page_id=1922",
     "source_url": "http://mddaonline.in",
-    "last_updated": "2026-04-17T05:28:37.431244+00:00",
+    "last_updated": "2026-04-17T09:37:07.721062+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -771,7 +771,7 @@
     "location_details": "Mussoorie Dehradun Development Authority zone",
     "apply_url": "http://mddaonline.in/wp-content/uploads/2020/01/LandPoolingScheme.pdf",
     "source_url": "http://mddaonline.in",
-    "last_updated": "2026-04-17T05:28:37.431346+00:00",
+    "last_updated": "2026-04-17T09:37:07.721161+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -792,7 +792,7 @@
     "location_details": "Mussoorie Dehradun Development Authority zone",
     "apply_url": "http://mddaonline.in/images/pdf/uk_awaas_niti_2017.pdf",
     "source_url": "http://mddaonline.in",
-    "last_updated": "2026-04-17T05:28:37.431461+00:00",
+    "last_updated": "2026-04-17T09:37:07.721254+00:00",
     "data_source": "LIVE",
     "scraper_status": "ok",
     "is_active": true
@@ -813,7 +813,7 @@
     "location_details": "Meerut city — NCR RRTS corridor influenced zone",
     "apply_url": "https://mda.up.gov.in",
     "source_url": "https://www.eauctionsindia.com/blog-details/mda-meerut",
-    "last_updated": "2026-04-17T05:28:57.628712+00:00",
+    "last_updated": "2026-04-17T09:37:29.744825+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
@@ -834,7 +834,7 @@
     "location_details": "Meerut — NCR spillover demand zone, RRTS Phase 1 corridor",
     "apply_url": "https://mda.up.gov.in",
     "source_url": "https://mda.up.gov.in",
-    "last_updated": "2026-04-17T05:28:57.628719+00:00",
+    "last_updated": "2026-04-17T09:37:29.744839+00:00",
     "data_source": "STATIC",
     "scraper_status": "fallback",
     "is_active": true
