@@ -60,7 +60,7 @@ def _push_to_supabase(schemes: list[dict]) -> bool:
             "Prefer":        "resolution=merge-duplicates,return=minimal",
         }
         resp = httpx.post(
-            f"{supabase_url}/rest/v1/schemes",
+            f"{supabase_url}/rest/v1/schemes?on_conflict=scheme_id",
             json=schemes,
             headers=headers,
             timeout=60,
@@ -175,7 +175,7 @@ def run_all(mode: str = "auto") -> list[dict]:
                 errors.append(f"{e.authority}: {e.error_type} — {e.error_detail[:80]}")
 
             # Populate run result
-            result.status         = "ok" if live_count > 0 else "fallback"
+            result.status         = "success" if live_count > 0 else "fallback"
             result.schemes_found  = len(new_schemes)
             result.schemes_live   = live_count
             result.schemes_static = static_count
