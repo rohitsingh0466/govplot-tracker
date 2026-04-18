@@ -6,7 +6,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../../components/AdminLayout";
 
 const API   = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const token = () => typeof window !== "undefined" ? localStorage.getItem("govplot_admin_token") || "" : "";
