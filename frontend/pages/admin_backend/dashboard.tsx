@@ -51,39 +51,29 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [err, setErr]         = useState("");
   const [time, setTime]       = useState("");
+  const [scmSum,  setScmSum]  = useState<any>(null);
+  const [scmHealth, setScmHealth] = useState<any[]>([]);
 
   async function load() {
     setLoading(true); setErr("");
-    const t = typeof window !== "undefined" ? localStorage.getItem("govplot_admin_token") : null;
-    if (!t) { window.location.replace("/admin_backend/login"); return; }
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
+    const t = localStorage.getItem("govplot_admin_token");
     try {
       const res = await fetch(`${API}/api/v1/admin/data/dashboard/stats`, {
         headers: { Authorization: `Bearer ${t}` },
-        signal: controller.signal,
       });
-      clearTimeout(timeout);
-      if (res.status === 401) {
-        localStorage.removeItem("govplot_admin_token");
-        window.location.replace("/admin_backend/login");
-        return;
-      }
-      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      if (res.status === 401) { window.location.href = "/admin_backend/login"; return; }
       setStats(await res.json());
       setTime(new Date().toLocaleTimeString("en-IN"));
-    } catch (e: any) {
-      clearTimeout(timeout);
-      if (e.name === "AbortError") {
-        setErr("Request timed out (15s). Railway may be starting up — try refreshing in 30 seconds.");
-      } else {
-        setErr("Failed to load dashboard stats. Check Railway is running.");
-      }
-    } finally {
-      setLoading(false);
-    }
+      // Load SCM summary + health in parallel (non-blocking)
+      Promise.all([
+        fetch(`${API}/api/v1/admin/scm/run-logs/summaries/latest`, { headers: { Authorization: `Bearer ${t}` } }),
+        fetch(`${API}/api/v1/admin/scm/run-logs/health`,            { headers: { Authorization: `Bearer ${t}` } }),
+      ]).then(async ([r1, r2]) => {
+        if (r1.ok) setScmSum(await r1.json());
+        if (r2.ok) { const d = await r2.json(); setScmHealth(d.authorities || []); }
+      }).catch(() => {});
+    } catch { setErr("Failed to load dashboard stats. Check Railway is running."); }
+    finally { setLoading(false); }
   }
 
   useEffect(() => { load(); }, []);
@@ -175,6 +165,84 @@ export default function Dashboard() {
                 ))}
               </div>
             </section>
+
+            {/* ── Phase 5: Scraper Health Widget ── */}
+            <section className="section">
+              <div className="sec-hd">
+                <h3 className="sec-title">🤖 Scraper Health</h3>
+                <Link href="/admin_backend/scm/run-logs" className="sec-link">Full logs →</Link>
+              </div>
+
+              {/* Last run summary bar */}
+              {scmSum && !scmSum.message && (
+                <div className="scm-sum-bar">
+                  {[
+                    { val: scmSum.total_scrapers,    lbl: "Scrapers",     color: "var(--text-heading)" },
+                    { val: scmSum.scrapers_success,  lbl: "Success",      color: "#22c55e" },
+                    { val: scmSum.scrapers_fallback, lbl: "Fallback",     color: "#f59e0b" },
+                    { val: scmSum.scrapers_failed,   lbl: "Failed",       color: "#ef4444" },
+                    { val: scmSum.live_schemes,      lbl: "LIVE schemes", color: "#22c55e" },
+                    { val: scmSum.static_schemes,    lbl: "STATIC",       color: "#f59e0b" },
+                    { val: scmSum.duration_seconds ? `${scmSum.duration_seconds}s` : "—", lbl: "Duration", color: "var(--text-muted)" },
+                  ].map(s => (
+                    <div className="scm-stat-chip" key={s.lbl}>
+                      <span className="scm-stat-val" style={{ color: s.color }}>{s.val ?? "—"}</span>
+                      <span className="scm-stat-lbl">{s.lbl}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(!scmSum || scmSum.message) && (
+                <div className="scm-no-data">No scraper runs recorded yet.</div>
+              )}
+
+              {/* Authority health dots */}
+              {scmHealth.length > 0 && (
+                <div className="scm-health-grid">
+                  {scmHealth.map((a: any) => {
+                    const HC: Record<string, string> = {
+                      healthy: "#22c55e", degraded: "#f59e0b",
+                      failing: "#ef4444", disabled: "#6b7280",
+                      never_run: "#8b5cf6", unknown: "#6b7280",
+                    };
+                    return (
+                      <div key={a.authority_code} className="scm-health-card"
+                        title={`${a.authority_name} · ${a.health_status}`}>
+                        <div className="scm-dot" style={{ background: HC[a.health_status] || "#6b7280" }} />
+                        <div className="scm-auth-info">
+                          <span className="scm-auth-code">{a.authority_code}</span>
+                          {a.schemes_live > 0 && (
+                            <span className="scm-live-tag">{a.schemes_live}L</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            {/* ── Phase 5: SCM Quick Links ── */}
+            <section className="section">
+              <h3 className="sec-title" style={{marginBottom:12}}>🔧 Scraper Config Manager</h3>
+              <div className="qa-grid">
+                {[
+                  { href:"/admin_backend/scm/authorities", icon:"🏛️", label:"Authorities",   sub:"Enable · disable · edit" },
+                  { href:"/admin_backend/scm/url-mapper",  icon:"🔗", label:"URL Mapper",    sub:"Add · toggle · sub-pages" },
+                  { href:"/admin_backend/scm/run-logs",    icon:"📊", label:"Run Logs",      sub:"Per-authority history" },
+                  { href:"/admin_backend/scm/static-data", icon:"💾", label:"Static Data",   sub:"Fallback snapshots" },
+                ].map(q => (
+                  <Link key={q.href} href={q.href} className="qa-card">
+                    <span className="qa-icon">{q.icon}</span>
+                    <div className="qa-info">
+                      <span className="qa-label">{q.label}</span>
+                      <span className="qa-sub">{q.sub}</span>
+                    </div>
+                    <span className="qa-arr">→</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
           </>
         )}
 
@@ -231,6 +299,51 @@ export default function Dashboard() {
           .qa-label { font-size:13.5px; font-weight:600; color:var(--text-qa-label); }
           .qa-sub   { font-size:11.5px; color:var(--text-qa-sub); }
           .qa-arr   { color:var(--text-qa-arr); font-size:15px; }
+
+          .scm-sum-bar {
+            display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;
+          }
+          .scm-stat-chip {
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; padding:9px 14px; display:flex;
+            flex-direction:column; gap:2px; min-width:80px;
+          }
+          .scm-stat-val {
+            font-family:'Outfit',system-ui,sans-serif;
+            font-size:22px; font-weight:800;
+          }
+          .scm-stat-lbl { font-size:10px; font-weight:700; text-transform:uppercase;
+            letter-spacing:.8px; color:var(--text-muted); }
+          .scm-health-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+            gap:7px;
+          }
+          .scm-health-card {
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; padding:9px 11px;
+            display:flex; align-items:center; gap:8px;
+            cursor:default; transition:border-color .15s;
+          }
+          .scm-health-card:hover { border-color:rgba(13,122,104,.35); }
+          .scm-dot {
+            width:9px; height:9px; border-radius:50%; flex-shrink:0;
+          }
+          .scm-auth-info {
+            display:flex; align-items:center; gap:5px; flex:1; overflow:hidden;
+          }
+          .scm-auth-code {
+            font-size:.72rem; font-weight:700; color:var(--text-heading);
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+          }
+          .scm-live-tag {
+            background:rgba(34,197,94,.12); color:#22c55e;
+            font-size:.62rem; font-weight:700;
+            padding:1px 5px; border-radius:3px; flex-shrink:0;
+          }
+          .scm-no-data {
+            color:var(--text-muted); font-size:.82rem; margin-bottom:12px;
+          }
         `}</style>
       </AdminLayout>
     </>
