@@ -4,6 +4,10 @@ type Scheme = {
   scheme_id: string;
 };
 
+type BlogPost = {
+  slug: string;
+};
+
 export default function SitemapXml() {
   return null;
 }
@@ -22,6 +26,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   ];
 
   let schemes: Scheme[] = [];
+  let blogs: BlogPost[] = [];
   try {
     const response = await fetch(`${apiBase}/api/v1/schemes/?limit=200`);
     if (response.ok) {
@@ -31,9 +36,25 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     schemes = [];
   }
 
+  try {
+    let blogPage = 1;
+    let blogPages = 1;
+    do {
+      const response = await fetch(`${apiBase}/api/v1/admin/data/public/blogs?page=${blogPage}&limit=50`);
+      if (!response.ok) break;
+      const data = await response.json();
+      blogs = [...blogs, ...(data.items || [])];
+      blogPages = data.pages || 1;
+      blogPage += 1;
+    } while (blogPage <= blogPages);
+  } catch {
+    blogs = [];
+  }
+
   const urls = [
     ...staticUrls.map((path) => `${siteUrl}${path}`),
     ...schemes.map((scheme) => `${siteUrl}/schemes/${scheme.scheme_id}`),
+    ...blogs.map((blog) => `${siteUrl}/blog/${blog.slug}`),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
