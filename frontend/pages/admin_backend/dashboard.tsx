@@ -54,16 +54,36 @@ export default function Dashboard() {
 
   async function load() {
     setLoading(true); setErr("");
-    const t = localStorage.getItem("govplot_admin_token");
+    const t = typeof window !== "undefined" ? localStorage.getItem("govplot_admin_token") : null;
+    if (!t) { window.location.replace("/admin_backend/login"); return; }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
     try {
       const res = await fetch(`${API}/api/v1/admin/data/dashboard/stats`, {
         headers: { Authorization: `Bearer ${t}` },
+        signal: controller.signal,
       });
-      if (res.status === 401) { window.location.href = "/admin_backend/login"; return; }
+      clearTimeout(timeout);
+      if (res.status === 401) {
+        localStorage.removeItem("govplot_admin_token");
+        window.location.replace("/admin_backend/login");
+        return;
+      }
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
       setStats(await res.json());
       setTime(new Date().toLocaleTimeString("en-IN"));
-    } catch { setErr("Failed to load dashboard stats. Check Railway is running."); }
-    finally { setLoading(false); }
+    } catch (e: any) {
+      clearTimeout(timeout);
+      if (e.name === "AbortError") {
+        setErr("Request timed out (15s). Railway may be starting up — try refreshing in 30 seconds.");
+      } else {
+        setErr("Failed to load dashboard stats. Check Railway is running.");
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
