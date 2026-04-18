@@ -12,6 +12,10 @@ const NAV_ITEMS = [
   { href: "/admin_backend/blogs",         icon: "📝", label: "Blogs"          },
   { href: "/admin_backend/subscriptions", icon: "🔔", label: "Subscriptions"  },
   { href: "/admin_backend/users",         icon: "👥", label: "Users"          },
+  { href: "/admin_backend/scm/authorities", icon: "🏛️", label: "SCM · Authorities" },
+  { href: "/admin_backend/scm/url-mapper",  icon: "🔗", label: "SCM · URL Mapper"  },
+  { href: "/admin_backend/scm/run-logs",    icon: "📊", label: "SCM · Run Logs"    },
+  { href: "/admin_backend/scm/static-data", icon: "💾", label: "SCM · Static Data" },
 ];
 
 interface Props { children: ReactNode; title?: string; }
