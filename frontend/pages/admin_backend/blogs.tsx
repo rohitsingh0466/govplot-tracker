@@ -14,7 +14,7 @@ const CITIES = [
 const BLANK: any = {
   title:"", excerpt:"", content_html:"", city:"Greater Noida",
   tag:"General", read_time_mins:5,
-  is_published:true, is_featured:false,
+  is_published:false, is_featured:false,
   meta_title:"", meta_desc:"", cover_image_url:"",
 };
 

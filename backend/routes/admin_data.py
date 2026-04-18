@@ -568,19 +568,13 @@ def public_blogs(
                is_featured, read_time_mins, published_at, cover_image_url
         FROM public.blogs
         WHERE is_published = TRUE
-        ORDER BY is_featured DESC, published_at DESC NULLS LAST, updated_at DESC
+        ORDER BY published_at DESC NULLS LAST
         LIMIT :limit OFFSET :offset
     """), {"limit": limit, "offset": offset}).fetchall()
     total = db.execute(
         text("SELECT COUNT(*) FROM public.blogs WHERE is_published = TRUE")
     ).scalar() or 0
-    return {
-        "items": [dict(r._mapping) for r in rows],
-        "total": total,
-        "page": page,
-        "limit": limit,
-        "pages": max(1, -(-total // limit)),
-    }
+    return {"items": [dict(r._mapping) for r in rows], "total": total}
 
 
 @router.get("/public/blogs/{slug}")
