@@ -1,281 +1,517 @@
-// frontend/pages/blog/index.tsx
-// REPLACES the current index.tsx (which re-exports blog-index-updated.tsx)
-// Now fetches ALL blogs from the API — admin-created blogs appear instantly.
-// Pagination built in — 6 per page, works for any number of blogs.
-
-import Head from "next/head";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import AuthModal from "../../components/AuthModal";
+import Head from "next/head";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const PER_PAGE = 6;
+const PER_PAGE = 9;
 
 interface Blog {
   id: number;
   slug: string;
   title: string;
-  excerpt: string;
-  content_html: string;
-  city?: string;
+  excerpt?: string;
   tag?: string;
+  city?: string;
   author?: string;
-  read_time_mins?: number;
-  is_published: boolean;
-  is_featured: boolean;
   published_at?: string;
   created_at: string;
   cover_image_url?: string;
+  read_time_mins?: number;
+  is_featured?: boolean;
 }
 
-const TAG_MAP: Record<string, { bg: string; color: string }> = {
-  "Breaking News": { bg: "rgba(13,122,104,.15)",  color: "#0d7a68" },
-  Comparison:      { bg: "rgba(14,165,233,.12)",   color: "#0284c7" },
-  Analysis:        { bg: "rgba(245,158,11,.12)",   color: "#b45309" },
-  Investment:      { bg: "rgba(34,197,94,.12)",    color: "#15803d" },
-  "How-To Guide":  { bg: "rgba(139,92,246,.12)",   color: "#7c3aed" },
-  General:         { bg: "rgba(107,114,128,.12)",  color: "#4b5563" },
-};
+export default function BlogIndexPage() {
+  const [blogs, setBlogs]     = useState<Blog[]>([]);
+  const [total, setTotal]     = useState(0);
+  const [pages, setPages]     = useState(1);
+  const [page,  setPage]      = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState("");
 
-const tagStyle = (tag?: string): React.CSSProperties => {
-  const s = TAG_MAP[tag || "General"] || TAG_MAP["General"];
-  return {
-    background: s.bg, color: s.color,
-    fontSize: "11px", fontWeight: 700,
-    padding: "3px 10px", borderRadius: "20px",
-    textTransform: "uppercase", letterSpacing: "0.4px",
-  };
-};
-
-const fmt = (d?: string) => d
-  ? new Date(d).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
-  : "";
-
-export default function BlogPage() {
-  const [blogs,      setBlogs]      = useState<Blog[]>([]);
-  const [featured,   setFeatured]   = useState<Blog | null>(null);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState("");
-  const [page,       setPage]       = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [authOpen,   setAuthOpen]   = useState(false);
-  const [loggedIn,   setLoggedIn]   = useState(false);
-
-  useEffect(() => {
-    const check = () => setLoggedIn(!!localStorage.getItem("govplot_auth_user"));
-    check();
-    window.addEventListener("govplot-auth-changed", check);
-    return () => window.removeEventListener("govplot-auth-changed", check);
-  }, []);
-
-  useEffect(() => { load(page); }, [page]);
-
-  async function load(p: number) {
-    setLoading(true); setError("");
+  const load = useCallback(async (p: number) => {
+    setLoading(true);
+    setError("");
     try {
       const offset = (p - 1) * PER_PAGE;
+      // ✅ FIXED: calls /api/v1/blogs/ (public, no auth needed)
       const res = await fetch(
-        `${API}/api/v1/admin/data/blogs?limit=100&offset=0`,
-        { headers: { "Cache-Control": "no-cache", Pragma: "no-cache" } }
+        `${API}/api/v1/blogs/?limit=${PER_PAGE}&offset=${offset}`,
+        { headers: { "Cache-Control": "no-cache" } }
       );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const all: Blog[] = (data.items || []).filter((b: Blog) => b.is_published);
-
-      setTotalCount(all.length);
-      setTotalPages(Math.max(1, Math.ceil(all.length / PER_PAGE)));
-
-      const start = (p - 1) * PER_PAGE;
-      const pageItems = all.slice(start, start + PER_PAGE);
-
-      if (p === 1) {
-        const feat = all.find((b) => b.is_featured) || all[0] || null;
-        setFeatured(feat);
-        setBlogs(feat ? pageItems.filter((b) => b.id !== feat.id) : pageItems);
-      } else {
-        setFeatured(null);
-        setBlogs(pageItems);
-      }
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const d = await res.json();
+      setBlogs(d.items || []);
+      setTotal(d.total  || 0);
+      setPages(d.pages  || 1);
     } catch (e: any) {
-      setError("Could not load articles. Please try again.");
+      setError(e.message || "Could not load articles. Please try again.");
+      setBlogs([]);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1);
+  useEffect(() => { load(page); }, [page, load]);
+
+  function fmt(dt?: string) {
+    if (!dt) return "";
+    return new Date(dt).toLocaleDateString("en-IN", {
+      day: "numeric", month: "short", year: "numeric",
+    });
+  }
 
   return (
     <>
       <Head>
-        <title>Blog — GovPlot Tracker | Government Plot Scheme Guides</title>
-        <meta name="description" content="In-depth guides, comparisons, and investment analysis for government residential plot lottery schemes across India." />
-        <link rel="canonical" href="https://govplottracker.com/blog" />
+        <title>Government Plot Scheme Guides & Analysis — GovPlot Tracker</title>
+        <meta name="description" content="Expert guides and latest news on government residential plot lottery schemes across India." />
+        <meta property="og:title" content="GovPlot Blog — Government Plot Scheme Guides" />
       </Head>
 
-      <div className="min-h-screen bg-[--bg-page]">
-
-        {/* Hero */}
-        <div className="bg-gradient-to-br from-[--teal-900] to-[--ink-900] text-white px-4 py-12 sm:py-16">
-          <div className="max-w-3xl mx-auto">
-            <Link href="/" className="inline-flex items-center gap-2 text-[--teal-400] text-[13px] font-semibold mb-6 hover:text-[--teal-300] transition">
-              ← Back to home
-            </Link>
-            {totalCount > 0 && !loading && (
-              <div className="inline-flex items-center gap-2 bg-[--teal-800]/50 border border-[--teal-600]/30 px-3 py-1.5 rounded-full mb-4">
-                <span className="w-2 h-2 rounded-full bg-[--teal-400] animate-pulse" />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-[--teal-300]">
-                  {totalCount} Article{totalCount !== 1 ? "s" : ""} Published
-                </span>
-              </div>
-            )}
-            <h1 className="text-[36px] sm:text-[48px] font-[Outfit] font-900 text-white mt-2 mb-4">
-              Government Plot Scheme Guides &amp; Analysis
-            </h1>
-            <p className="text-[15px] text-[--teal-300]/90 leading-relaxed max-w-xl">
-              Expert guides, head-to-head comparisons, and investment deep-dives for India's top government housing authorities.
-            </p>
-          </div>
+      <div style={s.page}>
+        {/* ── Header ── */}
+        <div style={s.headerWrap}>
+          <Link href="/" style={s.backLink}>← Back to home</Link>
+          <h1 style={s.h1}>Government Plot Scheme Guides &amp; Analysis</h1>
+          <p style={s.subtitle}>
+            Expert guides, head-to-head comparisons, and investment deep-dives for India's
+            top government housing authorities.
+          </p>
         </div>
 
-        <div className="max-w-3xl mx-auto px-4 py-12">
+        {/* ── Error Banner ── */}
+        {error && (
+          <div style={s.errorBanner}>
+            <span>⚠️ {error}</span>
+            <button onClick={() => load(page)} style={s.retryBtn}>Retry</button>
+          </div>
+        )}
 
-          {/* Error */}
-          {error && (
-            <div style={{ background:"rgba(220,38,38,.08)", border:"1px solid rgba(220,38,38,.2)", borderRadius:"10px", padding:"14px 18px", color:"#dc2626", fontSize:"14px", marginBottom:"24px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <span>⚠️ {error}</span>
-              <button onClick={() => load(page)} style={{ background:"#dc2626", color:"#fff", border:"none", padding:"6px 14px", borderRadius:"6px", cursor:"pointer", fontSize:"13px" }}>Retry</button>
-            </div>
-          )}
+        {/* ── Loading ── */}
+        {loading && (
+          <div style={s.centerBox}>
+            <div style={s.spinner}>⟳</div>
+            <p style={s.loadingText}>Loading articles…</p>
+          </div>
+        )}
 
-          {/* Loading */}
-          {loading && (
-            <div style={{ textAlign:"center", padding:"80px 0", color:"var(--ink-400)" }}>
-              <div style={{ fontSize:"36px", display:"inline-block", animation:"spin 0.9s linear infinite" }}>⟳</div>
-              <p style={{ marginTop:"12px", fontSize:"14px" }}>Loading articles…</p>
-            </div>
-          )}
+        {/* ── Empty ── */}
+        {!loading && !error && blogs.length === 0 && (
+          <div style={s.centerBox}>
+            <p style={s.emptyText}>No published articles yet. Check back soon!</p>
+          </div>
+        )}
 
-          {/* Empty */}
-          {!loading && !error && blogs.length === 0 && !featured && (
-            <div style={{ textAlign:"center", padding:"80px 0", color:"var(--ink-400)", fontSize:"15px" }}>
-              No published articles yet. Check back soon!
-            </div>
-          )}
-
-          {/* Featured (page 1 only) */}
-          {!loading && featured && page === 1 && (
-            <div className="mb-6">
-              <p style={{ fontSize:"11px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em", color:"var(--ink-400)", marginBottom:"12px" }}>Featured</p>
-              <article className="card card-hover overflow-hidden animate-fade-in-up">
-                <div className="bg-gradient-to-br from-[--teal-700] to-[--teal-900] p-6 sm:p-8">
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:"8px", marginBottom:"12px", alignItems:"center" }}>
-                    {featured.tag && <span style={tagStyle(featured.tag)}>{featured.tag}</span>}
-                    {featured.city && <span style={{ fontSize:"11px", fontWeight:600, color:"var(--teal-300)", background:"rgba(13,122,104,.3)", padding:"3px 10px", borderRadius:"20px" }}>📍 {featured.city}</span>}
-                    <span style={{ fontSize:"11px", color:"var(--teal-400)" }}>{fmt(featured.published_at || featured.created_at)}</span>
-                    {featured.read_time_mins && <span style={{ fontSize:"11px", color:"var(--teal-400)" }}>· {featured.read_time_mins} min read</span>}
-                  </div>
-                  <h2 className="text-[20px] sm:text-[24px] font-[Outfit] font-800 text-white leading-snug mb-3 hover:text-[--teal-200]">
-                    <Link href={`/blog/${featured.slug}`}>{featured.title}</Link>
-                  </h2>
-                  {featured.excerpt && (
-                    <p style={{ fontSize:"13.5px", color:"rgba(153,246,228,.8)", lineHeight:1.7, marginBottom:"16px" }}>{featured.excerpt}</p>
+        {/* ── Grid ── */}
+        {!loading && blogs.length > 0 && (
+          <>
+            <div style={s.grid}>
+              {blogs.map((b) => (
+                <article key={b.id} style={s.card}>
+                  {b.cover_image_url && (
+                    <div style={s.imgWrap}>
+                      <img src={b.cover_image_url} alt={b.title} style={s.img} />
+                    </div>
                   )}
-                  <Link href={`/blog/${featured.slug}`} className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white bg-white/15 hover:bg-white/25 transition px-4 py-2 rounded-full">
-                    Read article{featured.read_time_mins ? ` · ${featured.read_time_mins} min` : ""} →
-                  </Link>
-                </div>
-              </article>
-            </div>
-          )}
-
-          {/* Blog list */}
-          {!loading && blogs.length > 0 && (
-            <div className="space-y-5">
-              {blogs.map((post, i) => (
-                <article key={post.id} className="card card-hover p-6 animate-fade-in-up" style={{ animationDelay:`${i * 60}ms` }}>
-                  {post.cover_image_url && (
-                    <img src={post.cover_image_url} alt={post.title} style={{ width:"100%", height:"180px", objectFit:"cover", borderRadius:"8px", marginBottom:"14px" }} />
-                  )}
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:"8px", marginBottom:"12px", alignItems:"center" }}>
-                    {post.tag && <span style={tagStyle(post.tag)}>{post.tag}</span>}
-                    {post.city && <span style={{ fontSize:"11px", fontWeight:600, color:"var(--ink-500)", background:"var(--ink-50)", border:"1px solid var(--ink-100)", padding:"3px 10px", borderRadius:"20px" }}>📍 {post.city}</span>}
-                    <span style={{ fontSize:"11px", color:"var(--ink-400)" }}>{fmt(post.published_at || post.created_at)}</span>
-                    {post.read_time_mins && <span style={{ fontSize:"11px", color:"var(--ink-400)" }}>· {post.read_time_mins} min read</span>}
+                  <div style={s.cardBody}>
+                    <div style={s.metaRow}>
+                      {b.tag  && <span style={s.tagBadge}>{b.tag}</span>}
+                      {b.city && <span style={s.cityBadge}>{b.city}</span>}
+                      <span style={s.dateText}>{fmt(b.published_at || b.created_at)}</span>
+                      {b.read_time_mins && (
+                        <span style={s.readTime}>{b.read_time_mins} min read</span>
+                      )}
+                    </div>
+                    <h2 style={s.cardTitle}>{b.title}</h2>
+                    {b.excerpt && <p style={s.cardExcerpt}>{b.excerpt}</p>}
+                    {b.author  && <p style={s.authorText}>✍️ {b.author}</p>}
+                    <Link href={`/blog/${b.slug}`} style={s.readMore}>
+                      Read full article →
+                    </Link>
                   </div>
-                  <h2 className="text-[17px] sm:text-[19px] font-[Outfit] font-700 text-[--ink-900] leading-snug mb-2 hover:text-[--teal-700]">
-                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                  </h2>
-                  {post.excerpt && <p style={{ fontSize:"13.5px", color:"var(--ink-600)", lineHeight:1.75, marginBottom:"14px" }}>{post.excerpt}</p>}
-                  {post.author && <p style={{ fontSize:"12px", color:"var(--ink-400)", marginBottom:"10px" }}>✍️ {post.author}</p>}
-                  <Link href={`/blog/${post.slug}`} className="text-[13px] font-semibold text-[--teal-600] hover:text-[--teal-800] transition">
-                    Read more →
-                  </Link>
                 </article>
               ))}
             </div>
-          )}
 
-          {/* Pagination */}
-          {!loading && totalPages > 1 && (
-            <div style={{ marginTop:"40px" }}>
-              <nav style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:"8px", flexWrap:"wrap" }}>
-                <button onClick={() => setPage(Math.max(1, page-1))} disabled={page===1}
-                  style={{ padding:"9px 16px", borderRadius:"8px", border:"1px solid var(--ink-200)", background:"var(--bg-card)", color:"var(--ink-700)", fontSize:"13px", fontWeight:600, cursor:page===1?"not-allowed":"pointer", opacity:page===1?0.4:1 }}>
+            {/* ── Pagination ── */}
+            {pages > 1 && (
+              <nav style={s.paginationWrap}>
+                <button
+                  style={{ ...s.pgBtn, ...(page <= 1 ? s.pgBtnOff : {}) }}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                >
                   ← Prev
                 </button>
-                {pageNums.map(n => (
-                  <button key={n} onClick={() => setPage(n)}
-                    style={{ width:"38px", height:"38px", borderRadius:"8px", border:`1px solid ${page===n?"var(--teal-600)":"var(--ink-200)"}`, background:page===n?"var(--teal-600)":"var(--bg-card)", color:page===n?"#fff":"var(--ink-700)", fontSize:"13px", fontWeight:600, cursor:"pointer" }}>
-                    {n}
-                  </button>
-                ))}
-                <button onClick={() => setPage(Math.min(totalPages, page+1))} disabled={page===totalPages}
-                  style={{ padding:"9px 16px", borderRadius:"8px", border:"1px solid var(--ink-200)", background:"var(--bg-card)", color:"var(--ink-700)", fontSize:"13px", fontWeight:600, cursor:page===totalPages?"not-allowed":"pointer", opacity:page===totalPages?0.4:1 }}>
+
+                <div style={s.pageNums}>
+                  {(() => {
+                    // Show at most 7 page numbers with ellipsis logic
+                    const nums: (number | "...")[] = [];
+                    if (pages <= 7) {
+                      for (let i = 1; i <= pages; i++) nums.push(i);
+                    } else {
+                      nums.push(1);
+                      if (page > 3)   nums.push("...");
+                      for (let i = Math.max(2, page-1); i <= Math.min(pages-1, page+1); i++) nums.push(i);
+                      if (page < pages - 2) nums.push("...");
+                      nums.push(pages);
+                    }
+                    return nums.map((n, i) =>
+                      n === "..." ? (
+                        <span key={`e${i}`} style={s.ellipsis}>…</span>
+                      ) : (
+                        <button
+                          key={n}
+                          style={{ ...s.pgNum, ...(page === n ? s.pgNumActive : {}) }}
+                          onClick={() => setPage(n as number)}
+                        >
+                          {n}
+                        </button>
+                      )
+                    );
+                  })()}
+                </div>
+
+                <button
+                  style={{ ...s.pgBtn, ...(page >= pages ? s.pgBtnOff : {}) }}
+                  onClick={() => setPage(p => Math.min(pages, p + 1))}
+                  disabled={page >= pages}
+                >
                   Next →
                 </button>
               </nav>
-              <p style={{ textAlign:"center", fontSize:"12px", color:"var(--ink-400)", marginTop:"10px" }}>
-                Page {page} of {totalPages} · {totalCount} article{totalCount!==1?"s":""} total
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* CTA */}
-          {!loading && (
-            <div className="mt-12 bg-gradient-to-br from-[--teal-100] to-white border border-[--teal-200] rounded-3xl p-8 text-center">
-              <div className="text-3xl mb-3">🏠</div>
-              <h3 className="text-[20px] font-[Outfit] font-700 text-[--ink-900] mb-2">
-                {loggedIn ? "Track Live Schemes Across the Top-20 Watchlist" : "Never Miss a Government Plot Lottery Again"}
-              </h3>
-              <p className="text-[13.5px] text-[--ink-600] mb-5">
-                {loggedIn ? "Your free account gives you full access to all OPEN, ACTIVE, UPCOMING, and CLOSED scheme details." : "Sign up free to view scheme details across the 20-city watchlist — YEIDA, DDA, LDA, JDA, BDA, HMDA and more."}
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {!loggedIn ? (
-                  <button onClick={() => setAuthOpen(true)} className="btn-primary text-[14px] py-3 px-8">Sign Up Free →</button>
-                ) : (
-                  <Link href="/schemes" className="btn-primary text-[14px] py-3 px-8">Browse All Schemes →</Link>
-                )}
-                <Link href="/pricing" className="btn-secondary text-[14px] py-3 px-8">View Alert Plans</Link>
-              </div>
-            </div>
-          )}
-        </div>
+            {/* Pagination info */}
+            <p style={s.paginationInfo}>
+              Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, total)} of {total} articles
+            </p>
+          </>
+        )}
 
-        <div className="border-t border-[--ink-100] py-6 text-center">
-          <p className="text-[12px] text-[--ink-400]">
-            © 2026 GovPlot Tracker ·{" "}
-            <Link href="/privacy" className="hover:text-[--teal-600]">Privacy</Link> ·{" "}
-            <Link href="/terms" className="hover:text-[--teal-600]">Terms</Link> ·{" "}
-            <Link href="/contact" className="hover:text-[--teal-600]">Contact</Link>
+        {/* ── CTA Banner ── */}
+        <div style={s.ctaBanner}>
+          <div style={s.ctaIcon}>🏠</div>
+          <p style={s.ctaTitle}>Track Live Schemes Across the Top-20 Watchlist</p>
+          <p style={s.ctaSub}>
+            Your free account gives you full access to all OPEN, ACTIVE, UPCOMING, and CLOSED scheme details.
           </p>
+          <div style={s.ctaBtns}>
+            <Link href="/schemes" style={s.ctaBtnPrimary}>Browse All Schemes →</Link>
+            <Link href="/pricing" style={s.ctaBtnSecondary}>View Alert Plans</Link>
+          </div>
         </div>
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .blog-card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.10) !important;
+          border-color: #0d7a68 !important;
+        }
+        .read-more-hover:hover { color: #0a5f53 !important; }
+      `}</style>
     </>
   );
 }
+
+const s: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: "100vh",
+    backgroundColor: "#f7f4ef",
+    fontFamily: "'Source Serif 4', Georgia, serif",
+  },
+  headerWrap: {
+    maxWidth: 960,
+    margin: "0 auto",
+    padding: "48px 24px 40px",
+  },
+  backLink: {
+    display: "inline-block",
+    fontSize: 14,
+    color: "#0d7a68",
+    textDecoration: "none",
+    fontFamily: "'Source Serif 4', serif",
+    marginBottom: 20,
+    fontWeight: 400,
+  },
+  h1: {
+    fontFamily: "'Playfair Display', Georgia, serif",
+    fontSize: "clamp(28px, 5vw, 48px)",
+    fontWeight: 800,
+    color: "#1a1208",
+    lineHeight: 1.15,
+    margin: "0 0 16px",
+    letterSpacing: "-0.5px",
+  },
+  subtitle: {
+    fontSize: 17,
+    color: "#5c5244",
+    lineHeight: 1.7,
+    margin: 0,
+    maxWidth: 560,
+  },
+  errorBanner: {
+    maxWidth: 960,
+    margin: "0 auto 24px",
+    padding: "14px 20px",
+    backgroundColor: "#fef2f2",
+    border: "1px solid #fca5a5",
+    borderRadius: 10,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    color: "#dc2626",
+    fontSize: 14,
+    fontFamily: "'Source Serif 4', serif",
+  },
+  retryBtn: {
+    backgroundColor: "#dc2626",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: 600,
+    fontFamily: "'Source Serif 4', serif",
+  },
+  centerBox: {
+    textAlign: "center",
+    padding: "80px 24px",
+  },
+  spinner: {
+    fontSize: 48,
+    display: "inline-block",
+    animation: "spin 0.8s linear infinite",
+    marginBottom: 12,
+    color: "#0d7a68",
+  },
+  loadingText: {
+    color: "#7a6e62",
+    fontSize: 16,
+  },
+  emptyText: {
+    color: "#7a6e62",
+    fontSize: 16,
+  },
+  grid: {
+    maxWidth: 960,
+    margin: "0 auto 48px",
+    padding: "0 24px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gap: 24,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    border: "1px solid #e8e0d4",
+    overflow: "hidden",
+    transition: "transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease",
+    display: "flex",
+    flexDirection: "column",
+    animation: "fadeUp 0.4s ease both",
+  },
+  imgWrap: {
+    width: "100%",
+    height: 180,
+    overflow: "hidden",
+    backgroundColor: "#f0ebe3",
+  },
+  img: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    transition: "transform 0.3s ease",
+  },
+  cardBody: {
+    padding: "20px 20px 22px",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  },
+  metaRow: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  tagBadge: {
+    fontSize: 11,
+    fontWeight: 700,
+    backgroundColor: "#e0f2ef",
+    color: "#0d7a68",
+    padding: "3px 8px",
+    borderRadius: 20,
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    fontFamily: "'Source Serif 4', serif",
+  },
+  cityBadge: {
+    fontSize: 11,
+    fontWeight: 600,
+    backgroundColor: "#fef3c7",
+    color: "#92400e",
+    padding: "3px 8px",
+    borderRadius: 20,
+    fontFamily: "'Source Serif 4', serif",
+  },
+  dateText: {
+    fontSize: 12,
+    color: "#9d8e7f",
+  },
+  readTime: {
+    fontSize: 11,
+    color: "#9d8e7f",
+    fontStyle: "italic",
+  },
+  cardTitle: {
+    fontFamily: "'Playfair Display', Georgia, serif",
+    fontSize: 17,
+    fontWeight: 700,
+    color: "#1a1208",
+    marginBottom: 10,
+    lineHeight: 1.4,
+    flex: 1,
+  },
+  cardExcerpt: {
+    fontSize: 13.5,
+    color: "#5c5244",
+    lineHeight: 1.65,
+    marginBottom: 12,
+  },
+  authorText: {
+    fontSize: 12,
+    color: "#8a7d6e",
+    marginBottom: 12,
+  },
+  readMore: {
+    color: "#0d7a68",
+    fontSize: 13,
+    fontWeight: 600,
+    textDecoration: "none",
+    transition: "color 0.2s",
+    marginTop: "auto",
+  },
+  paginationWrap: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    padding: "0 24px 16px",
+    flexWrap: "wrap",
+  },
+  pgBtn: {
+    padding: "9px 16px",
+    border: "1px solid #d4c9bb",
+    backgroundColor: "white",
+    color: "#3d342a",
+    borderRadius: 8,
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: 600,
+    fontFamily: "'Source Serif 4', serif",
+    transition: "all 0.2s",
+  },
+  pgBtnOff: {
+    opacity: 0.35,
+    cursor: "not-allowed",
+  },
+  pageNums: {
+    display: "flex",
+    gap: 6,
+    alignItems: "center",
+  },
+  pgNum: {
+    width: 36,
+    height: 36,
+    border: "1px solid #d4c9bb",
+    backgroundColor: "white",
+    color: "#3d342a",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: 600,
+    fontFamily: "'Source Serif 4', serif",
+    transition: "all 0.2s",
+  },
+  pgNumActive: {
+    backgroundColor: "#0d7a68",
+    color: "white",
+    borderColor: "#0d7a68",
+  },
+  ellipsis: {
+    fontSize: 14,
+    color: "#9d8e7f",
+    padding: "0 4px",
+  },
+  paginationInfo: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#9d8e7f",
+    padding: "0 24px 40px",
+    fontFamily: "'Source Serif 4', serif",
+  },
+  ctaBanner: {
+    maxWidth: 960,
+    margin: "0 auto 60px",
+    padding: "40px 32px",
+    backgroundColor: "#e8f5f2",
+    border: "1px solid #b2ddd5",
+    borderRadius: 16,
+    textAlign: "center",
+  },
+  ctaIcon: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+  ctaTitle: {
+    fontFamily: "'Playfair Display', serif",
+    fontSize: 20,
+    fontWeight: 700,
+    color: "#1a1208",
+    marginBottom: 8,
+  },
+  ctaSub: {
+    fontSize: 14,
+    color: "#4a5568",
+    marginBottom: 22,
+    lineHeight: 1.6,
+  },
+  ctaBtns: {
+    display: "flex",
+    gap: 12,
+    justifyContent: "center",
+    flexWrap: "wrap",
+  },
+  ctaBtnPrimary: {
+    backgroundColor: "#0d7a68",
+    color: "white",
+    padding: "12px 24px",
+    borderRadius: 30,
+    textDecoration: "none",
+    fontSize: 14,
+    fontWeight: 700,
+    fontFamily: "'Source Serif 4', serif",
+  },
+  ctaBtnSecondary: {
+    backgroundColor: "white",
+    color: "#0d7a68",
+    padding: "12px 24px",
+    borderRadius: 30,
+    textDecoration: "none",
+    fontSize: 14,
+    fontWeight: 700,
+    border: "1px solid #0d7a68",
+    fontFamily: "'Source Serif 4', serif",
+  },
+};
