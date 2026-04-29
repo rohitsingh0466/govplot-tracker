@@ -59,10 +59,14 @@ jobs:
       # ── 3. Install Google Chrome (official binary) ────────────────────────
       - name: Install Google Chrome (stable, official)
         run: |
-          wget -q -O /tmp/google-signing-key.pub \
-            https://dl.google.com/linux/linux_signing_key.pub
-          sudo gpg --batch --no-tty --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-            /tmp/google-signing-key.pub
+          if command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --version
+            exit 0
+          fi
+
+          curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+            | gpg --dearmor \
+            | sudo tee /usr/share/keyrings/google-chrome.gpg >/dev/null
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
             http://dl.google.com/linux/chrome/deb/ stable main" \
             | sudo tee /etc/apt/sources.list.d/google-chrome.list
