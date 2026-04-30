@@ -49,8 +49,6 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
     }
   }, [scheme.scheme_id, scheme.blurred]);
 
-  const isBlurred = clientScheme.blurred && !isLoggedIn;
-
   return (
     <>
       <Head>
@@ -98,20 +96,6 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
               </p>
             </div>
 
-            {/* Blurred content gate */}
-            {isBlurred ? (
-              <div className="card p-8 text-center bg-gradient-to-br from-[--teal-100]/40 to-[--saffron-100]/30 border-[--teal-200]/50 mb-6">
-                <div className="text-5xl mb-4">🔓</div>
-                <h2 className="text-[22px] font-[Outfit] font-800 text-[--ink-900] mb-3">Sign up to view Open &amp; Active scheme details</h2>
-                <p className="text-[14px] text-[--ink-600] leading-relaxed mb-6 max-w-md mx-auto">
-                  This scheme is currently <strong>{clientScheme.status}</strong>. Create a free account to see pricing, plot count, location, apply URL and full scheme information.
-                </p>
-                <button onClick={() => setAuthOpen(true)} className="btn-primary text-[14px] py-3 px-8" style={{ fontFamily: "var(--font-display)" }}>
-                  Sign Up Free — Instant Access →
-                </button>
-                <p className="text-[11.5px] text-[--ink-500] mt-3">Google sign-in · No credit card required</p>
-              </div>
-            ) : (
               <div className="card p-6 mb-6">
                 <h2 className="text-[18px] font-[Outfit] font-700 text-[--ink-900] mb-5">Scheme Snapshot</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -133,7 +117,6 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
                   ))}
                 </div>
               </div>
-            )}
 
             <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SCHEME_MID} format="horizontal" label="Scheme Detail — Mid Ad" className="mb-6" />
 
@@ -141,8 +124,8 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
               <h3 className="text-[15px] font-[Outfit] font-700 text-[--ink-900] mb-2">About this scheme</h3>
               <p className="text-[13.5px] text-[--ink-600] leading-relaxed">
                 The <strong>{clientScheme.name}</strong> is a government residential plot scheme by <strong>{clientScheme.authority}</strong> in <strong>{clientScheme.city}</strong>.
-                {!isBlurred && clientScheme.total_plots && ` It offers ${clientScheme.total_plots.toLocaleString()} plots`}
-                {!isBlurred && clientScheme.price_min && ` priced between ₹${clientScheme.price_min}L and ₹${clientScheme.price_max}L`}.
+            {clientScheme.total_plots && ` It offers ${clientScheme.total_plots.toLocaleString()} plots`}
+            {clientScheme.price_min && ` priced between ₹${clientScheme.price_min}L and ₹${clientScheme.price_max}L`}.
                 {" "}Check the official website for the latest brochure, eligibility criteria, and application status.
               </p>
             </div>
@@ -150,14 +133,6 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
 
           {/* Sidebar */}
           <aside className="flex flex-col gap-5">
-            {isBlurred ? (
-              <div className="card p-6 text-center bg-gradient-to-br from-[--teal-100]/40 to-white border-[--teal-200]/50">
-                <div className="text-3xl mb-3">🔐</div>
-                <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900] mb-2">Sign up to access</h2>
-                <p className="text-[12.5px] text-[--ink-600] mb-4">Free account gives you full access to all scheme details including apply links.</p>
-                <button onClick={() => setAuthOpen(true)} className="btn-primary w-full justify-center text-[13px] py-3">Sign Up Free →</button>
-              </div>
-            ) : (
               <div className="card p-6">
                 <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900] mb-3">Apply / Check Status</h2>
                 <p className="text-[13px] text-[--ink-600] leading-relaxed mb-4">For the official brochure, eligibility criteria, and latest updates, visit the authority portal directly.</p>
@@ -165,10 +140,8 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
                   Visit Official Page ↗
                 </a>
               </div>
-            )}
 
             {/* Upgrade to get alerts CTA */}
-            {isLoggedIn ? (
               <div className="card p-6 bg-[--saffron-100]/50 border-[--saffron-200]/60">
                 <div className="text-2xl mb-2">🔔</div>
                 <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900] mb-2">Upgrade to stay updated</h2>
@@ -177,14 +150,6 @@ export default function SchemeDetailPage({ scheme }: { scheme: Scheme }) {
                 </p>
                 <Link href="/pricing" className="btn-saffron w-full justify-center text-[13px] py-2.5">See Plans →</Link>
               </div>
-            ) : (
-              <div className="card p-6 bg-[--teal-100]/30 border-[--teal-200]/50">
-                <div className="text-2xl mb-2">🔓</div>
-                <h2 className="text-[16px] font-[Outfit] font-700 text-[--ink-900] mb-2">Sign up to view details</h2>
-                <p className="text-[13px] text-[--ink-600] leading-relaxed mb-4">Free account gives you access to scheme information across the top-20 city watchlist.</p>
-                <button onClick={() => setAuthOpen(true)} className="btn-primary w-full justify-center text-[13px] py-2.5">Create Free Account →</button>
-              </div>
-            )}
 
             <AdSenseSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SCHEME_SIDE} format="rectangle" label="Scheme Detail — Sidebar Ad (300×250)" />
           </aside>

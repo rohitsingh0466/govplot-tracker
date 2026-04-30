@@ -108,25 +108,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Visibility explainer */}
-        <div className="max-w-3xl mx-auto mb-10 bg-gradient-to-r from-[--teal-100]/60 to-[--saffron-100]/40 border border-[--teal-200]/50 rounded-2xl p-5">
-          <h3 className="text-[14px] font-[Outfit] font-700 text-[--ink-900] mb-3">📋 What can I see without signing up?</h3>
-          <div className="grid sm:grid-cols-3 gap-3 text-[12.5px]">
-            <div className="bg-white rounded-xl p-3 border border-[--ink-100]">
-              <div className="font-bold text-[--ink-700] mb-1">🌐 Anonymous (no account)</div>
-              <p className="text-[--ink-500]">CLOSED & UPCOMING schemes in full. OPEN & ACTIVE cards shown but details hidden — sign up to unlock.</p>
-            </div>
-            <div className="bg-white rounded-xl p-3 border border-[--ink-100]">
-              <div className="font-bold text-[--ink-700] mb-1">🆓 Free account (signed in)</div>
-              <p className="text-[--ink-500]">ALL scheme statuses visible with full details across the 20-city watchlist. No alerts.</p>
-            </div>
-            <div className="bg-white rounded-xl p-3 border border-[--ink-100]">
-              <div className="font-bold text-[--saffron-600] mb-1">✦ Pro / Premium</div>
-              <p className="text-[--ink-500]">Everything above + city alert subscriptions to get notified the moment a scheme opens.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {PLANS.map(plan => {
             const price = annual && plan.id !== "free"

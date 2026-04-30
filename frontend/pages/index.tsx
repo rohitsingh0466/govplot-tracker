@@ -96,8 +96,6 @@ export default function Home() {
     return matchesStatus && matchesSearch;
   });
 
-  const hasBlurred = !isLoggedIn && filtered.some(s => s.blurred || (s.status === "OPEN" || s.status === "ACTIVE"));
-
   return (
     <>
       <Head>
@@ -148,44 +146,12 @@ export default function Home() {
               <span key={t} className="text-[12.5px] font-semibold text-[--ink-500] bg-[--ink-50] border border-[--ink-100] px-3 py-1.5 rounded-full">{t}</span>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-3 mt-8 max-w-xl">
-            {[
-              { value: "20", label: "watched cities" },
-              { value: resolvedStats.total_schemes || 0, label: "scheme rows" },
-              { value: resolvedStats.cities_tracked || 0, label: "cities with data" },
-            ].map(({ value, label }) => (
-              <div key={label} className="rounded-2xl border border-[--ink-100] bg-white p-4 shadow-sm">
-                <div className="font-[Outfit] text-[26px] font-900 text-[--teal-700]">{value}</div>
-                <div className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[--ink-400]">{label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
       <div className="page-container">
         {resolvedStats.total_schemes > 0 && <StatsBar stats={resolvedStats} />}
       </div>
-
-      {/* Sign up to see open/active banner — anonymous only */}
-      {!isLoggedIn && (
-        <div className="page-container mb-6">
-          <div className="bg-gradient-to-r from-[--teal-700] to-[--teal-900] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl flex-shrink-0">🔓</div>
-              <div>
-                <h2 className="text-[18px] font-[Outfit] font-800 text-white mb-1">Sign up to view Open &amp; Active schemes</h2>
-                <p className="text-[13px] text-[--teal-300]/90 leading-relaxed">
-                  Free account gives you full access to all scheme details — OPEN, ACTIVE, UPCOMING and CLOSED.
-                </p>
-              </div>
-            </div>
-            <button onClick={() => setAuthOpen(true)} className="btn-primary bg-white text-[--teal-700] hover:bg-[--teal-50] text-[14px] py-3 px-7 flex-shrink-0" style={{ fontFamily: "var(--font-display)" }}>
-              Create Free Account →
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* How it works */}
       <section className="page-container pb-14">
@@ -219,11 +185,6 @@ export default function Home() {
             <h2 className="text-[26px] font-[Outfit] font-800 text-[--ink-900] mt-1">
               {filtered.length} scheme{filtered.length !== 1 ? "s" : ""} found
             </h2>
-            {!isLoggedIn && (
-              <p className="text-[13px] text-[--ink-500] mt-1">
-                <button onClick={() => setAuthOpen(true)} className="text-[--teal-600] font-semibold underline">Sign up free</button> to view Open & Active scheme details
-              </p>
-            )}
           </div>
           <Link href="/schemes" className="btn-ghost text-[13px]">View all →</Link>
         </div>
