@@ -15,6 +15,13 @@ export default function AdminLogin() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Prevent infinite loops if dashboard kicks us back with an error or logout param
+      if (window.location.search.includes("session_expired=true") || window.location.search.includes("logout=true")) {
+        localStorage.removeItem("govplot_admin_token");
+        localStorage.removeItem("govplot_admin_email");
+        return;
+      }
+
       const t = localStorage.getItem("govplot_admin_token");
       if (t) router.replace("/admin_backend/dashboard");
     }
